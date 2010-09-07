@@ -1,0 +1,53 @@
+
+
+Insulin Regimen
+
+Insulin.Aspart.ttl   = 4h
+# Insulin.Glargine.ttl = 24h?
+
+Pump Therapy
+  Bolus ( no filters/preconditions )
+    insulin            = Insulin.Aspart.Novolog
+    ratios.carb2units  = 13grams
+    ratios.sensitivity = 45 mg/dL
+    target             = 106-114
+    
+    food       = carbs * ratios.carb2units
+    correction = ( BG  - target ) / ratios.sensitivity
+    active     = ??
+    subtotal   = correction + food
+    total      = subtotal   - active
+    pump.propose total
+
+  Basal Coverage ( BG < 240 )
+    12 AM 1.1u / h
+    08 AM 0.8u / h
+    10 PM 0.7u / h
+    
+  Basal Coverage ( BG > 240 * 2h )
+    basal.temp.ttl = 1h
+    basal.temp.mod = 120%;
+
+
+Syringe Therapy
+  Bolus ( no filters/preconditions )
+    insulin            = Insulin.Aspart.Novolog
+    ratios.carb2units  = 13grams
+    ratios.sensitivity = 40 mg/dL
+    target             = 120
+    
+    food       = carbs * ratios.carb2units
+    correction = ( BG  - target       )
+               /   ratios.sensitivity
+    active     = ??
+    subtotal   = correction + food
+    total      = subtotal   - active
+    syringe.inject( total )
+
+  Basal Coverage
+    # bedtime 24u, Lantus
+    insulin    = Insulin.Glargine.Lantus
+    total      = 24
+    syringe.inject total
+    
+

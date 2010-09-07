@@ -1,0 +1,9 @@
+
+syntax: glob
+
+no-hg.*
+*.swp
+*.swo
+
+#####
+# EOF
