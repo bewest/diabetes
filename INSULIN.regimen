@@ -3,7 +3,7 @@
 Insulin Regimen
 
 Insulin.Aspart.ttl   = 4h
-# Insulin.Glargine.ttl = 24h?
+Insulin.Glargine.ttl = 24h # ??
 
 Pump Therapy
   Bolus ( no filters/preconditions )
@@ -12,9 +12,11 @@ Pump Therapy
     ratios.sensitivity = 45 mg/dL
     target             = 106-114
     
-    food       = carbs * ratios.carb2units
-    correction = ( BG  - target ) / ratios.sensitivity
-    active     = ??
+    food       = carbs
+               / ratios.carb2units
+    correction = ( BG  - target )
+               / ratios.sensitivity
+    active     = pump.activeInsulin
     subtotal   = correction + food
     total      = subtotal   - active
     pump.propose total
@@ -36,7 +38,8 @@ Syringe Therapy
     ratios.sensitivity = 40 mg/dL
     target             = 120
     
-    food       = carbs * ratios.carb2units
+    food       = carbs
+               / ratios.carb2units
     correction = ( BG  - target       )
                /   ratios.sensitivity
     active     = ??
