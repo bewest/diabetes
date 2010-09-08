@@ -1,0 +1,235 @@
+I copied this memo from the LifeScan original as faithfully as possible,
+including formatting and typographical errors.  If you think you have
+found an error, please let me know.
+
+Vic Abell <abe@vic.cc.purdue.edu>
+
+
+ONE TOUCH(R) II RS-232 COMMUNICATION MODE SPECIFICATION
+
+The information contained in this specification is proprietary to
+LifeScan, Inc., Milpitas, CA.  LifeScan reserves the right to change any
+of this information at any time without notice.  There is no warranty,
+expressed or implied, for any use of this information, on any device
+built using this information except those approved by LifeScan Inc., or
+for any damage to a ONE TOUCH(R) II Meter caused by any device using the
+data port except for those devices approved by LifeScan Inc.
+
+RS-232
+
+  The "RS-232" option is the default mode for the ONE TOUCH(R) II meter.
+  Asynchronous RS-232 communications takes place at 300, 1200, 2400, or
+  9600 bps, selectable by the user.  Data are transferred as 8 bit
+  characters with no parity and one stop bit.  Communications is via a
+  three wire (RS-232 designations of BA, BB, AB) cable with XOFF/XON
+  handshaking on data transmission from the meter.
+
+  The ONE TOUCH(R) II meter "mimics' its LCD screen by transmitting the
+  contents of each screen in six or more character messages each
+  followed by a carriage return.  Additional characters (more than six)
+  are transmitted when a screen contains one or more decimal points or
+  the colon.  XOFF/XON pacing is not in effect while the meter is
+  mimicing.  To assist a program in interpreting the messages, the first
+  message transmitted on power up is the selected language (e.g.,
+  ENGL.).
+
+  Serial messages are encoded as ASCII characters.  All numbers, except
+  the checksums and the Strip code number specified by the 'DMSS'
+  command are decimal.  All non "mimic mode" messages are checksummed
+  and the hexadecimal representation of the 16 bit checksum (a blank
+  followed by four characters) is placed at the end of each message,
+  just before the carriage return, line feed pair.
+
+  "RS-232" Commands (the 'DM' prefix is not echoed):
+    DMT...  * set the date and time of the meter's clock (mm/dd/yy hh:mm)
+    DMF     * send date and time from meter's clock
+    DMZ     * zero the meter's datalog
+    DMP     * dump datalog from meter's memory
+    DMS..   * change or display the meter's status (defaults)
+
+  (Note, the meter should be turned on and flashing "INSERT STRIP" during
+  data transmission.)
+
+				1
+
+
+  Responses to "RS-232" commands"
+
+    'T"dow","mm/dd/yy","hh:mm:ss xM" cksm'
+      meter's clock has been set to the indicated date and time:
+      dow - derived day of week ('SUN',...,'SAT' in selected language)
+      date (mm/dd/yy)(M.D.Y.) or (dd/mm/yy)(D.M.Y.)
+      time (hh:mm:ss xM)(AM/PM) or (hh:mm:ss  )(24:00)
+
+      Time is entered as 'DMTmm/dd/yy hh:mm' or 'DMTmm/dd/yy hh:mm:ss',
+      always with the month first and the hours in 24:00 format. The
+      meter doesn't echo the data and time until it has been set.
+      If the format or value of the entered date or time is invalid,
+      the existing value is retained and nothing but the 'T cksm' is
+      echoed.  The day of the week is not entered.  The entered date
+      separator may be either a slash ('/') or a dash ('-').  The
+      seconds are cleared to zero if not entered.  Permissible clock
+      setting range is 1/1/84 0:0:0 to 12/31/14 23:59:59 or 31 years.
+
+    'F"dow","mm/dd/tt","hh:mm:ss xM" cksm'
+      current date and time from the meter's clock, encoded as:
+      dow - derived day of week ('SUN',...,'SAT' in selected language)
+      date (mm/dd/yy)(M.D.Y.) or (dd/mm/yy)(D.M.Y.)
+      time (hh:mm:ss xM)(AM/PM) or (hh:mm:ss  )(24:00)
+
+    'Z 005A'  meter's datalog is being cleared.  Takes about three
+              seconds to execute since the entire datalog RAM (2KB)
+	      is tested.  The checksum is transmitted and the meter
+	      is reset upon completion.
+
+    'P nnn,"MeterSN","ENGL. ","M.D.Y. ","AM/PM","MG/DL","!min","!max" cksm'
+      nnn - number of datalog records to follow (0-250)
+      "MeterSN" - the nine character meter serial number
+      "ENGL. ","ESPAN.", etc - the currently selected language
+      "M.D.Y. " or "D.M.Y. ", etc - the selected date format
+      "AM/PM" or "24:00 " - the selected time format
+      "MG/DL" or "MMOL/L" - the unit of measure for glucose values
+      "!min" and "!max" - the meter's checkstrip range
+
+    followed by nnn records of:
+    'P "dow","mm/dd/yy","hh:mm:00 xM"," nnn ",n cksm'
+              date          time    glucose event
+      dow - derived day of week ('SUN',...,'SAT' in selected language)
+      date of reading (mm/dd/yy)(M.D.Y.) or (dd/mm/yy)(D.M.Y.)
+      time of reading (hh:mm:00 xM)(AM/PM) or (hh:mm:00  )(24:00)
+
+				2
+
+
+  Responses to "RS-232" commands (continued):
+
+      glucose value formatting (there are language variations):
+        If the datalog record had a checksum error, the last character
+          is forced to be a question mark (e.g., '...," nnn?",...') All
+          data in a record so flagged must be considered "suspect".
+        If glucose > 600 mg/dL, '...," HIGH ",...' is transmitted.
+        If UNITS are mmol/L, '...,"MMnn.n ",...' is transmitted.
+        If a checkstrip reading, ',,,,"! nnn ",...' (mg/dL) or
+          '...,"! n.n ",...' (mmol/L) is transmitted.
+        If flagged as control solution, '...,"C nnn ",...' (mg/dL) or
+          '...,"C nn.n ",...' (mmol/L) is transmitted.  (The 'C' becomes
+          a 'K' if the languages is SVENS or DEUTS.)
+      event - a manually entered value from 0 to 9
+
+    'SSx'  change or display the strip lot calibration code
+      'SS0,"CODE 1" 02B2'  select CODE 1 ... 0 thru 9 select 1 thru 10
+      'SS9,"CODE10" 02CB'  select CODE10
+      'SSA,"CODE11" 02D4'  select CODE11 ... A thru F select 11 thru 16
+      'SSF,"CODE16" 02DE'  select CODE16
+      'SS+,"CODEnn" cksm'  select and display next Strip lot code
+      'SS?,"CODEnn" cksm'  display the currently selected Strip
+    'SLx'  change or display the Language for prompts and messages
+      'SL0,"ENGL. " 02D3'  select English
+      'SL1,"ESPAN." 0305'  select Spanish
+      'SL2,"FRANC." 02F9'  select French
+      'SL3,"ITALI." 0303'  select Italian
+      'SL4,"NEDER." 02FF'  select Dutch
+      'SL5,"PORT. " 02F7'  select Portuguese
+      'SL6,"SVENS." 0322'  select Swedish
+      'SL7,"DEUTS." 0319'  select German
+      'SL8,"0X00X0" 0333'  select symbolic
+      'SL+,"xxxxxx" cksm'  select and display "next" Language on the list
+      'SL?,"xxxxxx" cksm'  display the currently selected Language lot code
+    'SBx'  change or display the Beeper status
+      'SB0,"BEEP  " 0291'  turn beeper on (in selected Language)
+      'SB1,"NOBEEP" 02EF'  turn beeper off (in selected Language)
+      'SB+,"xxxxxx" cksm'  toggle and display the new beeper status
+      'SB?,"xxxxxx" cksm'  display the current beeper status
+    'SUx'  change or display the glucose Units
+      'SU0,"MG/DL " 02BB'  select mg/dL
+      'SU1,"MMOL/L" 02F9'  select mmol/L
+      'SU+,"xxxxxx" cksm'  toggle and display the new glucose Units
+      'SU?,"xxxxxx" cksm'  display the current glucose Units
+
+				3
+
+
+  Responses to "RS-232" commands (continued);
+
+    'SPx'  change or display Punctuation symbol used with "MMOL/L"
+      'SP0,"DEC PT" 02D3'  select decimal point (in selected Language)
+      'SP1,"COMMA " 02D1'  select comma (in selected Language)
+      'SP+,"xxxxxx" cksm'  toggle and display the new Punctuation symbol
+      'SP?,"xxxxxx" cksm'  display the current punctuation symbol
+    'SDx'  change or display the Date display format
+      'SD0,"M.D.Y." 030B'  month/day/year (in selected Language)
+      'SD1,"D.M.Y." 030C'  day/month/year (in selected Language)
+      'SD+,"x.x.x." cksm'  toggle and display the new Date display format
+      'SD?,"x.x.x." cksm'  display the current date display format
+    'STx'  change or display the Time display format
+      'ST0,"AM/PM " 02C1'  select AM/PM
+      'ST1,"24:00 " 0288'  Select 24 hour (or military) time
+      'ST+,"xxxxxx" cksm'  toggle and display the new Time display format
+      'ST?,"xxxxxx" cksm'  display the current Time display format
+    'SRx'  select or display baud rate (bps) used with "RS-232"
+      'SR0,"  9600" 0254'  rate in use changes on next meter power up
+      'SR1,"   300" 0239'  rate used with Bell 103A modems
+      'SR2,"  1200" 024A'  rate used with Bell 212A modems
+      'SR3,"  2400" 024E'
+      'SR?,"xxxxxx" cksm'  display the current baud Rate
+    'SCx'  select or display the Communications mode (must be done LAST)
+      'SC0,"RS-232" 029F'
+      'SC1,"DTAMGR" cksm'  destroys communications, won't display
+      'SC2,"DATA A" cksm'  partially disables communications, SC2 displays
+      'SC3,"DATA B" cksm'  partially disables communications, SC3 displays
+      'SC?,"xxxxxx" cksm'  display the current Communications mode
+
+    Use of the data management 'DMSCx' command can destroy on-going
+    communications.  Issuing 'DMSC1', 'DMSC2', or 'DMSC3' will immediately
+    disable RS-232 and response to any commands.  To reset, the user must
+    manually reset the meter's defaults by holding down the MB on power-up
+    and changing the communications mode.
+
+				4
+
+
+CABLING
+
+We recommend using the ONE TOUCH(R) Interface Cable from LifeScan.  The
+cable can be used to connect a ONE TOUCH(R) II Meter to the serial port
+(communication port) of an IBM(R), or compatible, personal computer.
+The ONE TOUCH Interface Cable may be adapted for use with a Macintosh
+computer by using a Mac Plus/SE/II to Hayes Modem (or equivalent) Cable
+which will interface the DB-25 connector to the Macintosh communication
+port.
+
+For cable availability, please call the LifeScan Technical Services
+Department.
+  U.S.A.    1 (800) 227-8862
+  Canada    1 (800) 663-5521
+
+ONE TOUCH Interface Cable Pinout:
+  DB-25 pin
+        2    TXD    transmitted data from computer to meter
+        3    RXD    received data from meter to computer
+	4    RTS    request to send from computer
+	6    DSR    data set ready to computer (connected to DTR)
+	7    GND    signal ground
+	20   DTR    data terminal ready from computer
+
+The following conditions must be met to enable the ONE TOUCH Interface
+Cable to work with the ONE TOUCH II Meter in RS-232 mode:
+
+  1.  The computer must assert (apply a positive RS-232 voltage to) RTS
+      and/or DTR.  Either or both of these signals supply power to the
+      cable circuitry.
+
+  2.  The computer may leave RTS "open" but may not drive it to a
+      negative RS-232 level.
+
+  3.  The meter must be set in RS-232 mode at the same transmission rate
+      (9600, 300, 1200, or 2400 bps) as the computer.  The computer
+      communications port must be set to 8 data bits, no parity, and one
+      stop bit.
+
+
+LifeScan Inc.
+Milpitas, CA 95035
+May, 1991
+
+				5

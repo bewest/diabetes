@@ -1,0 +1,597 @@
+***************************************************************************
+* WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! *
+*                                                                         *
+* The DMI command does not work the way LifeScan has documented it.       *
+* Regardless of what formats have been declared to the Profile(TM) meter, *
+* the DMI command always returns date in M-D-Y format; time, AM/PM; units *
+* of measure, mg/dL.  This bug has been reported to and acknowledged by   *
+* the data management group of LifeScan technical support on 26 Aug 1996. *
+*                                                                         *
+* The DMP command works correctly -- i.e., it properly reports date, time *
+* and units of measure in their selected formats.                         *
+***************************************************************************
+
+I copied this memo from the LifeScan original as faithfully as possible,
+including formatting and typographical errors.  If you think you have
+found an error, please let me know.
+
+Vic Abell <abe@vic.cc.purdue.edu>
+August 26, 1996
+
+======================================================================
+
+ONE TOUCH(TM) RS-232 COMMUNICATION MODE SPECIFICATION
+
+The following information may be used when attempting to download
+the ONE TOUCH(R) Profile(TM) Meter memory to a computer while using
+a communications package and the ONE TOUCH(R) Interface Cable.
+The information may also be used to erase the Meter's datalog.
+For additional technical information, see the following pages or
+call a Technical Service Representative at 1-800-227-8862.
+
+EQUIPMENT NEEDED
+
+Meter:          ONE TOUCH(R) Profile(TM)
+
+Cable:          ONE TOUCH(R) Interface Cable
+
+Computer:       IBM, IBM compatible or Macintosh
+
+Adapter:        IBM or compatible: a 25-pin to 9-pin adapter if
+                serial/comm port is a 9-pin
+                Macintosh: Hayes Modem cable or equivalent
+
+Software:       A communications software package
+
+PROCEDURE
+
+Cable:          Insert cable into meter data port and available
+                serial/comm port on computer.
+
+
+Software:       Select port settings in communications software:
+
+                Baud rate = 9600 bps            Data bits = 8
+                Stop Bits = 1                   Parity = none
+                Flow Control = Xon/Xoff         Com. port = port # utilized
+
+Initiate the terminal screen of your communications software package.
+Turn the meter on.  The screen should mimic the content of the ONE
+TOUCH(R) Profile(TM) display, for example:
+
+                0,"",0,"INSERT",""
+                0,"",9,"CODE 9",""
+                0,"",0,"STRIP ",""
+
+The meter is now communicating with your computer.  You may now
+issue the following commands to download and erase the results
+stored in the Meter's memory.
+
++------------------------------------------------------------------------+
+| *  To download data, type "DMI" - displays results and insulin records |
+|                                   stored in the Meter's memory.        |
+|                                   WARNING! THIS COMMAND DOES NOT WORK  |
+|                                   AS DOCUMENTED.  SEE THE COMMENTS IN  |
+|                                   THE OPENING WARNING BOX.             |
+|                   or type "DMP" - displays only the results stored in  |
+|                                   the Meter's memory.                  |
+|                                                                        |
+| * To erase the data, type "DMZ" - erases results and insulin records   |
+|                                   stored in the Meter's memory.        |
++------------------------------------------------------------------------+
+
+======================================================================
+
+The information contained in this specification is proprietary to
+LifeScan, Inc., Milpitas, CA.  LifeScan reserves the right to change
+any of this information at any time without notice.  There is no
+warranty, expressed or implied, for any use of this information on
+any device built using this information except those approved by
+LifeScan, Inc., or for any damage to a ONE TOUCH(R) Profile(TM)
+meter caused by any device using the data port except those approved
+by LifeScan, Inc.
+
+
+                                Page 1 of 9
+ 
+RS-232 COMMUNICATION
+
+The ONE TOUCH(R) Profile(TM) Meter supports asynchronous, RS-232
+communications via the data port at 9600 baud only.  The "Data
+Manager" signaling scheme used by the One Touch and GlucoScan 3000
+Meters, and the "DATA A" and "DATA B" data formats supported by
+the ONE TOUCH(R) II are NOT supported.  Data are transferred as
+8-bit characters with no parity and one stop bit.  Communications
+is via three-wire (RS-232 designations of BA, BB, AB) cable with
+XON/XOFF handshaking supported on transmissions from the Meter,
+except for mimicked messages (see below).
+
+MIMICKING
+
+The ONE TOUCH(R) Profile(TM) Meter "mimics" its LCD screen by
+transmitting comma delimited, ASCII text records.  The minimum
+length record (blank screen, except, possibly, one or more icons)
+is 14 bytes:
+
+        n,"",m,"",""
+
+The maximum length record (all decimal points and colons) is 47 bytes:
+
+        n,"12.3",m,"1.2.:3.4.5.6.","12:3456789ABCDEF"
+
+The "normal" record is about 38 bytes:
+
+        n,"123",m,"123456","123456789ABCDEF"
+           line 1  line 2        line 3
+
+where:
+n       encodes the Memory and Battery icons as:
+  0     neither icon displayed
+  1     Memory displayed
+  2     Battery displayed
+  3     Memory and Battery displayed
+
+m       encodes the UNITS, mg/dL, and mmol/L icons as:
+  0     none displayed
+  1     mmol/L displayed
+  2     mg/dL displayed
+  3     mmol/L and mg/dL displayed
+  4     UNITS displayed
+  5     mmol/L and UNITS displayed
+  6     mg/dL and UNITS displayed
+  7     mmol/L, mg/dL, and UNITS displayed
+
+For example, the following screen will be mimicked as follows:
+
++---------------+
+|  M  120 mg/dL |       1,"120",2," AVG  ","       30-DAY  " 
+|               |
+|     AVG       |
+|    30-day     |
++---------------+
+
+                                Page 2 of 9
+ 
+RS-232 "DM" COMMANDS
+
+Serial commands and responses are encoded as ASCII characters.  A
+checksum is generated for all non "mimicked" messages and the
+hexadecimal representation of the least significant 16 bits of the
+checksum (a blank followed by 4 characters) is placed at the end
+of each response message, Just before the carriage return (<CR>),
+line feed (<LF>) pair.
+
+In order to keep the meter from automatically powering down, the
+external device should periodically send "DMT<CR>".  This causes
+the meter to respond with "T 0054" and to reset the automatic
+power-down time-out to 2 minutes.  Not that the "DMS...", "DMP",
+"DMI", "DMX", and "DM^" commands also reset the automatic power-down
+time-out to 2 minutes.
+
+Commands are handled in the order they are received.  All responses
+will be in English, regardless of the current language setting.
+Note that some commands require termination with a carriage return
+(<CR>) while others do not.  Also note that the brackets ("[]")
+denote optional parameters and are NOT part of the actual command.
+
+COMMAND         ACTION/RESPONSE
+
+DM?             Returns the software version number and creation
+                date, where "x" is the calibration data block format
+                code ("M" for example"), "nn.nn.nn" is the software
+                version number ("71.00.00" for example), and mm/dd/yy
+                is the software creation date.
+
+                ?xnn.nn.nn mm/dd/yy cksm<CR><LF>
+
+======================================================================
+
+DM@             Returns the meter's unique, non-digit serial number
+                assigned during calibration.  This command is
+                intended to be used to identify the meter connected
+                to the external device's serial port.
+
+                @ "XXX1234ZG" cksm<CR><LF>
+
+======================================================================
+
+DM^[nnn]<CR>    Changes the current "new-data-marker" to "nnn"
+		(0 - 250) and returns the new value.  If "nnn" is
+		invalid or not specified, the current setting is
+		returned.  This value represents the number of
+		readings taken since the "new-data-marker" was last
+		set.  For example, if only the most recent 100
+		results were desired, sending "DM^100" would
+		effectively erase results older than the most recent
+		100 results.  Sending "DM^250" recovers all the
+		results.  Sending "DM^0" erases all results.  Note
+		that this command manipulates the datalog information
+		record, but does not affect any of the stored
+		results.
+
+                ^ nnn cksm<CR><LF>
+
+======================================================================
+
+DMF             Returns the current date and time from the meter's
+                clock in the selected date and time formats.
+
+        F "dow","mm/dd/yy","hh:mm:ss xM" cksm<CR><LF>  for (M-D-Y, AM/PM)
+        F "dow","mm/dd/yy","hh:mm:ss   " cksm<CR><LF>  for (M-D-Y, 24:00)
+        F "dow","dd/mm/yy","hh:mm:ss xM" cksm<CR><LF>  for (D-M-Y, AM/PM)
+        F "dow","dd/mm/yy","hh:mm:ss   " cksm<CR><LF>  for (D-M-Y, 24:00)
+
+        "dow" ("day-of-week") = SUN, MON, TUE, WED, THU, FRI, or SAT.
+
+                                Page 3 of 9
+ 
+COMMAND         ACTION/RESPONSE
+
+DMI             Dumps the datalog from the meter's memory.  The
+                response is always transmitted in English in the
+                selected units, date, and time formats.  A header
+                is sent first, which contains information about
+                the format of the data and how many records will
+                follow.  Each datalog record is transmitted next.
+                Leading zeroes are suppressed.
+
+***************************************************************************
+* WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! *
+*                                                                         *
+* The DMI command does not work the way LifeScan has documented it.       *
+* Regardless of what formats have been declared to the Profile(TM) meter, *
+* the DMI command always returns date in M-D-Y format; time, AM/PM; units *
+* of measure, mg/dL.  This bug has been reported to and acknowledged by   *
+* the data management group of LifeScan technical support on 26 Aug 1996. *
+***************************************************************************
+
+        HEADER
+
+        I nnn," MeterSN ","ENGL. "," M.D.Y ","AM/PM","MG/DL","! min",
+          (1)     (2)       (3)       (4)      (5)     (6)      (7)
+
+        "! max", cksm<CR><LF>
+         (8)
+
+                (1)  Number of datalog records to follow (0 - 250)
+                (2)  Meter serial number (9 characters)
+                (3)  Currently selected language
+                (4)  Date format (M-D-Y shown)
+                (5)  Time format (AM/PM shown)
+                (6)  Units of measure for glucose values (mg/dL shown)
+                (7)  Meter's check strip range lower limit (LOMIN)
+                     in selected units
+                (8)  Meter's check strip range upper limit (LOMAX)
+                     in selected units
+
+        EACH DATALOG RECORD
+
+        I "dow","mm/dd/yy","hh:mm:00 xM","xxxxx ", nn cksm<CR><LF>
+           (9)     (10)          (11)      (12)   (13)
+
+                (9)  Day of week (SUN,MON,TUE,WED,THU,FRI,SAT)
+                (10) Date of reading or insulin record in selected
+                     format (M-D-Y shown)
+                (11) Time of reading or insulin record in selected
+                     format (AM/PM shown)
+                (12) Result format:
+                     "  nnn " - blood test result (mg/dL)
+                     "MMnn.n" - blood test result (mmol/dL)
+                     " HIGH " - blood test result > 600 mg/dL
+                     "! nnn" - check strip test result (mg/dL)
+                     "! nn.n " - check strip test result (mmol/L)
+                     "!HIGH " - check strip test result > 600 mg/dL
+                     "C nnn " - control solution test result (mg/dL)
+                     "C nn.n" - control solution test result (mmol/L)
+                     "CHIGH " - control solution test result > 600 mg/dL
+                     "I 000 " to "I 150 " - CARB records
+                     "I 00.0 " to "I 20.0 " - BOLUS insulin records
+                     "I  00 " to "I  99 " - all other insulin records
+
+                                Page 4 of 9
+ 
+COMMAND         ACTION/RESPONSE
+
+DMI (cont.)     (13) For check strip results, nn is always 0.
+                     For blood or control solution test results, nn
+                     indicates the event:
+
+                0 - None              6 - Pre Dinner      12 - After Exercise
+                1 - Fasting           7 - After Dinner    13 - Illness
+                2 - Pre Breakfast     8 - Different Food  14 - Hypoglycemia
+                3 - After Breakfast   9 - Bedtime         15 - Other
+                4 - Pre Noon Meal    10 - During Night
+                5 - After Noon Meal  11 - Pre-Exercise
+
+                      For insulin records, nn indicates the insulin type:
+
+                0 - REG               4 - 70/30            8 - BOLUS
+                1 - NPH               5 - 50/50            9 - CARB
+                2 - LENTE             6 - MIX             10 - 80/20
+                3 - ULENTE            7 - OTHER           11 - 60/40
+
+======================================================================
+
+DMP             Dumps the blood, control solution and check strip
+                records from the meter's memory in ASCCI text
+                format.  This command is intended to be compatible
+                with the ONE TOUCH(R) II's "DMP" command.
+
+		Same response as the "DMI" command except insulin
+		records are NOT sent and the leading character for
+		the header and each datalog record is a `P' instead
+		of an `I'.
+
+======================================================================
+
+DMSn            Invalid ~DMS" sub-command (`n') received.  The
+                valid "DMS" sub-commands are (?, B, C, D, E, I, L,
+                P, R, S, T, U, and X).
+
+                S 0053<CR><LF>
+
+======================================================================
+
+DMS?            Return all user option settings.
+
+                S?,Sn,Ln,X0,Bn,Un,Pn,Dn,Tn,C0,R0,En,In cksm<CR><LF>
+
+                S0-SF    : Strip Cal. Code (0 - 9 corresponds to
+                           1-10, A-F corresponds to 11-16)
+                L0-LH,LJ : Selected language:
+                           0 - English     7 - German     E - Turkish
+                           1 - Spanish     8 - Symbolic   F - Czech
+                           2 - French      9 - Danish     G - Greek
+                           3 - Italian     A - Finnish    H - Russian
+                           4 - Dutch       B - Norwegian  J - British
+                           5 - Portuguese  C - Polish
+                           6 - Swedish     D - Hungarian
+                X0       : Translation status (for compatibility with
+                           OT2, always ENGL.)
+                B0|B1    : Beeper (0 = ON, 1 = OFF)
+                U0|U1    : Units (0 = mg/dL, 1 = mmol/L)
+                P0|P1    : Punctuation (0 = decimal point, 1 = comma)
+                D0|D1    : Date format (0 = M-D-Y, 1 = D-M-Y)
+                T0|T1    : Time format (0 = AM/PM, 1 = 24:00)
+                C0       : Communications mode (for OT2 compatibility,
+                           always RS-232)
+                R0       : RS-232 Baud Rate (for OT2 compatibility,
+                           always 9600)
+                E0|E1    : Event Averages (0 = OFF, 1 = ON)
+                I0|I1    : Insulin Prompt (0 = OFF, 1 = ON)
+
+                                Page 5 of 9
+ 
+COMMAND         ACTION/RESPONSE
+
+DMSBx           Change and/or return the current Beep setting.
+                Beeper sounds if turned ON or left ON.
+
+                SB0," BEEP " 0291<CR><LF>  - turn ON, return new setting
+                SB1,"NOBEEP" 02EF<CR><LF>  - turn OFF, return new setting
+                SB+,"xxxxxx" cksm<CR><LF>  - toggle, return new setting
+                SB?,"xxxxxx" cksm<CR><LF>  - invalid command, return
+                                             current setting
+
+======================================================================
+
+DMSCx           Returns the Communications mode.  Note that the
+                communications mode CANNOT be changed.
+
+                SC0,"RS-232" 029F<CR><LF>  - always set to RS-232
+                SC+,"RS-232" 029A<CR><LF>  - always set to RS-232
+                SC?,"RS-232" 029E<CR><LF>  - invalid command, return
+                                             current state
+
+======================================================================
+
+DMSDx           Change and/or return the Date format.
+
+                SD0," M.D.Y. " 030B<CR><LF>  - select month/day/year,
+                                               return new setting
+                SD1," D.M.Y. " 030C<CR><LF>  - select day/month/year,
+                                               return new setting
+                SD+,"xxxxxxxx" cksm<CR><LF>  - toggle, return new setting
+                SD?,"xxxxxxxx" cksm<CR><LF>  - invalid command, return
+                                               current setting
+
+======================================================================
+
+DMSEn           Change and/or return the current Event Averages
+                setting.
+
+                SE0,"NOAVGS", 0306<CR><LF>  - turn OFF, return new setting
+                SE1," AVGS ", 02AA<CR><LF>  - turn ON, return new setting
+                SE+,"xxxxxx", cksm<CR><LF>  - toggle, return new setting
+                SE?,"xxxxxx", cksm<CR><LF>  - invalid command, return
+                                              current setting
+
+======================================================================
+
+DMSIn           Change and/or return the current Insulin Prompt
+                setting.
+
+                SI0,"NOINSL", 030F<CR><NL>  - turn OFF, return new setting
+                SI1," INSL ", 02B3<CR><NL>  - turn ON, return new setting
+                SI+,"xxxxxx", cksm<CR><NL>  - turn OFF, return new setting
+                SI?,"xxxxxx", cksm<CR><NL>  - invalid command, return
+                                              current setting
+
+======================================================================
+
+DMSLx           Change and/or return the current Language setting
+                (SL0 - SLH compatible with the OT2).
+
+                SL0,"ENGL.  ", 02D3<CR><LF>  - select English, return setting
+                SL1,"ESPAN. ", 0305<CR><LF>  - select Spanish, return setting
+                SL2,"FRANC. ", 02F9<CR><LF>  - select French, return setting
+                SL3,"ITALIA",  0303<CR><LF>  - select Italian, return setting
+                SL4,"NEDER. ", 02FF<CR><LF>  - select Dutch, return setting
+                SL5,"PORT.  ", 02F7<CR><LF>  - select Portuguese, return
+                                               setting
+                SL6,"SVENS. ", 0322<CR><LF>  - select Swedish, return setting
+                SL7,"DEUTS. ", 0319<CR><LF>  - select German, return setting
+                SL7,"OXOOXO",  0333<CR><LF>  - select Symbolic, return setting
+                SL9,"DANSK ",  02D9<CR><LF>  - select Danish, return setting
+
+                                Page 6 of 9
+ 
+COMMAND         ACTION/RESPONSE
+
+                SLA,"SUOMI ",  02FD<CR><LF>  - select Finnish, return setting
+                SLB,"NORSK ",  02FE<CR><LF>  - select Norwegian, return setting
+                SLC,"POLSKI",  0324<CR><LF>  - select Polish, return setting
+                SLD,"MAGYAR",  0314<CR><LF>  - select Hungarian, return setting
+                SLE,"TURKCE",  0322<CR><LF>  - select Turkish, return setting
+                SLF,"CESKY ",  02F4<CR><LF>  - select Czech, return setting
+                SLG,"E^^/KA",  0312<CR><LF>  - select Greek, return setting
+                SLH,"PRCCK. ", 0318<CR><LF>  - select Russian, return setting
+                SLJ,"BRIT  ",  02CA<CR><LF>  - select British, return setting
+                SL+,"xxxxxx", cksm<CR><LF>  - select next language (wrap),
+                                              return new setting
+                SL?,"xxxxxx", cksm<CR><LF>  - invalid command, return current
+                                              setting
+
+======================================================================
+
+DMSPx           Change and/or return the Punctuation symbol used with
+                mmol/L or BOLUS insulin values.
+
+                SP0,"DEC PT" 02D3<CR><LF>  - select decimal point,
+                                             return new setting
+                SP1,"COMMA " 02D1<CR><LF>  - select comma, return
+                                             new setting
+                SP+,"xxxxxx" cksm<CR><LF>  - toggle, return new setting
+                SP?,"xxxxxx" cksm<CR><LF>  - invalid command, return
+                                             current setting
+
+======================================================================
+
+DMSSx           Change and/or return the current SCC.
+
+                SS0,"CODE 1" 02B2<CR><LF>  - set SCC = 1
+                      :
+                SS9,"CODE10" 02CB<CR><LF>  - set SCC = 10
+                SSA,"CODE11" 02D4<CR><LF>  - set SCC = 11
+                      :
+                SSF,"CODE16" 02DE<CR><LF>  - set SCC = 16
+                SS+,"CODEnn" cksm<CR><LF>  - increment SCC (wrap from
+                                             16 to 0), return new setting
+                SS?,"CODEnn" cksm<CR><LF>  - invalid command, return
+                                             current setting
+
+======================================================================
+
+DMSTx           Change and/or return the Time format.
+
+                ST0,"AM/PM " 02C1<CR><LF>  - select AM/PM, return new
+                                             setting
+                ST1,"24:00 " 0288<CR><LF>  - select 24 hour, return new
+                                             setting
+                ST+,"xxxxxx" cksm<CR><LF>  - toggle, return new setting
+                ST?,"xxxxxx" cksm<CR><LF>  - invalid command, return
+                                             current setting
+
+                                Page 7 of 9
+ 
+COMMAND         ACTION/RESPONSE
+
+DMSUx           Change and/or return the glucose Units setting.
+
+                SU0,"MG/DL " 02BB<CR><LF>  - select mg/dL, return new
+                                             setting
+                SU1,"MMOL/L" 02F9<CR><LF>  - select mmol/L, return new
+                                             setting
+                SU+,"xxxxxx" cksm<CR><LF>  - toggle, return new setting
+                SU?,"xxxxxx" cksm<CR><LF>  - invalid command, return
+                                             current setting
+
+======================================================================
+
+DMSXn           Returns the translate status for "DM" command
+                responses.  Note that the translate status CANNOT
+                be changed.
+
+                SX0,"ENGL.   " 02DF<CR><LF>  - always set to English
+                SX+,"ENGL.   " 02DA<CR><LF>  - always set to English
+                SX?,"ENGL.   " 02EE<CR><LF>  - invalid command, return
+                                               current status
+
+======================================================================
+
+DMTmm/dd/yy hh:mm[:ss]
+
+                Sets the meter clock with the specified date (entered
+                in M-D-Y format) and time (entered in 24 hour
+                format).  If seconds are not specified, seconds
+                are set to zero.  Returns the new meter clock date
+                and time after the clock has been successfully set,
+                or returns "T 0054" if the date and/or time specified
+                was invalid.  The date must be specified as
+                "month-day-year", and the separator can be slash
+                (`/') or dash (`-').  The clock setting range is
+                1/1/92, 00:00:00 through 12/31/22, 23:59:59.  The
+                date and time returned will be in the selected time
+                and date formats.  "dow" ("day-of-week") is always
+                in English (SUN, MON, TUE, WED, THU, FRI, or SAT).
+                This command will also reset the automatic shut-off
+                time to 2 minutes.
+
+    T "dow","mm/dd/yy","hh:mm:ss xM" cksm<CR><LF>  - for (M-D-Y, AM/PM)
+    T "dow","mm/dd/yy","hh:mm:ss   " cksm<CR><LF>  - for (M-D-Y, 24:00)
+    T "dow","dd/mm/yy","hh:mm:ss xM" cksm<CR><LF>  - for (D-M-Y, AM/PM)
+    T "dow","dd/mm/yy","hh:mm:ss   " cksm<CR><LF>  - for (D-M-Y, 24:00)
+    T 0054<CR><LF>                                -  specified date
+                                                     and/or time invalid
+
+======================================================================
+
+DMZ             Zeros the meter's datalog stored in EEPROM and resets
+                the meter.
+
+                Z 005A<CR><LF>
+
+                                Page 8 of 9
+ 
+CABLING
+
+We recommend using the ONE TOUCH(R) Interface Cable from LifeScan.
+This cable can be used to connect a ONE TOUCH(R) Profile(TM) Meter
+to the serial port (communication port) of an IBM, or compatible,
+personal computer.  The ONE TOUCH(R) Interface Cable may be adapted
+for use with a Macintosh computer by using a Hayes Modem, or
+equivalent, cable which will interface the DB-25 connector to the
+Macintosh communication port.
+
+For cable availability, please call the LifeScan Technical Services
+Department.
+U.S.A           1 (800) 227-8862
+Canada          1 (800) 663-5521
+
+ONE TOUCH(R) Interface Cable Pin-out:
+
++-------------------------------------------------------------------------+
+| DB-25 pin  RS-232 Signal  Description                                   |
+|                                                                         |
+|    2           TXD        transmitted data from computer to Meter       |
+|    3           RXD        received data from Meter to computer          |
+|    4           RTS        request to send from computer                 |
+|    6           DSR        data set ready to computer (connected to DTR) |
+|    7           GND        signal ground                                 |
+|    20          DTR        data terminal ready from computer             |
++-------------------------------------------------------------------------+
+
+The following conditions must be met to enable the ONE TOUCH(R)
+Interface Cable to work with the ONE TOUCH(R) Profile(TM) Meter:
+
+    1.  The computer must assert (apply a positive RS-232 voltage
+        to) RTS and/or DTR.  Either or both of these signals supply
+        power to the cable circuitry.
+
+    2.  The computer may leave RTS "open" but may not drive it to
+        a negative RS-232 level.
+
+    3.  The computer communications port must be set to 9600 baud,
+        8 data bits, no parity, and one stop bit.
+
+                                Page 9 of 9

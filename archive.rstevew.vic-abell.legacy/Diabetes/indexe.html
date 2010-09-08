@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>One Touch Profile's cable</TITLE>
+</HEAD>
+<BODY BGCOLOR=WHITE>
+
+<H1><P><B>How to build a cable for the One Touch Profile sensor.</B></H1></P>
+<HR>
+<P><FONT COLOR=#FF0000>BEFORE YOU START, IF YOU KNOW NOTHING ABOUT ELECTRONICS <B>DON'T</B> TRY TO BUILD THIS CIRCUIT, BECAUSE THIS COULD CAUSE <B>IRREPARABLE</B> DAMAGES TO YOUR METER, TO YOUR PC OR BOTH. I DON'T FEEL RESPONSIBLE FOR ANY DAMAGES CAUSED BY THIS CIRCUIT.</FONT></P>
+<HR>
+<B><CENTER>COMPONENTS LIST</CENTER></B>
+<UL>
+<LI> DB25 or DB9 female connector</LI>
+<LI> Stereo jack connector </LI>
+<LI> Multiple line cable (5 lines)</LI>
+<LI> Multiple line cable (3 lines) </LI>
+<LI> DIP16 (8x2) socket</LI>
+<LI><A HREF="http://209.1.238.250/arpdf/1798.pdf  "> MAX232</A></LI>
+<LI> 5 1uF electrolitic capacitors</LI>
+<LI> 1 5,1V zener diod (BZX55C) </LI>
+<LI> Board</LI>
+</UL>
+
+<HR>
+<B><CENTER>CONNECTION WITH THE PC</CENTER></B>
+<P>The connection with the PC is made through a DB25 or DB9 female connector.</P>
+<P>We'll only use <I>Transmitted Data, Received Data, Signal Ground, Clear to Send and DTE Ready</I> lines from the connector. We've got to connect through multiple line cable (5 lines) the <I>Tx, Rx, GND, CTS y DTE</I> lines of the connector with the <I>TxPC, RxPC, GND, Vcc y Vcc</I> lines respectively of the conversor circuit (it's described below).</P>
+<P>Here you have the reference for the connectors:</P>
+<P ALIGN="CENTER"><IMG SRC="conecdb.gif" BORDER=0 ALT="Conector DB"></P>
+
+<HR>
+<B><CENTER>CONVERSOR CIRCUIT</CENTER></B>
+<P>At this point we have to build the <A HREF="pcb.gif">PCB</A> (you can do it the way you want).</P>
+<P>If you're very crafty and if your connector is big enough you can try to put your circuit inside the connector. To solder the components I recommend using a 15W soldering-iron (security facts). Be very carefull with the polarity of the zener and the electrolitic capacitors, cause as you know it's not the same in this kind of components. The Vcc lines are connected to pins 4 and 20 of the DB25 connector (use the reference for the DB9). </P>
+<P>Here you have the schematics of the circuit.</P>
+<P ALIGN="CENTER"><IMG SRC="circuit.gif" BORDER=0 ALT="Esquema"></P>
+
+<HR>
+<B><CENTER>CONNECTION WITH THE METER</CENTER></B>
+<P>The connection with the meter is made through the stereo jack connector. We've got to connect <I>Rx,Tx and GND</I> lines to <I>RxProf, TxProf and GND Prof</I> lines respectively of the conversor circuit using the multiple line cable (3 lines).</P>
+<P ALIGN="CENTER"><IMG SRC="conecja.gif" BORDER=0 ALT="Conector jack est&eacute;reo"></P>
+
+<HR>
+<B><CENTER>POSSIBLE UPGRADES</CENTER></B>
+<P>As you can see, this cable can be improved, but what I was looking for was a cheap circuit that could help us. Someone interested in improving it could put the circuit inside a little box (I recommend it), could use an interruptor to switch the power off while it's not working, could add two LEDs to see when it's on and working, etc... If someone improves it I would be very grateful if I were told about the new circuit.</P>
+
+<HR>
+<P><CENTER>Last modification - 21st May 1998</CENTER></P>
+<P>e-mail:<FONT COLOR="#ff0000"> </FONT><A HREF="mailto:jberian@geocities.com">jberian@geocities.com</A></P>
+</P></BODY>

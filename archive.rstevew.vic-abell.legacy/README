@@ -1,0 +1,6 @@
+
+
+From http://www.armory.com/~rstevew/Diabetes/index.html
+
+wget -r 2 http://www.armory.com/~rstevew/Diabetes/index.html
+
