@@ -9,6 +9,12 @@ import json
 import string
 from contextlib import contextmanager
 
+import logging
+logging.basicConfig( stream=sys.stdout )
+logging.setLevel( logging.DEBUG )
+log = logging.getLogger( 'data.timseries.hacking' )
+
+log.debug( 'hello world' )
 data = {}
 
 
@@ -28,10 +34,13 @@ def iter_data( stream ):
   raise StopIteration( stream )
 
 def get_data( stream ):
+  # TODO: sensitivity to timezones!
   for datum in iter_data( stream ):
     P = map( string.strip, datum.split( ) )
     print P
-    print dateutil.parser.parse( "T".join( P[ 0:2 ] ) )
+    date = dateutil.parser.parse( "T".join( P[ 0:2 ] ) )
+    print date
+    data
     #data[ 
     #data[ P[0:2] ] = P[2]
   return data
