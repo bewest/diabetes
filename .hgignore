@@ -4,6 +4,8 @@ syntax: glob
 no-hg.*
 *.swp
 *.swo
+*.pyc
+*.pyo
 
 #####
 # EOF
