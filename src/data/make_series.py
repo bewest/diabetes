@@ -10,6 +10,7 @@ import string
 import itertools
 from contextlib import contextmanager
 from pprint import pformat
+from scikits import timeseries
 
 import logging
 logging.basicConfig( stream=sys.stdout )
@@ -63,11 +64,12 @@ def iter_data( stream ):
 
 def get_data( stream ):
   # TODO: sensitivity to timezones!
+  data = { }
   for datum in iter_data( stream ):
     P = map( string.strip, datum.split( ) )
     try:
-      date = dateutil.parser.parse( "T".join( P[ 0:2 ] ) )
-      data[ date ] = int( P[2] )
+      date = dateutil.parser.parse( 'T'.join( P[ 0:2 ] ) )
+      data[ date ] = int( P[ 2 ] )
     except IndexError, e:
       log.error( 'error %s' % ( e ) )
 
@@ -77,15 +79,13 @@ def get_data( stream ):
 if __name__ == '__main__':
   print "Generate a chart of a timeseries."
   data = [[3,4], [4,8], [5,3], [9,1]]
-  CairoPlot.bar_plot( 'bar4.svg', data, 600, 200,
-                      border = 20, grid= True )
-  data = {'teste00' : [27], 'teste01' : [10], 'teste02' : [18], 'teste03' : [5], 'teste04' : [1], 'teste05' : [22], 'teste06' : [31], 'teste07' : [8]}
-  CairoPlot.bar_plot( 'bar3.svg', data, 600, 200,
-                      border = 20, grid= True )
+
   with data_stream( sys.argv[ 1 ] ) as stream:
     data = get_data( stream )
-    dataList = list( data.iteritems( ) )
+    dataList = list( data.values( ) )
     log.debug( pformat( data ) )
+    ts = timeseries.time_series( data.values( ), data.keys( ) )
+    log.debug( pformat( ts ) )
     #log.debug( pformat( dataList ) )
     #CairoPlot.bar_plot( 'sugars.svg', dataList, 500, 350,
     #                    border = 13
