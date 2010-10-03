@@ -124,33 +124,32 @@ if __name__ == '__main__':
 
 
 
-  xlim = [ 0,  10.0 ]
-  YMAX = 240.00
-  ylim = [ 0,  YMAX ]
+  #xlim = [ 0,  10.0 ]
+  #YMAX = ts.max( ) * 1.1
+  #ylim = [ 0,  YMAX ]
   fig = Figure( )
   canvas = FigureCanvas(fig)
   #xticks = [ 1,2,3,4,5,6,7,8  ]
-  ax = fig.add_subplot(111, xlim=xlim, ylim=ylim,
-                        xticks=ts.index )
+  #ax = fig.add_subplot(111, xlim=xlim, ylim=ylim,
+  ax = fig.add_subplot(111)
   #data = [[False, False], [1,200],[4, 100],[6, 120]]
   #ax.plot(data)
   #D = dict( data )
 
-  ax.stem( ts.index, ts.values( ), '-.' )
+  markers, stems, baselines, = ax.stem( ts.index, ts.values( ),
+           linefmt='s-',
+           markerfmt='ro',
+           basefmt='b-' )
+  fig.autofmt_xdate( )
 
   ax.set_title('glucose history')
   ax.grid(True)
   ax.set_xlabel('time')
   ax.set_ylabel('glucose')
+  #fig.legend( stems, ts.index, 'top' )
   canvas.print_figure('test')
 
     
-    #log.debug( pformat( dataList ) )
-    #CairoPlot.bar_plot( 'sugars.svg', dataList, 500, 350,
-    #                    border = 13
-    #                  , grid   = True
-    #                  , rounded_corners = True
-    #                  )
 
   
 
