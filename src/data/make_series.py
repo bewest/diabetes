@@ -1,7 +1,11 @@
 #!/usr/bin/python
 
+from matplotlib.backends.backend_svg import FigureCanvasSVG as FigureCanvas
+
+from matplotlib.figure import Figure
 import dateutil.parser
 import sys
+import io
 import time, datetime
 import CairoPlot
 import cairo
@@ -11,6 +15,9 @@ import itertools
 from contextlib import contextmanager
 from pprint import pformat
 from scikits import timeseries
+import pandas
+import pandas.io
+import pandas.io.parsers
 
 import logging
 logging.basicConfig( stream=sys.stdout )
@@ -64,15 +71,28 @@ def iter_data( stream ):
 
 def get_data( stream ):
   # TODO: sensitivity to timezones!
-  data = { }
+  data  = {  }
+  dates = [ ]
   for datum in iter_data( stream ):
     P = map( string.strip, datum.split( ) )
     try:
-      date = dateutil.parser.parse( 'T'.join( P[ 0:2 ] ) )
+      date = dateutil.parser.parse( 'T'.join( 
+                                    P[ 0:2 ] ) ) 
+      dates.append( date )
       data[ date ] = int( P[ 2 ] )
+      #data[ 'glucose' ].append( P[ 2 ] )
     except IndexError, e:
       log.error( 'error %s' % ( e ) )
 
+  return dates, data
+
+def get_pandas( name ):
+  return pandas.io.parsers.parseText( stream )
+
+def get_series( name ):
+  data = None, None
+  with data_stream( name ) as stream:
+    data = get_data( stream )
   return data
 
 
@@ -80,12 +100,51 @@ if __name__ == '__main__':
   print "Generate a chart of a timeseries."
   data = [[3,4], [4,8], [5,3], [9,1]]
 
-  with data_stream( sys.argv[ 1 ] ) as stream:
-    data = get_data( stream )
-    dataList = list( data.values( ) )
-    log.debug( pformat( data ) )
-    ts = timeseries.time_series( data.values( ), data.keys( ) )
-    log.debug( pformat( ts ) )
+  index, data = get_series( sys.argv[ 1 ] )
+
+  #dataList = list( data.values( ) )
+  log.debug( pformat( data ) )
+  #ts = timeseries.time_series( data.values( ), data.keys( ) )
+  #log.debug( "##### scikits timeseries #####" )
+  #log.debug( pformat( ts ) )
+
+
+  log.debug( "##### pandas dump #####" )
+  #drange = pandas.DateRange( data[ 'glucose' ] )
+  ts = pandas.Series( data )
+  log.debug( pformat( ts ) )
+  log.debug( "##### index #####" )
+  #log.debug( pformat( ts.index ) )
+  log.debug( "##### values #####" )
+  #log.debug( pformat( ts.values( ) ) )
+  log.debug( "##### data #####" )
+  #log.debug( pformat( ts.data ) )
+
+
+
+
+
+  xlim = [ 0,  10.0 ]
+  YMAX = 240.00
+  ylim = [ 0,  YMAX ]
+  fig = Figure( )
+  canvas = FigureCanvas(fig)
+  #xticks = [ 1,2,3,4,5,6,7,8  ]
+  ax = fig.add_subplot(111, xlim=xlim, ylim=ylim,
+                        xticks=ts.index )
+  #data = [[False, False], [1,200],[4, 100],[6, 120]]
+  #ax.plot(data)
+  #D = dict( data )
+
+  ax.stem( ts.index, ts.values( ), '-.' )
+
+  ax.set_title('glucose history')
+  ax.grid(True)
+  ax.set_xlabel('time')
+  ax.set_ylabel('glucose')
+  canvas.print_figure('test')
+
+    
     #log.debug( pformat( dataList ) )
     #CairoPlot.bar_plot( 'sugars.svg', dataList, 500, 350,
     #                    border = 13
