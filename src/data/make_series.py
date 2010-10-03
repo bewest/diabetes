@@ -86,7 +86,7 @@ if __name__ == '__main__':
     data = get_data( stream )
     dataList = list( data.iteritems( ) )
     log.debug( pformat( data ) )
-    log.debug( pformat( dataList ) )
+    #log.debug( pformat( dataList ) )
     #CairoPlot.bar_plot( 'sugars.svg', dataList, 500, 350,
     #                    border = 13
     #                  , grid   = True
