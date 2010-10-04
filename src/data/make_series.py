@@ -3,6 +3,7 @@
 from matplotlib.backends.backend_svg import FigureCanvasSVG as FigureCanvas
 
 from matplotlib.figure import Figure
+from matplotlib import pyplot as plt
 import dateutil.parser
 import sys
 import io
@@ -122,7 +123,9 @@ if __name__ == '__main__':
 
 
 
-
+  
+  PREFER = ( 120, 135 )
+  SAFE = ( 70, 160 )
 
   #xlim = [ 0,  10.0 ]
   #YMAX = ts.max( ) * 1.1
@@ -135,17 +138,31 @@ if __name__ == '__main__':
   #data = [[False, False], [1,200],[4, 100],[6, 120]]
   #ax.plot(data)
   #D = dict( data )
+  preferspan = ax.axhspan( SAFE[0], SAFE[1],
+                           facecolor='g', alpha=0.2,
+                           edgecolor = '#003333',
+                           linewidth=1
+                         )
+  log.debug( "axhspan props" )
+  log.debug( pformat( plt.setp( preferspan ) ) )
 
   markers, stems, baselines, = ax.stem( ts.index, ts.values( ),
-           linefmt='s-',
-           markerfmt='ro',
-           basefmt='b-' )
+           linefmt='b:'
+           #markerfmt='o'
+           )
+  log.debug( "stem properties" )
+  log.debug( pformat( plt.setp( stems ) ) )
+  plt.setp( markers, color='red', linewidth=.5,
+            marker='o' #, markerfacecolor='red'
+            # markeredgecolor='white'
+          )
+  plt.setp( baselines, marker='None' ) 
   fig.autofmt_xdate( )
 
   ax.set_title('glucose history')
   ax.grid(True)
   ax.set_xlabel('time')
-  ax.set_ylabel('glucose')
+  ax.set_ylabel('glucose mm/dL')
   #fig.legend( stems, ts.index, 'top' )
   canvas.print_figure('test')
 
