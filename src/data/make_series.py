@@ -130,7 +130,7 @@ if __name__ == '__main__':
   #xlim = [ 0,  10.0 ]
   #YMAX = ts.max( ) * 1.1
   #ylim = [ 0,  YMAX ]
-  fig = Figure( )
+  fig = Figure( ( 6.3, 3.5 ), 300, frameon=False )
   canvas = FigureCanvas(fig)
   #xticks = [ 1,2,3,4,5,6,7,8  ]
   #ax = fig.add_subplot(111, xlim=xlim, ylim=ylim,
