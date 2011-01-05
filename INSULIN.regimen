@@ -22,14 +22,16 @@ Pump Therapy
     pump.propose total
 
   Basal Coverage ( BG < 240 )
-    12 AM 1.1u / h
-    08 AM 0.8u / h
-    10 PM 0.7u / h
+  Standard 19.40U
+    12 AM 0.85u / h
+    08 AM 0.80u / h
+    10 PM 0.70u / h
     
   Basal Coverage ( BG > 240 * 2h )
     basal.temp.ttl = 1h
     basal.temp.mod = 120%;
-
+    # In practice, I toggle percentages ranging between
+    # .85 - 1.0.
 
 Syringe Therapy
   Bolus ( no filters/preconditions )
@@ -53,4 +55,10 @@ Syringe Therapy
     total      = 24
     syringe.inject total
     
+  Recovering from DKA
+    # observed symptoms with blood sugar > 240
+    while glucose > 250
+      5U / hour Insulin.Aspart.Novolog
+
+
 
