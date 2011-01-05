@@ -113,6 +113,8 @@ if __name__ == '__main__':
   log.debug( "##### pandas dump #####" )
   #drange = pandas.DateRange( data[ 'glucose' ] )
   ts = pandas.Series( data )
+  D  = { 'glucose': ts }
+  df = pandas.DataFrame( { 'glucose': ts }, columns=['glucose'] )
   log.debug( pformat( ts ) )
   log.debug( "##### index #####" )
   #log.debug( pformat( ts.index ) )
@@ -125,12 +127,12 @@ if __name__ == '__main__':
 
   
   PREFER = ( 120, 135 )
-  SAFE = ( 70, 160 )
+  SAFE = ( 70, 140 )
 
   #xlim = [ 0,  10.0 ]
   #YMAX = ts.max( ) * 1.1
   #ylim = [ 0,  YMAX ]
-  fig = Figure( ( 6.3, 3.5 ), 300, frameon=False )
+  fig = Figure( ( 6.3, 3.5 ), 300 )
   canvas = FigureCanvas(fig)
   #xticks = [ 1,2,3,4,5,6,7,8  ]
   #ax = fig.add_subplot(111, xlim=xlim, ylim=ylim,
@@ -146,6 +148,7 @@ if __name__ == '__main__':
   log.debug( "axhspan props" )
   log.debug( pformat( plt.setp( preferspan ) ) )
 
+  # visualize glucose using stems
   markers, stems, baselines, = ax.stem( ts.index, ts.values( ),
            linefmt='b:'
            #markerfmt='o'
@@ -153,11 +156,14 @@ if __name__ == '__main__':
   log.debug( "stem properties" )
   log.debug( pformat( plt.setp( stems ) ) )
   plt.setp( markers, color='red', linewidth=.5,
-            marker='o' #, markerfacecolor='red'
-            # markeredgecolor='white'
+            marker='o'
           )
   plt.setp( baselines, marker='None' ) 
   fig.autofmt_xdate( )
+
+  # visualize average with a line plot
+  #glucose_max  = df.max( 1 )
+  #glucose_plot = ax.plot( glucose_max
 
   ax.set_title('glucose history')
   ax.grid(True)
@@ -166,9 +172,8 @@ if __name__ == '__main__':
   #fig.legend( stems, ts.index, 'top' )
   canvas.print_figure('test')
 
-    
 
-  
+
 
 #####
 # EOF
