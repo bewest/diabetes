@@ -105,7 +105,8 @@ if __name__ == '__main__':
 
   #dataList = list( data.values( ) )
   log.debug( pformat( data ) )
-  #ts = timeseries.time_series( data.values( ), data.keys( ) )
+  ts = timeseries.time_series( data.values( ), data.keys( ) )
+  ts.sort_chronologically( )
   #log.debug( "##### scikits timeseries #####" )
   #log.debug( pformat( ts ) )
 
@@ -113,8 +114,8 @@ if __name__ == '__main__':
   log.debug( "##### pandas dump #####" )
   #drange = pandas.DateRange( data[ 'glucose' ] )
   ts = pandas.Series( data )
-  D  = { 'glucose': ts }
-  df = pandas.DataFrame( { 'glucose': ts }, columns=['glucose'] )
+  #D  = { 'glucose': ts }
+  #df = pandas.DataFrame( { 'glucose': ts }, columns=['glucose'] )
   log.debug( pformat( ts ) )
   log.debug( "##### index #####" )
   #log.debug( pformat( ts.index ) )
@@ -132,7 +133,7 @@ if __name__ == '__main__':
   #xlim = [ 0,  10.0 ]
   #YMAX = ts.max( ) * 1.1
   #ylim = [ 0,  YMAX ]
-  fig = Figure( ( 6.3, 3.5 ), 300 )
+  fig = Figure( ( 20.3, 3.5 ), 300 )
   canvas = FigureCanvas(fig)
   #xticks = [ 1,2,3,4,5,6,7,8  ]
   #ax = fig.add_subplot(111, xlim=xlim, ylim=ylim,
@@ -149,7 +150,9 @@ if __name__ == '__main__':
   log.debug( pformat( plt.setp( preferspan ) ) )
 
   # visualize glucose using stems
-  markers, stems, baselines, = ax.stem( ts.index, ts.values( ),
+  #markers, stems, baselines, = ax.stem( ts.values,
+  markers, stems, baselines = ax.stem( ts.index, ts.values,
+  #markers, stems, baselines, = ax.stem( ts.dates, ts.data,
            linefmt='b:'
            #markerfmt='o'
            )
