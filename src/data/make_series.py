@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-from matplotlib.backends.backend_svg import FigureCanvasSVG as FigureCanvas
+#from matplotlib.backends.backend_svg import FigureCanvasSVG as FigureCanvas
+from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvas
 
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
@@ -173,7 +174,7 @@ if __name__ == '__main__':
   ax.set_xlabel('time')
   ax.set_ylabel('glucose mm/dL')
   #fig.legend( stems, ts.index, 'top' )
-  canvas.print_figure('test')
+  canvas.print_figure('test.png')
 
 
 
