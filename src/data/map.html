@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Test</title>
+<style type="text/css">
+#map { 
+  width: 80%;
+  height: 10em;
+  border: 2px solid brown;
+}
+</style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+
+<script type="text/javascript"
+        src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+<script type="text/javascript" src="js/jquery.svg.js"></script>
+
+<script type="text/javascript">
+(function($) {
+  $(document).ready( function( ) {
+    console.log( 'ready' );
+    window.test = { };
+    test.svg = $( '#svg' )[ 0 ];
+    test.svgdoc  = $(test.svg).svg( 'after',
+                    test.svg.getSVGDocument( ),
+                    test.svg, { } );
+    console.log( svg, $(svg).svg( 'get' ) );
+    test.map = $( '#map' );
+
+    var myOptions = {
+      zoom: 8,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    test.gmap = new google.maps.Map( test.map[ 0 ], myOptions );
+  } );
+
+    
+})( jQuery );
+</script>
+</head>
+<body>
+
+<h1>Test</h1>
+
+<div id="svg_embed">
+<embed id="svg"
+       src="./test.svg"
+       type="image/svg+xml"
+       ></embed>
+</div>
+<div id="map_embed">
+<div id="map"></div>
+</div>
+
+</body>
+</html>

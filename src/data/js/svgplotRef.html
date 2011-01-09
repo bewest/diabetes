@@ -1,0 +1,501 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+     "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>jQuery SVG Plotting Reference</title>
+<style type="text/css">
+@import "css/jquery.tabs.css";
+@import "css/jquery.bookmark.css";
+@import "css/demo.css";
+
+#tabs ul { width: 100%; }
+li { margin-right: 3em; }
+code { font-size: 115%; }
+table { width: 100%; }
+</style>
+<!--[if IE]><style type="text/css">
+code { font-size: 100%; }
+</style><![endif]-->
+<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
+<script type="text/javascript" src="js/jquery.debug.js"></script>
+<script type="text/javascript" src="js/jquery.tabs.js"></script>
+<script type="text/javascript" src="js/jquery.bookmark.js"></script>
+<script type="text/javascript" src="js/jquery.chili-2.0.js"></script>
+<script type="text/javascript" src="js/demo.js"></script>
+<script type="text/javascript">
+$(function() {
+});
+</script>
+</head>
+<body>
+<h1>jQuery SVG Plotting Reference</h1>
+<p>A <a href="http://jquery.com">jQuery</a> <a href="http://jquery.com/plugins/project/svg">plugin</a>
+	that lets you interact with an SVG canvas. If you find this plugin useful please
+	<a href="http://jquery.com/plugins/project/svg">vote for it</a> on the jQuery site.</p>
+<p>This page provides a documentation reference for working
+	with the plotting extension to the plugin <span class="version">v1.4.3</span>.
+	Also see the documentation for the <a href="svgRef.html">base plugin</a>
+	and the <a href="svggraphRef.html">graphing extension</a>.
+	<a href="zip/jquery.svg.doc-1.4.3.zip">Download a copy</a> for your own reference -
+	just add jQuery JavaScript for full functionality.</p>
+<p>See a <a href="svg.html">demonstration</a> of the SVG plugin and download the code from there.
+	Or see a <a href="svgBasics.html">minimal page</a> that you could
+	use as a basis for your own investigations.</p>
+<p style="text-align: center;"><span id="bookmark"></span></p>
+<div id="tabs">
+	<ul>
+		<li><a href="#plot"><span>Plotting</span></a></li>
+		<li><a href="#plotfn"><span>Function</span></a></li>
+		<li><a href="#plotaxis"><span>Axis</span></a></li>
+		<li><a href="#plotlegend"><span>Legend</span></a></li>
+	</ul>
+	<div id="plot" class="feature">
+		<h2><a name="svgplot">SVG Plotting</a></h2>
+		<p>The jQuery SVG plotting extension (<code>jquery.svgplot.js</code>) provides support for
+			plotting numeric functions with SVG.<br>
+			<span class="version">Since 1.3.0.</span></p>
+		<p>The SVG plotting entry point is within the SVG wrapper object as <code>svg.plot</code>,
+			which allows you to configure the plot and render it using SVG.
+			Many functions return the plot object so that further calls may be chained together.</p>
+		<pre><code class="js">svg.plot.noDraw().title('Functions').
+	addFunction('sine', Math.sin, 'blue', 3).
+	addFunction('cosine', Math.cos, [-Math.PI, Math.PI], 20, 'red', 3).
+	addFunction('decaying', decay, 'green', 3).
+	areaFormat('ivory', 'gray').
+	gridlines({stroke: 'gray', strokeDashArray: '2,2'}, 'gray').
+	status(setStatus);
+svg.plot.xAxis.scale(-1, 3.5).ticks(1, 0.2);
+svg.plot.yAxis.scale(-1.5, 1.5).ticks(1, 0.2);
+svg.plot.legend.settings({fill: 'lightgoldenrodyellow', stroke: 'gray'});
+
+svg.plot.noDraw().
+	legend.show(true).area(legendAreas[plotLegend]).end().
+	xAxis.scale(plotZooms[plotZoom][0], plotZooms[plotZoom][1]).end().
+	yAxis.scale(plotZooms[plotZoom][2], plotZooms[plotZoom][3]).end().
+	chartArea(chartAreas[plotLegend]).equalXY(plotEqual).redraw();</code></pre>
+		<p class="quickref">
+			<a href="#paddfunction">addFunction</a> |
+			<a href="#parea">area</a> |
+			<a href="#pcontainer">container</a> |
+			<a href="#pequalxy">equalXY</a> |
+			<a href="#pformat">format</a> |
+			<a href="#pfunctions">functions</a> |
+			<a href="#pgridlines">gridlines</a> |
+			<a href="#pnodraw">noDraw</a> |
+			<a href="#predraw">redraw</a> |
+			<a href="#pstatus">status</a> |
+			<a href="#ptitle">title</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="paddfunction">addFunction(name, fn, range, points, stroke, strokeWidth, settings)</a></td>
+				<td>SVGPlot object</td>
+				<td>Add a function to be shown on the plot. The details are encapsulated in a
+					<a href="#" onclick="jumpTo('plotfn', 'svgpfunction');">SVGPlotFunction</a> object.<br><br>
+					<code>name</code> (string, optional) is the name of this function.<br><br>
+					<code>fn</code> (function) is the function to be plotted.
+					It takes a single numeric value as a parameter and returns a numeric value.<br><br>
+					<code>range</code> (number[2], optional) is the minimum and maximum x-values to be plotted.
+					If not specified it defaults to the full range of the x-axis.<br><br>
+					<code>points</code> (number, optional) is the number of points within the range to plot.
+					More points produce a smoother curve, but generate a larger SVG document.
+					If not specified it defaults to 100.<br><br>
+					<code>stroke</code> (string, optional) is the colour of the plotted lines.
+					If not specified it defaults to black.<br><br>
+					<code>strokeWidth</code> (number, optional) is the width of the plotted lines.<br><br>
+					<code>settings</code> (object, optional) is additional
+					settings (SVG attributes) for the plotted values.<br><br>
+					<code class="js">svg.plot.addFunction('sine', Math.sin,
+	[-Math.PI, Math.PI], 50, 'green', 3);</code></td></tr>
+			<tr><td><a name="parea">area(left, top, right, bottom)</a></td>
+				<td>SVGPlot object <i>or</i> number[4]</td>
+				<td>Set the insets for the main plot area.
+					If the parameter value is less than or equal to 1 it is taken as the proportion
+					of the width/height. If more than 1 it is the number of pixels.
+					The default is [0.1, 0.1, 0.8, 0.9].<br><br>
+					<code>left</code> (number) is the left position or
+					(number[4]) all the positions in an array.<br><br>
+					<code>top</code> (number) is the top position (omitted if left is an array).<br><br>
+					<code>right</code> (number) is the right position (omitted if left is an array).<br><br>
+					<code>bottom</code> (number) is the bottom position (omitted if left is an array).<br><br>
+					<code class="js">svg.plot.area(0.1, 0.1, 0.9, 0.8);</code><br><br>
+					If no parameters are provided, the function returns the current plot area.<br><br>
+					<code class="js">var area = svg.plot.area();
+alert(area[0] + ',' + area[1]);</code></td></tr>
+			<tr><td><a name="pcontainer">container(cont)</a></td>
+				<td>SVGPlot object <i>or</i> SVG element</td>
+				<td>Set the container, which should be a <code>svg</code> element,
+					for the plot elements. A default container is created automatically.<br><br>
+					<code>cont</code> (SVG element) is the new plot container.<br><br>
+					<code class="js">svg.plot.container(svg.svg(0, 0, 600, 350));</code><br><br>
+					If no parameters are provided, the function returns the current plot container.<br><br>
+					<code class="js">var cont = svg.plot.container();</code><br><br>
+					<span class="version">Since 1.3.1</span>.</td></tr>
+			<tr><td><a name="pequalxy">equalXY(value)</a></td>
+				<td>SVGPlot object <i>or</i> boolean</td>
+				<td>Set whether the units along the x- and y-axes are of equal size.
+					<code>value</code> (boolean) is the new setting.
+					When <code>true</code> (default) the plot area may be reduced along one axis
+					to fit the axis and maintain a constant unit size.
+					When <code>false</code> the axes expand to fill the plot area available.<br><br>
+					<code class="js">svg.plot.equalXY(false);</code><br><br>
+					If no parameters are provided, the function returns the current equal X/Y setting.<br><br>
+					<code class="js">if (svg.plot.equalXY()) ...</code></td></tr>
+			<tr><td><a name="pformat">format(fill, stroke, settings)</a></td>
+				<td>SVGPlot object <i>or</i> format object</td>
+				<td>Set the background of the plot area.<br><br>
+					<code>fill</code> (string) is how to fill the plot background (default 'none').<br><br>
+					<code>stroke</code> (string, optional) is the colour of the outline (default 'black').<br><br>
+					<code>settings</code> (object, optional) is additional
+					formatting (SVG attributes) for the plot background.<br><br>
+					<code class="js">svg.plot.format('ivory', 'gray', {fillOpacity: 0.5});</code><br><br>
+					If no parameters are provided, the function returns the current area format
+					as an object with at least <code>fill</code> and <code>stroke</code> attributes.<br><br>
+					<code class="js">var format = svg.plot.format();
+alert(format.fill);</code></td></tr>
+			<tr><td><a name="pfunctions">functions(i)</a></td>
+				<td><a href="#" onclick="jumpTo('plotfn', 'svgpfunction');">SVGPlotFunction</a>
+					<i>or</i> SVGPlotFunction[]</td>
+				<td>Retrieve a single function or the current set of functions to be plotted.<br><br>
+					<code>i</code> (number, optional) is the index of the required function<br><br>
+					<code class="js">var fn = svg.plot.functions(0);</code><br><br>
+					If no parameters are provided, the function returns the list of all functions.<br><br>
+					<code class="js">var allFns = svg.plot.functions();</code></td></tr>
+			<tr><td><a name="pgridlines">gridlines(xSettings, ySettings)</a></td>
+				<td>SVGPlot object <i>or</i> object[2]</td>
+				<td>Set the gridlines formatting for the plot. The default is no gridlines.<br><br>
+					<code>xSettings</code> (string) is the colour of the gridlines along the x-axis, or
+					(object) formatting (SVG attributes) for the gridlines
+					along the x-axis, or <code>null</code> for none.<br><br>
+					<code>ySettings</code> (string) is the colour of the gridlines along the y-axis, or
+					(object) formatting (SVG attributes) for the gridlines
+					along the y-axis, or <code>null</code> for none.<br><br>
+					<code class="js">svg.plot.gridlines('green',
+	{stroke: 'yellow', strokeWidth: 2});</code><br><br>
+					If no parameters are provided, the function returns
+					the current gridline format objects in an array.<br><br>
+					<code class="js">var gridlines = svg.plot.gridlines();
+alert(gridlines[0].stroke);</code></td></tr>
+			<tr><td><a name="pnodraw">noDraw()</a></td>
+				<td>SVGPlot object</td>
+				<td>Suppress drawing of the plot until <code>redraw()</code> is called.
+					Normally the plot is redrawn whenever anything changes, but this
+					function allows multiple changes to be made before redrawing.<br><br>
+					<code class="js">svg.plot.noDraw();</code></td></tr>
+			<tr><td><a name="predraw">redraw()</a></td>
+				<td>SVGPlot object</td>
+				<td>Redraw the entire plot with the current settings and values.
+					Normally the plot is redrawn whenever anything changes, but this
+					function signals a redraw after pausing it with <code>noDraw()</code>.<br><br>
+					<code class="js">svg.plot.redraw();</code></td></tr>
+			<tr><td><a name="pstatus">status(onstatus)</a></td>
+				<td>SVGPlot object</td>
+				<td>Set the callback function for status updates.
+					When the mouse hovers over a plot line, a call is made to
+					this function with name of the current series.
+					On mouse exit the function is called with a blank value.<br><br>
+					<code>onstatus</code> (function) is the callback function.<br><br>
+					<code class="js">svg.plot.status(setStatus);</code><br><br>
+					<span class="version">Since 1.4.3</span> - function no longer has to be global.</td></tr>
+			<tr><td><a name="ptitle">title(value, offset, colour, settings)</a></td>
+				<td>SVGPlot object <i>or</i> object</td>
+				<td>Set the title of the plot.<br><br>
+					<code>value</code> (string) is the title (default '').<br><br>
+					<code>offset</code> (number, optional) is the pixel offset from the
+					top of the plot (default 25).<br><br>
+					<code>colour</code> (string, optional) is the fill colour for the title.<br><br>
+					<code>settings</code> (object, optional) is formatting (SVG attributes)
+					for the title (default textAnchor: 'middle').<br><br>
+					<code class="js">svg.plot.title('Functions', 'blue', {stroke: 'yellow'});</code><br><br>
+					If no parameters are provided, the function returns the current title settings
+					as an object with <code>value</code>, <code>offset</code>,
+					and <code>settings</code> attributes (<code>colour</code> appears in
+					<code>settings</code> as <code>fill</code>).<br><br>
+					<code class="js">var title = svg.plot.title();
+alert(title.value);</code><br><br>
+					<span class="version">Since 1.4.2</span> - added <code>colour</code>.</td></tr>
+		</table>
+		<p>The following variables are available for general use.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Type</th><th>Comments</th></tr>
+			<tr><td><a name="plegend">legend</a></td>
+				<td><a href="#" onclick="jumpTo('plotlegend', 'svgplegend');">SVGPlotLegend</a></td>
+				<td>The plot's legend.<br><br>
+					<code class="js">svg.plot.legend.settings(
+	{fill: 'lightgoldenrodyellow', stroke: 'gray'});</code></td></tr>
+			<tr><td><a name="pxaxis">xAxis</a></td>
+				<td><a href="#" onclick="jumpTo('plotaxis', 'svgpaxis');">SVGPlotAxis</a></td>
+				<td>The plot's x-axis.<br><br>
+					<code class="js">svg.plot.xAxis.title('X');</code></td></tr>
+			<tr><td>yAxis</td>
+				<td><a href="#" onclick="jumpTo('plotaxis', 'svgpaxis');">SVGPlotAxis</a></td>
+				<td>The plot's y-axis.<br><br>
+					<code class="js">svg.plot.yAxis.title('Y');</code></td></tr>
+		</table>
+	</div>
+	<div id="plotfn" class="feature">
+		<h2><a name="svgpfunction">SVG Plot Function</a></h2>
+		<p>The function object, SVGPlotFunction, contains details about a function being plotted.
+			Add a new function with <code><a href="#" onclick="jumpTo('plot', 'paddfunction');">svg.plot.addFunction()</a></code>,
+			or retrieve the existing functions with <code><a href="#" onclick="jumpTo('plot', 'pfunctions');">svg.plot.functions()</a></code>.</p>
+		<p class="quickref">
+			<a href="#pfend">end</a> |
+			<a href="#pffn">fn</a> |
+			<a href="#pfformat">format</a> |
+			<a href="#pfname">name</a> |
+			<a href="#pfpoints">points</a> |
+			<a href="#pfrange">range</a> |
+			<a href="#svgplotfunction">SVGPlotFunction</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="svgplotfunction"></a>SVGPlotFunction(plot, name, fn, range, points, stroke, strokeWidth, settings)</td>
+				<td>SVGPlotFunction</td>
+				<td>Create a new plot function definition. It is only used internally as part of the
+					<code><a href="#" onclick="jumpTo('plot', 'paddfunction');">addFunction()</a></code> call.<br><br>
+					<code>plot</code> (<a href="#" onclick="jumpTo('plot', 'svgplot');">SVGPlot</a>)
+					is the parent plot.<br><br>
+					<code>name</code> (string, optional) is the name of this function.<br><br>
+					<code>fn</code> (function) is the function to be plotted.
+					It takes a single numeric value as a parameter and returns a numeric value.<br><br>
+					<code>range</code> (number[2], optional) is the minimum and maximum x-values to be plotted.
+					If not specified it defaults to the full range of the x-axis.<br><br>
+					<code>points</code> (number, optional) is the number of points within the range to plot.
+					More points produces a smoother curve, but produces a larger SVG document.
+					If not specified it defaults to 100.<br><br>
+					<code>stroke</code> (string, optional) is the colour of the plotted lines.
+					If not specified it defaults to black.<br><br>
+					<code>strokeWidth</code> (number, optional) is the width of the plotted lines.<br><br>
+					<code>settings</code> (object, optional) is additional settings for the plotted values.</td></tr>
+			<tr><td><a name="pfend"></a>end()</td>
+				<td><a href="#" onclick="jumpTo('plot', 'svgplot');">SVGPlot</a> object</td>
+				<td>Finish with this function and return to the parent plot.<br><br>
+					<code class="js">svg.plot.functions(i).format(...).end()...;</code></td></tr>
+			<tr><td><a name="pffn"></a>fn(name, fn)</td>
+				<td>SVGPlotFunction object <i>or</i> function</td>
+				<td>Set or retrieve the function for this function definition.<br><br>
+					<code>name</code> (string, optional) is the function's name.<br><br>
+					<code>fn</code> (function) is the function to be plotted.<br><br>
+					<code class="js">func.fn(Math.sin);</code><br><br>
+					If no parameters are provided, the function returns the current function.<br><br>
+					<code class="js">var func = func.fn();</code></td></tr>
+			<tr><td><a name="pfformat"></a>format(stroke, strokeWidth, settings)</td>
+				<td>SVGPlotFunction object <i>or</i> object</td>
+				<td>Set or retrieve the formatting for this function definition.<br><br>
+					<code>stroke</code> (string) is the line's colour.<br><br>
+					<code>strokeWidth</code> (number, optional) is the line's width.<br><br>
+					<code>settings</code> (object, optional) is additional
+					formatting settings (SVG attributes) for the plotted values.<br><br>
+					<code class="js">func.format('lightyellow', 'yellow', {strokeOpacity: 0.5});</code><br><br>
+					If no parameters are provided, the function returns the current formatting settings
+					as an object with at least <code>stroke</code> and <code>strokeWidth</code> attributes.<br><br>
+					<code class="js">var format = func.format();
+alert(format.stroke);</code></td></tr>
+			<tr><td><a name="pfname"></a>name(name)</td>
+				<td>SVGPlotFunction object <i>or</i> string</td>
+				<td>Set or retrieve the name for this function definition.<br><br>
+					<code>name</code> (string) is the functions' name.<br><br>
+					<code class="js">func.name('sine');</code><br><br>
+					If no parameters are provided, the function returns the current name.<br><br>
+					<code class="js">var name = func.name();</code></td></tr>
+			<tr><td><a name="pfpoints"></a>points(value)</td>
+				<td>SVGPlotFunction object <i>or</i> number</td>
+				<td>Set or retrieve the number of points plotted for this function.<br><br>
+					<code>value</code> (number) is number of points to be plotted.<br><br>
+					<code class="js">func.points(50);</code><br><br>
+					If no parameters are provided, the function returns the current number of points.<br><br>
+					<code class="js">var points = func.points();</code></td></tr>
+			<tr><td><a name="pfrange"></a>range(min, max)</td>
+				<td>SVGPlotFunction object <i>or</i> number[2]</td>
+				<td>Set or retrieve the range of values plotted for this function.<br><br>
+					<code>min</code> (number) is start of the plotted range or
+					<code>null</code> to use the range of the x-axis.<br><br>
+					<code>max</code> (number) is the end of the plotted range
+					(omitted if <code>min</code> is <code>null</code>).<br><br>
+					<code class="js">func.range(-3, 3);</code><br><br>
+					If no parameters are provided, the function returns the current range.<br><br>
+					<code class="js">var range = func.range();
+alert(range[0] + ' - ' + range[1]);</code></td></tr>
+		</table>
+	</div>
+	<div id="plotaxis" class="feature">
+		<h2><a name="svgpaxis">SVG Plot Axis</a></h2>
+		<p>The axis object, SVGPlotAxis, contains details about an axis on the plot.
+			The plot maintains two references to axes:
+			<code><a href="#" onclick="jumpTo('plot', 'pxaxis');">xAxis</a></code> and <code>yAxis</code>.</p>
+		<p class="quickref">
+			<a href="#paend">end</a> |
+			<a href="#paformat">format</a> |
+			<a href="#paline">line</a> |
+			<a href="#pascale">scale</a> |
+			<a href="#svgplotaxis">SVGPlotAxis</a> |
+			<a href="#paticks">ticks</a> |
+			<a href="#patitle">title</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="svgplotaxis">SVGPlotAxis(plot, title, min, max, major, minor)</a></td>
+				<td>SVGPlotAxis</td>
+				<td>Create a new plot axis.
+					It is only used internally as part of the plot initialisation.<br><br>
+					<code>plot</code> (<a href="#" onclick="jumpTo('plot', 'svgplot');">SVGPlot</a>)
+					is the parent plot.<br><br>
+					<code>title</code> (string) is the title of the axis.<br><br>
+					<code>min</code> (number, optional) is the minimum value
+					displayed on this axis (default 0).<br><br>
+					<code>max</code> (number, optional) is the maximum value
+					displayed on this axis (default 100).<br><br>
+					<code>major</code> (number, optional) is the distance
+					between major ticks (default 10).<br><br>
+					<code>minor</code> (number, optional) is the distance
+					between minor ticks (default 0).<br><br>
+					<code class="js">var axis = new SVGPlotAxis('X', -3, 3, 1, 0.2);</code></td></tr>
+			<tr><td><a name="paend">end()</a></td>
+				<td><a href="#" onclick="jumpTo('plot', 'svgplot');">SVGPlot</a> object</td>
+				<td>Finish with this axis and return to the parent plot.<br><br>
+					<code class="js">svg.plot.xAxis.labels(...).end()...;</code></td></tr>
+			<tr><td><a name="paformat">format(colour, format)</a></td>
+				<td>SVGPlotAxis object <i>or</i> object</td>
+				<td>Set or retrieve the label format for this axis.<br><br>
+					<code>colour</code> (string, optional) is the fill colour for the labels.<br><br>
+					<code>format</code> (object) is formatting settings
+					(SVG attributes) for the labels on this axis.<br><br>
+					<code class="js">svg.plot.xAxis.format('red', {stroke: 'black'});</code><br><br>
+					If no parameters are provided, the function returns the current label format
+					settings (with <code>colour</code> as <code>fill</code>).<br><br>
+					<code class="js">var format = svg.plot.xAxis.format();
+alert(format.fill);</code><br><br>
+					<span class="version">Since 1.4.2</span> - added <code>colour</code>.</td></tr>
+			<tr><td><a name="paline">line(colour, width, settings)</a></td>
+				<td>SVGPlotAxis object <i>or</i> object</td>
+				<td>Set or retrieve the line formatting for this axis.<br><br>
+					<code>colour</code> (string) is the line's colour.<br><br>
+					<code>width</code> (number, optional) is the line's width.<br><br>
+					<code>settings</code> (object, optional) is additional
+					formatting settings (SVG attributes) for the line.<br><br>
+					<code class="js">svg.plot.xAxis.line('gray', 2, {strokeDashArray: '3,2'});</code><br><br>
+					If no parameters are provided, the function returns
+					the current line settings as an object with at least <code>stroke</code>
+					and <code>strokeWidth</code> attributes.<br><br>
+					<code class="js">var lineFormat = svg.plot.xAxis.line();
+alert(lineFormat.stroke);</code></td></tr>
+			<tr><td><a name="pascale">scale(min, max)</a></td>
+				<td>SVGPlotAxis object <i>or</i> object</td>
+				<td>Set or retrieve the scale for this axis.<br><br>
+					<code>min</code> (number) is the minimum value shown.<br><br>
+					<code>max</code> (number) is the maximum value shown.<br><br>
+					<code class="js">svg.plot.yAxis.scale(-5, 105);</code><br><br>
+					If no parameters are provided, the function returns the current scale
+					as an object with <code>min</code> and <code>max</code> attributes.<br><br>
+					<code class="js">var scale = svg.plot.yAxis.scale();
+alert(scale.min + ' - ' + scale.max);</code></td></tr>
+			<tr><td><a name="paticks">ticks(major, minor, size, position)</a></td>
+				<td>SVGPlotAxis object <i>or</i> object</td>
+				<td>Set or retrieve the ticks for this axis.<br><br>
+					<code>major</code> (number) is the distance between major ticks.<br><br>
+					<code>minor</code> (number) is the distance between minor ticks.<br><br>
+					<code>size</code> (number, optional) is the length of the major ticks
+					(default is 10, minor ticks are half size).<br><br>
+					<code>position</code> (string, optional) is the location of the ticks:
+					'nw' (above or to the left), 'se' (below or to the right), 'both' (default).<br><br>
+					<code class="js">svg.plot.yAxis.ticks(10, 5);</code><br><br>
+					If no parameters are provided, the function returns the current ticks
+					settings as an object with <code>major</code>, <code>minor</code>,
+					<code>size</code>, and <code>position</code> attributes.<br><br>
+					<code class="js">var ticks = svg.plot.yAxis.ticks();
+alert(ticks.major);</code></td></tr>
+			<tr><td><a name="patitle">title(title, offset, colour, format)</a></td>
+				<td>SVGPlotAxis object <i>or</i> object</td>
+				<td>Set or retrieve the title for this axis.<br><br>
+					<code>title</code> (string) is the title text.<br><br>
+					<code>offset</code> (number, optional) is the distance to offset the title position.<br><br>
+					<code>colour</code> (string, optional) is the fill colour for the title.<br><br>
+					<code>format</code> (object, optional) is formatting
+					settings (SVG attributes) for the title.<br><br>
+					<code class="js">svg.plot.xAxis.title('Year', 'green', {stroke: 'black'});</code><br><br>
+					If no parameters are provided, the function returns the current title
+					settings as an object with <code>title</code>, <code>offset</code>,
+					and <code>format</code> attributes (<code>colour</code> appears in
+					<code>format</code> as <code>fill</code>).<br><br>
+					<code class="js">var titleSettings = svg.plot.xAxis.title();
+alert(titleSettings.title);</code><br><br>
+					<span class="version">Since 1.4.2</span> - added <code>colour</code>.</td></tr>
+		</table>
+	</div>
+	<div id="plotlegend" class="feature">
+		<h2><a name="svgplegend">SVG Plot Legend</a></h2>
+		<p>The legend object, SVGPlotLegend, contains details about the legend for the plot.
+			Access the legend via <code><a href="#" onclick="jumpTo('plot', 'plegend');">svg.plot.legend</a></code>.</p>
+		<p class="quickref">
+			<a href="#plarea">area</a> |
+			<a href="#plend">end</a> |
+			<a href="#plsettings">settings</a> |
+			<a href="#plshow">show</a> |
+			<a href="#svgplotlegend">SVGPlotLegend</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="svgplotlegend"></a>SVGPlotLegend(plot, bgSettings, textSettings)</td>
+				<td>SVGPlotLegend</td>
+				<td>Create a new plot legend.
+					It is only used internally as part of the plot initialisation.<br><br>
+					<code>plot</code> (<a href="#" onclick="jumpTo('plot', 'svgplot');">SVGPlot</a>)
+					is the parent plot.<br><br>
+					<code>bgSettings</code> (object, optional) is additional formatting
+					settings for the legend background.<br><br>
+					<code>textSettings</code> (object, optional) is additional formatting
+					settings for the legend text.</td></tr>
+			<tr><td><a name="plarea"></a>area(left, top, right, bottom)</td>
+				<td>SVGPlotLegend object <i>or</i> number[4]</td>
+				<td>Set or retrieve the legend area.
+					If the parameter value is less than or equal to 1 it is taken as the proportion
+					of the width/height. If more then 1 it is the number of pixels.<br><br>
+					<code>left</code> (number) is the left position or
+					(number[4]) all the positions in an array.<br><br>
+					<code>top</code> (number) is the top position (omitted if left is an array).<br><br>
+					<code>right</code> (number) is the right position (omitted if left is an array).<br><br>
+					<code>bottom</code> (number) is the bottom position (omitted if left is an array).<br><br>
+					<code class="js">svg.plot.legend.area(
+	[0.005, 0.1, 0.125, 0.5]);</code><br><br>
+					If no parameters are provided, the function returns the current area.<br><br>
+					<code class="js">var area = svg.plot.legend.area();</code></td></tr>
+			<tr><td><a name="plend"></a>end()</td>
+				<td><a href="#" onclick="jumpTo('plot', 'svgplot');">SVGPlot</a> object</td>
+				<td>Finish with this legend and return to the parent plot.<br><br>
+					<code class="js">svg.plot.legend.settings(...).end()...;</code></td></tr>
+			<tr><td><a name="plsettings"></a>settings(sampleSize, bgSettings, textSettings)</td>
+				<td>SVGPlotLegend object <i>or</i> object</td>
+				<td>Set or retrieve additional settings for the legend area.<br><br>
+					<code>sampleSize</code> (number, optional) the size of the sample box to display.<br><br>
+					<code>bgSettings</code> (object) is additional formatting
+					settings (SVG attributes) for the legend background.<br><br>
+					<code>textSettings</code> (object, optional) is additional formatting
+					settings (SVG attributes) for the legend text.<br><br>
+					<code class="js">svg.plot.legend.settings(
+	{fill: 'lightgoldenrodyellow',
+	stroke: 'gray'});</code><br><br>
+					If no parameters are provided, the function returns the current settings
+					as an object with <code>sampleSize</code>, <code>bgSettings</code>,
+					and <code>textSettings</code> attributes.<br><br>
+					<code class="js">var settings =
+	svg.plot.legend.settings();
+alert(settings.sampleSize);</code></td></tr>
+			<tr><td><a name="plshow"></a>show(show)</td>
+				<td>SVGPlotLegend object <i>or</i> boolean</td>
+				<td>Set or retrieve whether the legend should be shown.<br><br>
+					<code>show</code> (boolean) is true to display it, false to hide it.<br><br>
+					<code class="js">svg.plot.legend.show(true);</code><br><br>
+					If no parameters are provided, the function returns the current visibility.<br><br>
+					<code class="js">if (svg.plot.legend.show()) ...</code></td></tr>
+		</table>
+	</div>
+</div>
+<p>Contact <a href="index.html">Keith Wood</a> at kbwood{at}iinet.com.au 
+	with comments or suggestions.</p>
+</body>
+</html>

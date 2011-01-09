@@ -1,0 +1,216 @@
+/* Common CSS for jQuery demonstration pages. */
+body {
+	font-family: Arial, Helvetica, Sans-serif;
+	margin: 20px 40px 20px 120px;
+	background: url(../img/marblegbor.gif) repeat-y;
+}
+h1 {
+	font-size: 150%;
+	border-bottom: 2px solid #484;
+}
+h2 {
+	font-size: 120%;
+	border-bottom: 1px solid #484;
+}
+h3 {
+	font-size: 100%;
+	border-bottom: 1px solid #484;
+}
+h3 a {
+	text-decoration: none;
+}
+pre {
+	clear: both;
+	margin: 10px 0px;
+}
+html:first-child pre { /* Opera */
+	font-size: 80%;
+}
+q {
+	font-style: italic;
+}
+blockquote {
+	clear: both;
+	margin: 0px;
+}
+blockquote:before {
+	content: url(../img/quote-o.png);
+}
+blockquote:after {
+	content: url(../img/quote-c.png);
+}
+blockquote p {
+	display: inline;
+	margin: 0px;
+}
+cite {
+	float: right;
+	margin-bottom: 0.5em;
+}
+li {
+	margin-bottom: 10px;
+}
+select {
+	font-family: Arial, Helvetica, Sans-serif;
+}
+table {
+	border-collapse: collapse;
+}
+th {
+	text-align: left;
+}
+th, td {
+	vertical-align: top;
+	padding: 0.5em 0.25em;
+}
+table ul {
+	margin: 0px;
+	padding-left: 1em;
+}
+* html h2, * html p { /* IE6 */
+	zoom: 1;
+}
+#tabs > ul {
+	width: 100%;
+}
+.ie6 {
+	display: none;
+}
+* html .ie6 { /* IE6 */
+	display: block;
+}
+.tabSplit {
+	clear: both;
+}
+.feature {
+	clear: both;
+	border: 1px solid #3c8243;
+}
+.demoLabel {
+	float: left; 
+	width: 14.5em;
+	margin-right: 0.5em;
+}
+div.showCode {
+	width: 5em;
+	margin-left: 18.5em;
+	background: #ddffe8;
+	border: 1px solid #3c8243;
+}
+* html div.showCode { /* IE 6- */
+	margin-left: 18.25em;
+}
+*:first-child+html div.showCode { /* IE 7 only */
+	margin-left: 18em;
+}
+a.showCode {
+	color: #000;
+	font-family: Arial, Helvetica, Sans-serif;
+	font-size: 100%;
+	cursor: pointer;
+	text-decoration: none;
+}
+body:first-of-type a.showCode { /* Safari, Opera */
+	font-size: 80%;
+}
+.alternate {
+	background-color: #ddffe8;
+}
+.quickref {
+	background-color: #ddffe8;
+	padding: 3px;
+	font-size: 90%;
+}
+.version {
+	font-weight: bold;
+}
+#header-links {
+	float: right;
+}
+#header-links img {
+	border: none;
+}
+#crosslinks {
+	display: none;
+	position: absolute;
+	z-index: 100;
+	width: 16em;
+	margin: 0px;
+	padding: 0px;
+	border: 1px solid #3c8243;
+	background-color: #cfd;
+	font-size: 80%;
+	list-style: none;
+}
+#crosslinks li {
+	margin: 0px;
+	padding: 2px 5px;
+	text-align: right;
+}
+#download img, #bookmark img {
+	vertical-align: top;
+}
+#bookmark a {
+	text-decoration: none;
+}
+#bookmark .bookmark_popup ul {
+	position: relative;
+	left: 1px;
+	border: 1px solid #3c8243;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+#bookmark .bookmark_compact {
+	background-color: #cfd;
+}
+.rating span {
+	white-space: nowrap;
+}
+.rating img {
+	width: 16px;
+	height: 16px;
+}
+#wildLinks {
+	clear: both;
+}
+#wildLinks div {
+	float: left;
+	width: 48%;
+	padding: 0% 1%;
+}
+#wildLinks a img {
+	border: none;
+	vertical-align: middle;
+}
+/* Tabs overrides */
+.tabs-nav a {
+    color: #277a53;
+}
+.tabs-nav a, .tabs-nav a span {
+    background: url(../img/tab-green.png) no-repeat;
+}
+.tabs-nav a {
+    background-position: 100% -100px;
+}
+/* Print overrides */
+@media print {
+	body {
+		background: none;
+		margin: 0px;
+	}
+	code {
+		font-size: 100% !important;
+	}
+	#header-links {
+		display: none;
+	}
+	#bookmark {
+		display: none;
+	}
+	#tabs > ul {
+		display: none;
+	}
+	.quickref {
+		display: none;
+	}
+}

@@ -1,0 +1,871 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+     "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>jQuery SVG Graphing Reference</title>
+<style type="text/css">
+@import "css/jquery.tabs.css";
+@import "css/jquery.bookmark.css";
+@import "css/demo.css";
+
+#tabs ul { width: 100%; }
+li { margin-right: 3em; }
+code { font-size: 115%; }
+table { width: 100%; }
+</style>
+<!--[if IE]><style type="text/css">
+code { font-size: 100%; }
+</style><![endif]-->
+<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
+<script type="text/javascript" src="js/jquery.debug.js"></script>
+<script type="text/javascript" src="js/jquery.tabs.js"></script>
+<script type="text/javascript" src="js/jquery.bookmark.js"></script>
+<script type="text/javascript" src="js/jquery.chili-2.0.js"></script>
+<script type="text/javascript" src="js/demo.js"></script>
+<script type="text/javascript">
+$(function() {
+});
+</script>
+</head>
+<body>
+<h1>jQuery SVG Graphing Reference</h1>
+<p>A <a href="http://jquery.com">jQuery</a> <a href="http://jquery.com/plugins/project/svg">plugin</a>
+	that lets you interact with an SVG canvas. If you find this plugin useful please
+	<a href="http://jquery.com/plugins/project/svg">vote for it</a> on the jQuery site.</p>
+<p>This page provides a documentation reference for working
+	with the graphing extension to the plugin <span class="version">v1.4.3</span>.
+	Also see the documentation for the <a href="svgRef.html">base plugin</a>
+	and the <a href="svgplotRef.html">plotting extension</a>.
+	<a href="zip/jquery.svg.doc-1.4.3.zip">Download a copy</a> for your own reference -
+	just add jQuery JavaScript for full functionality.</p>
+<p>See a <a href="svg.html">demonstration</a> of the SVG plugin and download the code from there.
+	Or see a <a href="svgBasics.html">minimal page</a> that you could
+	use as a basis for your own investigations.</p>
+<p style="text-align: center;"><span id="bookmark"></span></p>
+<div id="tabs">
+	<ul>
+		<li><a href="#graph"><span>Graphing</span></a></li>
+		<li><a href="#renderers"><span>Renderers</span></a></li>
+		<li><a href="#graphseries"><span>Series</span></a></li>
+		<li><a href="#graphaxis"><span>Axis</span></a></li>
+		<li><a href="#graphlegend"><span>Legend</span></a></li>
+	</ul>
+	<div id="graph" class="feature">
+		<h2><a name="svggraph">SVG Graphing</a></h2>
+		<p>The jQuery SVG graphing extension (<code>jquery.svggraph.js</code>) provides support for
+			drawing graphs with SVG.</p>
+		<p>The SVG graphing entry point is within the SVG wrapper object as <code>svg.graph</code>,
+			which allows you to configure the graph and render it using SVG.
+			Many functions return the graph object so that further calls may be chained together.</p>
+		<pre><code class="js">var defs = svg.defs();
+svg.linearGradient(defs, 'fadeBlue', [[0, 'lightblue'], [1, 'blue']]);
+svg.linearGradient(defs, 'fadeRed', [[0, 'pink'], [1, 'red']]);
+svg.linearGradient(defs, 'fadeGreen', [[0, 'lightgreen'], [1, 'green']]);
+svg.graph.noDraw().title('Browser Usage').
+	addSeries('IE', [95.97, 91.80, 88.16, 86.64], 'lightblue', 'blue', 3).
+	addSeries('Netscape', [3.39, 2.83, 1.61, 0.00], 'pink', 'red', 3).
+	addSeries('Firefox', [0.00, 4.06, 8.13, 9.95], 'lightgreen', 'green', 3).
+	format('ivory', 'gray').
+	gridlines({stroke: 'gray', strokeDashArray: '2,2'}, 'gray').
+	status(setStatus);
+	
+svg.graph.noDraw().
+	xAxis.title('Year').scale(0, 3).
+		ticks(1, 0).labels(['2002', '2004', '2005', '2006']).end().
+	yAxis.title('Percentage').scale(-5, 105).ticks(10, 5).end().
+	legend.settings({fill: 'lightgoldenrodyellow', stroke: 'gray'}).
+		show(legendPos).area(legendArea[legendPos]).end().
+	series(0).format(fills[0][seriesFill]).end().
+	series(1).format(fills[1][seriesFill]).end().
+	series(2).format(fills[2][seriesFill]).end().
+	area(chartArea[legendPos]).
+	type(chartType, {explode: 2, explodeDist: 10}).redraw();</code></pre>
+		<p class="quickref">
+			<a href="#gaddseries">addSeries</a> |
+			<a href="#garea">area</a> |
+			<a href="#gchartarea">chartArea</a> |
+			<a href="#gchartformat">chartFormat</a> |
+			<a href="#gchartoptions">chartOptions</a> |
+			<a href="#gcharttype">chartType</a> |
+			<a href="#gcontainer">container</a> |
+			<a href="#gformat">format</a> |
+			<a href="#ggridlines">gridlines</a> |
+			<a href="#gnodraw">noDraw</a> |
+			<a href="#goptions">options</a> |
+			<a href="#gredraw">redraw</a> |
+			<a href="#gseries">series</a> |
+			<a href="#gstatus">status</a> |
+			<a href="#gtitle">title</a> |
+			<a href="#gtype">type</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="gaddseries">addSeries(name, values, fill, stroke, strokeWidth, settings)</a></td>
+				<td>graph object</td>
+				<td>Add a series of values to be plotted on the graph. The details are encapsulated in a
+					<a href="#" onclick="jumpTo('graphseries', 'svgseries');">SVGGraphSeries</a> object.<br><br>
+					<code>name</code> (string, optional) is the name of this series.<br><br>
+					<code>values</code> (number[]) is the values to be plotted.<br><br>
+					<code>fill</code> (string) is how the plotted values are filled.
+					The default is 'green'.<br><br>
+					<code>stroke</code> (string, optional) is the colour of the plotted lines.
+					The default is 'black'.<br><br>
+					<code>strokeWidth</code> (number, optional) is the width of the plotted lines.
+					The default is 1.<br><br>
+					<code>settings</code> (object, optional) is additional settings
+					(SVG attributes) for the plotted values.<br><br>
+					<code class="js">svg.graph.addSeries('Firefox', [0.00, 4.06,
+	8.13, 9.95], 'lightgreen', 'green', 3);</code></td></tr>
+			<tr><td><a name="garea">area(left, top, right, bottom)</a></td>
+				<td>graph object <i>or</i> number[4]</td>
+				<td>Set the insets for the main chart area.
+					If the parameter value is less than or equal to 1 it is taken as the proportion
+					of the width/height. If more than 1 it is the number of pixels.<br><br>
+					<code>left</code> (number) is the left position or
+					(number[4]) all the positions in an array.<br><br>
+					<code>top</code> (number) is the top position (omitted if left is an array).<br><br>
+					<code>right</code> (number) is the right position (omitted if left is an array).<br><br>
+					<code>bottom</code> (number) is the bottom position (omitted if left is an array).<br><br>
+					<code class="js">svg.graph.area(0.1, 0.1, 0.9, 0.8);</code><br><br>
+					If no parameters are provided, the function returns the current chart area.<br><br>
+					<code class="js">var area = svg.graph.area();
+alert(area[0] + ',' + area[1]);</code><br><br>
+					<span class="version">Since 1.3.0</span> - previously you used <code>chartArea</code>.</td></tr>
+			<tr><td><a name="gchartarea">chartArea(left, top, right, bottom)</a></td>
+				<td>graph object <i>or</i> number[4]</td>
+				<td><span class="version">Since 1.3.0</span> - deprecated in
+					favour of <a href="#garea"><code>area</code></a>.</td></tr>
+			<tr><td><a name="gchartformat">chartFormat(fill, stroke, settings)</a></td>
+				<td>graph object <i>or</i> format object</td>
+				<td><span class="version">Since 1.3.0</span> - deprecated in
+					favour of <a href="#gformat"><code>format</code></a>.</td></tr>
+			<tr><td><a name="gchartoptions">chartOptions(options)</a></td>
+				<td>graph object <i>or</i> options object</td>
+				<td><span class="version">Since 1.3.0</span> - deprecated in
+					favour of <a href="#goptions"><code>options</code></a>.</td></tr>
+			<tr><td><a name="gcharttype">chartType(id, options)</a></td>
+				<td>graph object <i>or</i> string</td>
+				<td><span class="version">Since 1.3.0</span> - deprecated in
+					favour of <a href="#gtype"><code>type</code></a>.</td></tr>
+			<tr><td><a name="gcontainer">container(cont)</a></td>
+				<td>graph object <i>or</i> SVG element</td>
+				<td>Set the container, which should be a <code>svg</code> element,
+					for the graph elements. A default container is created automatically.<br><br>
+					<code>cont</code> (SVG element) is the new graph container.<br><br>
+					<code class="js">svg.graph.container(svg.svg(0, 0, 600, 350));</code><br><br>
+					If no parameters are provided, the function returns the current chart container.<br><br>
+					<code class="js">var cont = svg.graph.container();</code><br><br>
+					<span class="version">Since 1.3.1</span>.</td></tr>
+			<tr><td><a name="gformat">format(fill, stroke, settings)</a></td>
+				<td>graph object <i>or</i> format object</td>
+				<td>Set the background of the graph chart.<br><br>
+					<code>fill</code> (string) is how to fill the chart background.<br><br>
+					<code>stroke</code> (string, optional) is the colour of the outline.<br><br>
+					<code>settings</code> (object, optional) is additional formatting
+					(SVG attributes) for the chart background.<br><br>
+					<code class="js">svg.graph.format('ivory', 'gray', {fillOpacity: 0.5});</code><br><br>
+					If no parameters are provided, the function returns the current chart format,
+					with at least the <code>fill</code> attribute.<br><br>
+					<code class="js">var format = svg.graph.format();
+alert(format.fill);</code><br><br>
+					<span class="version">Since 1.3.0</span> - previously you used <code>chartFormat</code>.</td></tr>
+			<tr><td><a name="ggridlines">gridlines(xSettings, ySettings)</a></td>
+				<td>graph object <i>or</i> object[2]</td>
+				<td>Set the gridlines formatting for the graph chart.<br><br>
+					<code>xSettings</code> (string) is the colour of the gridlines along the x-axis, or
+					(object) formatting (SVG attributes) for the gridlines
+					along the x-axis, or <code>null</code> for none.<br><br>
+					<code>ySettings</code> (string) is the colour of the gridlines along the y-axis, or
+					(object) formatting (SVG attributes) for the gridlines
+					along the y-axis, or <code>null</code> for none.<br><br>
+					<code class="js">svg.graph.gridlines('yellow',
+	{stroke: 'green', strokeWidth: 2});</code><br><br>
+					If no parameters are provided, the function returns the current gridline format objects.<br><br>
+					<code class="js">var gridlines = svg.graph.gridlines();
+alert(gridlines[0].stroke);</code></td></tr>
+			<tr><td><a name="gnodraw">noDraw()</a></td>
+				<td>graph object</td>
+				<td>Suppress drawing of the graph until <code>redraw()</code> is called.
+					Normally the graph is redrawn whenever anything changes, but this
+					function allows multiple changes to be made before redrawing.<br><br>
+					<code class="js">svg.graph.noDraw();</code></td></tr>
+			<tr><td><a name="goptions">options(options)</a></td>
+				<td>graph object <i>or</i> options object</td>
+				<td>Set <a href="#" onclick="jumpTo('renderers', 'chartoptions');">additional options</a>
+					for the particluar chart type.<br><br>
+					<code>options</code> (object) is the extra options.<br><br>
+					<code class="js">svg.graph.options({explodeDistance: 15});</code><br><br>
+					If no parameters are provided, the function returns the current chart options.<br><br>
+					<code class="js">var options = svg.graph.options();</code><br><br>
+					<span class="version">Since 1.3.0</span> - previously you used <code>chartOptions</code>.</td></tr>
+			<tr><td><a name="gredraw">redraw()</a></td>
+				<td>graph object</td>
+				<td>Redraw the entire graph with the current settings and values.
+					Normally the graph is redrawn whenever anything changes, but this
+					function signals a redraw after pausing it with <code>noDraw()</code>.<br><br>
+					<code class="js">svg.graph.redraw();</code></td></tr>
+			<tr><td><a name="gseries">series(i)</a></td>
+				<td><a href="#" onclick="jumpTo('graphseries', 'svgseries');">SVGGraphSeries</a>
+					<i>or</i> SVGGraphSeries[]</td>
+				<td>Retrieve a single series or the current set of series to be plotted on the graph.<br><br>
+					<code>i</code> (number, optional) is the index of the required series.<br><br>
+					<code class="js">var series = svg.graph.series(0);</code><br><br>
+					If no parameters are provided, the function returns the list of all series.<br><br>
+					<code class="js">var allSeries = svg.graph.series();</code><br><br>
+					<span class="version">Since 1.3.0</span> - added <code>index</code>.</td></tr>
+			<tr><td><a name="gstatus">status(onstatus)</a></td>
+				<td>graph object</td>
+				<td>Set the callback function for status updates.
+					When the mouse hovers over a series, a call is made to this function
+					with the series name and the current value as parameters.
+					On mouse exit the function is called with blank and zero values.<br><br>
+					<code>onstatus</code> (function) is the callback function.<br><br>
+					<code class="js">svg.graph.status(setStatus);</code><br><br>
+					<span class="version">Since 1.4.3</span> - function
+					no longer has to be global and now takes two parameters.</td></tr>
+			<tr><td><a name="gtitle">title(value, offset, colour, settings)</a></td>
+				<td>graph object <i>or</i> object</td>
+				<td>Set the title of the graph.<br><br>
+					<code>value</code> (string) is the title.<br><br>
+					<code>offset</code> (number, optional) is the pixel offset from the top of the chart.<br><br>
+					<code>colour</code> (string, optional) is the fill colour for the title.<br><br>
+					<code>settings</code> (object, optional) is formatting
+					(SVG attributes) for the title.<br><br>
+					<code class="js">svg.graph.title('Browser usage',
+	'blue', {stroke: 'yellow'});</code><br><br>
+					If no parameters are provided, the function returns the current title settings
+					as an object with <code>value</code>, <code>offset</code>, and <code>settings</code>
+					attributes (<code>colour</code> appears in <code>settings</code> as <code>fill</code>).<br><br>
+					<code class="js">var title = svg.graph.title();
+alert(title.value);</code><br><br>
+					<span class="version">Since 1.4.2</span> - added <code>colour</code>.</td></tr>
+			<tr><td><a name="gtype">type(id, options)</a></td>
+				<td>graph object <i>or</i> string</td>
+				<td>Set the type of chart to be rendered.
+					See <a href="#" onclick="jumpTo('renderers', 'charttypes');">
+					<code>$.svg.graphing.chartTypes()</code></a>
+					for the list of available types.<br><br>
+					<code>id</code> (string) is the ID of the chart type.<br><br>
+					<code>options</code> (object, optional) is <a href="#" onclick="jumpTo('renderers', 'chartoptions');">
+					additional settings</a> for this chart type.<br><br>
+					<code class="js">svg.graph.type('pie', {explode: 1});</code><br><br>
+					If no parameters are provided, the function returns the current chart type.<br><br>
+					<code class="js">var type = svg.graph.type();</code><br><br>
+					<span class="version">Since 1.3.0</span> - previously you used <code>chartType</code>.</td></tr>
+		</table>
+		<p>The following functions are intended for internal use by chart renderers.
+			They would be called from within the
+			<code><a href="#" onclick="jumpTo('renderers', 'grdrawgraph');">drawGraph()</a></code>
+			function via the <code>graph</code> parameter.</p>
+		<p class="quickref">
+			<a href="#drawaxes">_drawAxes</a> |
+			<a href="#drawaxis">_drawAxis</a> |
+			<a href="#drawchartbackground">_drawChartBackground</a> |
+			<a href="#drawgridlines">_drawGridlines</a> |
+			<a href="#drawlegend">_drawLegend</a> |
+			<a href="#drawtitle">_drawTitle</a> |
+			<a href="#getdims">_getDims</a> |
+			<a href="#getpercentageaxis">_getPercentageAxis</a> |
+			<a href="#gettickoffsets">_getTickOffsets</a> |
+			<a href="#gettotals">_getTotals</a> |
+			<a href="#showstatus">_showStatus</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="drawaxes">_drawAxes(noX)</a></td>
+				<td>null</td>
+				<td>Draw the axes in their standard configuration.<br><br>
+					<code>noX</code> (boolean, optional) is true to suppress the x-axes, false to draw it.<br><br>
+					<code class="js">graph._drawAxes();</code></td></tr>
+			<tr><td><a name="drawaxis">_drawAxis(axis, id, x1, y1, x2, y2)</a></td>
+				<td>null</td>
+				<td>Draw an axis and its tick marks.<br><br>
+					<code>axis</code> (<a href="#" onclick="jumpTo('graphaxis', 'svgaxis');">
+					SVGGraphAxis</a>) is the axis definition.<br><br>
+					<code>id</code> (string) is the identifier for the axis group element.<br><br>
+					<code>x1</code> (number) is starting x-coodinate for the axis.<br><br>
+					<code>y1</code> (number) is starting y-coodinate for the axis.<br><br>
+					<code>x2</code> (number) is ending x-coodinate for the axis.<br><br>
+					<code>y2</code> (number) is ending y-coodinate for the axis.<br><br>
+					<code class="js">graph._drawAxis(new SVGGraphAxis(
+	'', 0, 100, 10, 0), 'yAxis', dims[X],
+	dims[Y], dims[X], dims[Y] + dims[H]);</code></td></tr>
+			<tr><td><a name="drawchartbackground">_drawChartBackground(noXGrid, noYGrid)</a></td>
+				<td>background element</td>
+				<td>Draw the chart background, including gridlines.<br><br>
+					<code>noXGrid</code> (boolean, optional) is true to suppress the x-gridlines,
+					false to draw them.<br><br>
+					<code>noYGrid</code> (boolean, optional) is true to suppress the y-gridlines,
+					false to draw them.<br><br>
+					<code class="js">var bg = graph._drawChartBackground();</code></td></tr>
+			<tr><td><a name="drawgridlines">_drawGridlines(bg, axis, horiz, dims, format)</a></td>
+				<td>null</td>
+				<td>Draw one set of gridlines.<br><br>
+					<code>bg</code> (element) is the background group element.<br><br>
+					<code>axis</code> (<a href="#" onclick="jumpTo('graphaxis', 'svgaxis');">
+					SVGGraphAxis</a>) is the axis definition.<br><br>
+					<code>horiz</code> (boolean) is true if horizontal, false if vertical.<br><br>
+					<code>dims</code> (number[4]) is the left, top, width, height of the chart area.<br><br>
+					<code>format</code> (object) is additional settings for the gridlines.<br><br>
+					<code class="js">graph._drawGridlines(bg, graph.yAxis,
+	false, dims, graph._gridlines[0]);</code></td></tr>
+			<tr><td><a name="drawlegend">_drawLegend()</a></td>
+				<td>null</td>
+				<td>Draw the chart legend based on its settings.<br><br>
+					<code class="js">graph._drawLegend();</code></td></tr>
+			<tr><td><a name="drawtitle">_drawTitle()</a></td>
+				<td>null</td>
+				<td>Draw the graph title - centred at the top.<br><br>
+					<code class="js">graph._drawTitle();</code></td></tr>
+			<tr><td><a name="getdims">_getDims(area)</a></td>
+				<td>number[4]</td>
+				<td>Calculate the actual dimensions of the given area.
+					Convert the <a href="#garea">chart area</a> settings into actual
+					coordinates returned in an array: left, top, width, height.<br><br>
+					<code>area</code> (number[4], optional) is the area sizings
+					(left, top, right, bottom), defaults to main chart area.<br><br>
+					<code class="js">var dims = graph._getDims();</code></td></tr>
+			<tr><td><a name="getpercentageaxis">_getPercentageAxis()</a></td>
+				<td><a href="#" onclick="jumpTo('graphaxis', 'svgaxis');">SVGGraphAxis</a></td>
+				<td>Retrieve the standard percentage axis (localised).<br><br>
+					<code class="js">graph._drawGridlines(
+	bg, graph._getPercentageAxis(),
+	true, dims, graph._gridlines[0]);</code></td></tr>
+			<tr><td><a name="gettickoffsets">_getTickOffsets(axis, bottomRight)</a></td>
+				<td>number[2]</td>
+				<td>Calculate offsets based on axis and tick positions.
+					Returns the array of offset multipliers (-1..+1) for left/up and right/down strokes.<br><br>
+					<code>axis</code> (<a href="#" onclick="jumpTo('graphaxis', 'svgaxis');">
+					SVGGraphAxis</a>) is the axis definition.<br><br>
+					<code>bottomRight</code> (boolean) is true if this axis is appearing on
+					the bottom or right of the chart area, false if to the top or left.<br><br>
+					<code class="js">var offsets =
+	graph._getTickOffsets(axis, true);</code></td></tr>
+			<tr><td><a name="gettotals">_getTotals()</a></td>
+				<td>number[]</td>
+				<td>Retrieve the totals for each entry across all the series.
+					This can be used in charts that show relative proportions,
+					such as stacked columns or rows, and pie charts.<br><br>
+					<code class="js">var totals = graph._getTotals();</code></td></tr>
+			<tr><td><a name="showstatus">_showStatus()</a></td>
+				<td>object</td>
+				<td>Retrieve the SVG attributes for <code>onmouseover</code> and
+					<code>onmouseout</code> events that display the current series value status.
+					Add this to your SVG element depicting the series value.<br><br>
+					<code class="js">graph._wrapper.rect(g, x, y, w, h,
+	graph._showStatus(series._name + ' ' +
+	series._values[i]));</code></td></tr>
+		</table>
+		<p>The following variables are available for general use.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Type</th><th>Comments</th></tr>
+			<tr><td><a name="legend">legend</a></td>
+				<td><a href="#" onclick="jumpTo('graphlegend', 'svglegend');">SVGGraphLegend</a></td>
+				<td>The chart's legend.<br><br>
+					<code class="js">svg.graph.legend.settings(
+	{fill: 'lightgoldenrodyellow', stroke: 'gray'});</code></td></tr>
+			<tr><td><a name="xaxis">xAxis</a></td>
+				<td><a href="#" onclick="jumpTo('graphaxis', 'svgaxis');">SVGGraphAxis</a></td>
+				<td>The chart's main x-axis.<br><br>
+					<code class="js">svg.graph.xAxis.title('Year');</code></td></tr>
+			<tr><td>x2Axis</td>
+				<td><a href="#" onclick="jumpTo('graphaxis', 'svgaxis');">SVGGraphAxis</a></td>
+				<td>The chart's secondary x-axis. Not yet implemented.<br><br>
+					<code class="js">svg.graph.x2Axis.title('Region');</code></td></tr>
+			<tr><td>yAxis</td>
+				<td><a href="#" onclick="jumpTo('graphaxis', 'svgaxis');">SVGGraphAxis</a></td>
+				<td>The chart's main y-axis.<br><br>
+					<code class="js">svg.graph.yAxis.title('Percentage');</code></td></tr>
+			<tr><td>y2Axis</td>
+				<td><a href="#" onclick="jumpTo('graphaxis', 'svgaxis');">SVGGraphAxis</a></td>
+				<td>The chart's secondary y-axis. Not yet implemented.<br><br>
+					<code class="js">svg.graph.y2Axis.title('Rates');</code></td></tr>
+		</table>
+		<p>The following variables are intended for internal use by chart renderers.
+			They would be used from within the <code>
+			<a href="#" onclick="jumpTo('renderers', 'grdrawgraph');">drawGraph()</a></code>
+			function via the <code>graph</code> parameter.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Type</th><th>Comments</th></tr>
+			<tr><td>_area</td>
+				<td>number[4]</td>
+				<td>The sizing for the main chart area. Convert these into actual
+					dimensions with <code><a href="#getdims">_getDims()</a></code>.<br><br>
+					<code class="js">var dims = graph._getDims(graph._area);</code></td></tr>
+			<tr><td>_chartFormat</td>
+				<td>object</td>
+				<td>The format settings for the main chart area.<br><br>
+					<code class="js">graph._wrapper.rect(bg, 0, 0, 600, 400, graph._chartFormat);</code></td></tr>
+			<tr><td>_chartCont</td>
+				<td>SVG element</td>
+				<td>The SVG element that contains all the charting elements.<br><br>
+					<code class="js">graph._wrapper.rect(graph._chartCont, ...);</code></td></tr>
+			<tr><td>_chartOptions</td>
+				<td>object</td>
+				<td>Additional options set for the current chart type.<br><br>
+					<code class="js">var explode = graph._chartOptions.explode;</code></td></tr>
+			<tr><td>_gridlines</td>
+				<td>object[2]</td>
+				<td>The format settings for the x- and y-gridlines.<br><br>
+					<code class="js">graph._drawGridlines(bg, graph._getPercentageAxis(),
+	true, dims, graph._gridlines[0]);</code></td></tr>
+			<tr><td>_series</td>
+				<td><a href="#" onclick="jumpTo('graphseries', 'svgseries');">SVGGraphSeries</a>[]</td>
+				<td>The series to be plotted.<br><br>
+					<code class="js">for (var i = 0; i &lt; graph._series.length; i++) {
+	...graph._series[i]...
+}</code></td></tr>
+			<tr><td>_title</td>
+				<td>object</td>
+				<td>Details about the graph title.<br><br>
+					<code class="js">graph._title.value;</code></td></tr>
+			<tr><td>_wrapper</td>
+				<td><a href="svgRef.html#definitions">SVGWrapper</a></td>
+				<td>The attached SVG wrapper.<br><br>
+					<code class="js">graph._wrapper.rect(...);</code><br><br>
+					<span class="version">Since 1.2.0</span> - previously you used <code>_root</code>.</td></tr>
+		</table>
+		<p>Similarly for these constants.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Type</th><th>Comments</th></tr>
+			<tr><td>H</td>
+				<td>number</td>
+				<td>The index into the dimensions array (<a href="#getdims">_getDims()</a>)
+					for the height.<br><br>
+					<code>dims[graph.H]</code></td></tr>
+			<tr><td>W</td>
+				<td>number</td>
+				<td>The index into the dimensions array (<a href="#getdims">_getDims()</a>)
+					for the width.<br><br>
+					<code>dims[graph.W]</code></td></tr>
+			<tr><td>X</td>
+				<td>number</td>
+				<td>The index into the dimensions array (<a href="#getdims">_getDims()</a>)
+					for the x-coordinate.<br><br>
+					<code>dims[graph.X]</code></td></tr>
+			<tr><td>Y</td>
+				<td>number</td>
+				<td>The index into the dimensions array (<a href="#getdims">_getDims()</a>)
+					for the y-coordinate.<br><br>
+					<code>dims[graph.Y]</code></td></tr>
+		</table>
+	</div>
+	<div id="renderers" class="feature">
+		<h2><a name="graphmanager">SVG Graphing Manager</a></h2>
+		<p>The SVG graphing manger is accessed via the <code>$.svg.graphing</code> object.
+			It manages the renders for different graph formats.
+			Assign a renderer to a particular graph with the following:</p>
+		<pre><code class="js">svg.graph.setGraphType('column');</code></pre>
+		<h4>Functions</h4>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td>addChartType(id, chartType)</td>
+				<td>null</td>
+				<td>Add a new chart rendering type to the package.
+					The rendering object must implement the following functions:
+					<code><a href="#grtitle">title()</a></code>,
+					<code><a href="#grdescription">description()</a></code>,
+					<code><a href="#groptions">options()</a></code>,
+					<code><a href="#grdrawgraph">drawGraph(graph)</a></code>.<br><br>
+					<code>id</code> (string) is the ID of this graph renderer.<br><br>
+					<code>chartType</code> (object) is the object implementing this graph type.<br><br>
+					<code class="js">$.svg.graphing.addChartType('column', new SVGColumnChart());</code></td></tr>
+			<tr><td><a name="charttypes">chartTypes()</a></td>
+				<td>renderer array</td>
+				<td>Retrieve the list of chart types.<br>
+					Returns the array of chart types indexed by ID.<br><br>
+					<code class="js">var chartTypes = $.svg.graphing.chartTypes();<br>
+for (var id in chartTypes) { ... }</code></td></tr>
+		</table>
+		<h4>Variables</h4>
+		<table border="0">
+			<tr><th>Name</th><th>Type</th><th>Comments</th></tr>
+			<tr><td>region</td>
+				<td>object</td>
+				<td>The current regional settings from below.<br><br>
+					<code class="js">$.svg.graphing.region = $.svg.graphing.regional['fr'];</code></td></tr>
+			<tr><td>regional</td>
+				<td>object[string]</td>
+				<td>Regional localisations. Each entry is an object with the following attributes:
+					<code>percentageText</code>. Entries are indexed by the ISO country/language code,
+					with '' being the default (English).<br><br>
+					<code class="js">$.svg.graphing.regional['fr'] = {percentageText: 'Pourcentage'};</code></td></tr>
+		</table>
+		<h2><a name="graphrenderers">SVG Graph Renderers</a></h2>
+		<p>Different graph types are rendered by plugin objects that are 
+			registered with the <code>$.svg.graphing</code> manager object
+			above and may then be assigned to individual graphs.
+			Each must implement the functions below.
+			The standard chart types are:</p>
+		<ul>
+			<li>column - basic column chart with bars grouped by category</li>
+			<li>stackedColumn - column chart with bars showing proportion of the whole</li>
+			<li>row - basic row chart with bars grouped by category</li>
+			<li>stackedRow - row chart with bars showing proportion of the whole</li>
+			<li>line - basic line chart</li>
+			<li>pie - basic pie chart</li>
+		</ul>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="grtitle">title()</a></td>
+				<td>string</td>
+				<td>Retrieve the display title for this chart type.<br><br>
+					<code class="js">html += '&lt;option value="' + id + '"&gt;' +
+	chartType.title() + '&lt;/option&gt;';</code></td></tr>
+			<tr><td><a name="grdescription">description()</a></td>
+				<td>string</td>
+				<td>Retrieve a longer description of this chart type.<br><br>
+					<code class="js">$('#graphDesc').text(chartType.description());</code></td></tr>
+			<tr><td><a name="groptions">options()</a></td>
+				<td>string[]</td>
+				<td>Retrieve a list of the options that may be set for this chart type.
+					Each entry should have the format: 'name (type) - description'.<br><br>
+					<code class="js">for (var i = 0; i &lt; chartType.options().length; i++) { ... }</code></td></tr>
+			<tr><td><a name="grdrawgraph">drawGraph(graph)</a></td>
+				<td>null</td>
+				<td>Actually draw the graph in this type's style.
+					This function is called internally by the graph object
+					in response to a <code>redraw()</code> call.<br><br>
+					<code>graph</code> (object) is the
+					<a href="#" onclick="jumpTo('graph', 'svggraph');">SVGGraph</a> object.<br><br>
+					<code class="js">chartType.drawGraph(graph);</code></td></tr>
+		</table>
+		<h4><a name="chartoptions"></a>Chart Type Options</h4>
+		<table border="0">
+			<tr><th>Chart Type</th><th>Name</th><th>Type</th><th>Default</th><th>Comments</th></tr>
+			<tr><td>column<br>stackedColumn</td><td>barWidth</td><td>number</td><td>10</td>
+				<td>The width (pixels) of each column.</td></tr>
+			<tr><td>&nbsp;</td><td>barGap</td><td>number</td><td>10</td>
+				<td>The gap (pixels) between column.</td></tr>
+			<tr><td>row<br>stackedRow</td><td>barWidth</td><td>number</td><td>10</td>
+				<td>The width (pixels) of each row.</td></tr>
+			<tr><td>&nbsp;</td><td>barGap</td><td>number</td><td>10</td>
+				<td>The gap (pixels) between row.</td></tr>
+			<tr><td>pie</td><td>explode</td><td>number or number[]</td><td>[]</td>
+				<td>The indexes of series (starting at zero) to
+					explode out from the main pie chart.<br><br>
+					<span class="version">Since 1.4.2</span> - value may be a single number.</td></tr>
+			<tr><td>&nbsp;</td><td>explodeDist</td><td>number</td><td>10</td>
+				<td>The distance (pixels) that exploded series are moved.</td></tr>
+			<tr><td>&nbsp;</td><td>pieGap</td><td>number</td><td>10</td>
+				<td>The gap (pixels) between pie charts if multiple values are graphed.</td></tr>
+		</table>
+	</div>
+	<div id="graphseries" class="feature">
+		<h2><a name="svgseries">SVG Graph Series</a></h2>
+		<p>The series object, SVGGraphSeries, contains details about a series in the graph.
+			Add a new series with <code><a href="#" onclick="jumpTo('graph', 'gaddseries');">svg.graph.addSeries()</a></code>,
+			or retrieve the existing series with
+			<code><a href="#" onclick="jumpTo('graph', 'gseries');">svg.graph.series()</a></code>.</p>
+		<p class="quickref">
+			<a href="#gsend">end</a> |
+			<a href="#gsformat">format</a> |
+			<a href="#gsname">name</a> |
+			<a href="#svggraphseries">SVGGraphSeries</a> |
+			<a href="#gsvalues">values</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="svggraphseries"></a>SVGGraphSeries(graph, name, values, fill, stroke, strokeWidth, settings)</td>
+				<td>SVGGraphSeries</td>
+				<td>Create a new graph series. It is only used internally as part of the
+					<code><a href="#" onclick="jumpTo('graph', 'gaddseries');">addSeries()</a></code> call.<br><br>
+					<code>graph</code> (<a href="#" onclick="jumpTo('graph', 'svggraph');">SVGGraph</a>)
+					is the parent graph.<br><br>
+					<code>name</code> (string, optional) is the name of this series.<br><br>
+					<code>values</code> (number[]) is the list of values to be plotted.<br><br>
+					<code>fill</code> (string) is how the series should be displayed.<br><br>
+					<code>stroke</code> (string, optional) is the colour of the (out)line for the series.<br><br>
+					<code>strokeWidth</code> (number, optional) is the width of the plotted lines.<br><br>
+					<code>settings</code> (object, optional) is additional formatting settings.</td></tr>
+			<tr><td><a name="gsend"></a>end()</td>
+				<td>graph object</td>
+				<td>Finish with this series and return to the parent graph.<br><br>
+					<code class="js">svg.graph.series(i).format(...).end()...;</code><br><br>
+					<span class="version">Since 1.3.0</span>.</td></tr>
+			<tr><td><a name="gsformat"></a>format(fill, stroke, strokeWidth, settings)</td>
+				<td>series object <i>or</i> object</td>
+				<td>Set or retrieve the formatting for this series.<br><br>
+					<code>fill</code> (string) is how the values are filled when plotted.<br><br>
+					<code>stroke</code> (string, optional) is the (out)line colour.<br><br>
+					<code>strokeWidth</code> (number, optional) is the line's width.<br><br>
+					<code>settings</code> (object, optional) is additional
+					formatting settings (SVG attributes) for the series.<br><br>
+					<code class="js">series.format('lightyellow', 'yellow', {fillOpacity: 0.5});</code><br><br>
+					If no parameters are provided, the function returns the current
+					formatting settings as an object with at least <code>fill</code>,
+					<code>stroke</code>, and <code>strokeWidth</code> attributes.<br><br>
+					<code class="js">var format = series.format();
+alert(format.fill);</code></td></tr>
+			<tr><td><a name="gsname"></a>name(name)</td>
+				<td>series object <i>or</i> string</td>
+				<td>Set or retrieve the name for this series.<br><br>
+					<code>name</code> (string) is the series' name.<br><br>
+					<code class="js">series.name('Opera');</code><br><br>
+					If no parameters are provided, the function returns the current name.<br><br>
+					<code class="js">var name = series.name();</code></td></tr>
+			<tr><td><a name="gsvalues"></a>values(name, values)</td>
+				<td>series object <i>or</i> number[]</td>
+				<td>Set or retrieve the values for this series.<br><br>
+					<code>name</code> (string, optional) is the series' name.<br><br>
+					<code>values</code> (number[]) is the values to be graphed.<br><br>
+					<code class="js">series.values([0.2, 0.3, 0.3, 0.4]);</code><br><br>
+					If no parameters are provided, the function returns the current values.<br><br>
+					<code class="js">var values = series.values();</code></td></tr>
+		</table>
+		<p>Internally the following fields are available for graph renderers.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Type</th><th>Comments</th></tr>
+			<tr><td>_axis</td>
+				<td>number</td>
+				<td>Which axis (1 or 2) does this series apply to?</td></tr>
+			<tr><td>_fill</td>
+				<td>string</td>
+				<td>How the series is rendered.</td></tr>
+			<tr><td>_name</td>
+				<td>string</td>
+				<td>The name of the series.</td></tr>
+			<tr><td>_settings</td>
+				<td>object</td>
+				<td>Additional formatting settings for the series.</td></tr>
+			<tr><td>_stroke</td>
+				<td>string</td>
+				<td>The (out)line colour.</td></tr>
+			<tr><td>_strokeWidth</td>
+				<td>number</td>
+				<td>The line width.</td></tr>
+			<tr><td>_values</td>
+				<td>number[]</td>
+				<td>The list of values for the series.</td></tr>
+		</table>
+	</div>
+	<div id="graphaxis" class="feature">
+		<h2><a name="svgaxis">SVG Graph Axis</a></h2>
+		<p>The axis object, SVGGraphAxis, contains details about an axis on the graph.
+			The graph maintains several references to axes: <code><a href="#" onclick="jumpTo('graph', 'xaxis');">xAxis</a></code>,
+			<code>yAxis</code>, <code>x2Axis</code>, <code>y2Axis</code>, and
+			<code><a href="#" onclick="jumpTo('graph', 'getpercentageaxis');">_getPercentageAxis()</a></code>.</p>
+		<p class="quickref">
+			<a href="#gaend">end</a> |
+			<a href="#galabels">labels</a> |
+			<a href="#galine">line</a> |
+			<a href="#gascale">scale</a> |
+			<a href="#svggraphaxis">SVGGraphAxis</a> |
+			<a href="#gaticks">ticks</a> |
+			<a href="#gatitle">title</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="svggraphaxis">SVGGraphAxis(graph, title, min, max, major, minor)</a></td>
+				<td>SVGGraphAxis</td>
+				<td>Create a new graph axis.
+					It is only used internally as part of the graph initialisation.<br><br>
+					<code>graph</code> (<a href="#" onclick="jumpTo('graph', 'svggraph');">SVGGraph</a>)
+					is the parent graph.<br><br>
+					<code>title</code> (string) is the title of the axis.<br><br>
+					<code>min</code> (number) is the minimum value displayed on this axis.<br><br>
+					<code>max</code> (number) is the maximum value displayed on this axis.<br><br>
+					<code>major</code> (number) is the distance between major ticks.<br><br>
+					<code>minor</code> (number, optional) is the distance between minor ticks.</td></tr>
+			<tr><td><a name="gaend">end()</a></td>
+				<td>graph object</td>
+				<td>Finish with this axis and return to the parent graph.<br><br>
+					<code class="js">svg.graph.xAxis.labels(...).end()...;</code><br><br>
+					<span class="version">Since 1.3.0</span>.</td></tr>
+			<tr><td><a name="galabels">labels(labels, colour, format)</a></td>
+				<td>axis object <i>or</i> object</td>
+				<td>Set or retrieve the labels for this axis.<br><br>
+					<code>labels</code> (string[]) is the text for each entry.<br><br>
+					<code>colour</code> (string, optional) is the fill colour for the labels.<br><br>
+					<code>format</code> (object, optional) is formatting
+					(SVG attributes) settings for the labels.<br><br>
+					<code class="js">svg.graph.xAxis.labels(
+	['2002', '2004', '2005', '2006'], 'blue');</code><br><br>
+					If no parameters are provided, the function returns the current labels settings
+					as an object with <code>labels</code> and <code>format</code> attributes
+					 (<code>colour</code> appears in <code>format</code> as <code>fill</code>).<br><br>
+					<code class="js">var labelSettings = svg.graph.xAxis.labels();
+alert(labelSettings.labels);</code><br><br>
+					<span class="version">Since 1.4.2</span> - added <code>colour</code>.</td></tr>
+			<tr><td><a name="galine">line(colour, width, settings)</a></td>
+				<td>axis object <i>or</i> object</td>
+				<td>Set or retrieve the line formatting for this axis.<br><br>
+					<code>colour</code> (string) is the line's colour.<br><br>
+					<code>width</code> (number, optional) is the line's width.<br><br>
+					<code>settings</code> (object, optional) is additional
+					formatting settings (SVG attributes) for the line.<br><br>
+					<code class="js">svg.graph.xAxis.line('gray', 2, {strokeDashArray: '3,2'});</code><br><br>
+					If no parameters are provided, the function returns the current line settings
+					as an object with <code>stroke</code> and <code>strokeWidth</code> attributes.<br><br>
+					<code class="js">var lineFormat = svg.graph.xAxis.line();
+alert(lineFormat.stroke);</code></td></tr>
+			<tr><td><a name="gascale">scale(min, max)</a></td>
+				<td>axis object <i>or</i> object</td>
+				<td>Set or retrieve the scale for this axis.<br><br>
+					<code>min</code> (number) is the minimum value shown.<br><br>
+					<code>max</code> (number) is the maximum value shown.<br><br>
+					<code class="js">svg.graph.yAxis.scale(-5, 105);</code><br><br>
+					If no parameters are provided, the function returns the current scale
+					as an object with <code>min</code> and <code>max</code> attributes.<br><br>
+					<code class="js">var scale = svg.graph.yAxis.scale();
+alert(scale.min + ' - ' + scale.max);</code></td></tr>
+			<tr><td><a name="gaticks">ticks(major, minor, size, position)</a></td>
+				<td>axis object <i>or</i> object</td>
+				<td>Set or retrieve the ticks for this axis.<br><br>
+					<code>major</code> (number) is the distance between major ticks.<br><br>
+					<code>minor</code> (number) is the distance between minor ticks.<br><br>
+					<code>size</code> (number, optional) is the length of the major ticks
+					(default is 10, minor ticks are half size).<br><br>
+					<code>position</code> (string, optional) is the location of the ticks:
+					'in', 'out' (default), 'both'.<br><br>
+					<code class="js">svg.graph.yAxis.ticks(10, 5);</code><br><br>
+					If no parameters are provided, the function returns the current ticks
+					settings as an object with <code>major</code>, <code>minor</code>,
+					<code>size</code>, and <code>position</code> attributes.<br><br>
+					<code class="js">var ticks = svg.graph.yAxis.ticks();
+alert(ticks.major);</code></td></tr>
+			<tr><td><a name="gatitle">title(title, offset, colour, format)</a></td>
+				<td>axis object <i>or</i> object</td>
+				<td>Set or retrieve the title for this axis.<br><br>
+					<code>title</code> (string) is the title text.<br><br>
+					<code>offset</code> (number, optional) is the distance to offset the title position.<br><br>
+					<code>colour</code> (string, optional) is the fill colour for the title.<br><br>
+					<code>format</code> (object, optional) is formatting
+					settings (SVG attributes) for the title.<br><br>
+					<code class="js">svg.graph.xAxis.title('Year', 'green', {stroke: 'black'});</code><br><br>
+					If no parameters are provided, the function returns the current title
+					settings as an object with <code>title</code>, <code>offset</code>, and <code>format</code>
+					attributes (<code>colour</code> appears in <code>format</code> as <code>fill</code>).<br><br>
+					<code class="js">var titleSettings = svg.graph.xAxis.title();
+alert(titleSettings.title);</code><br><br>
+					<span class="version">Since 1.4.2</span> - added <code>colour</code>.</td></tr>
+		</table>
+		<p>Internally the follow fields are available for graph renderers.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Type</th><th>Comments</th></tr>
+			<tr><td>_labels</td>
+				<td>string[]</td>
+				<td>The list of labels for the axis - one per possible value across all series.</td></tr>
+			<tr><td>_labelFormat</td>
+				<td>object</td>
+				<td>Formatting settings for the labels.</td></tr>
+			<tr><td>_lineFormat</td>
+				<td>object</td>
+				<td>Formatting settings for the axis lines, including tick marks.</td></tr>
+			<tr><td>_scale</td>
+				<td>object</td>
+				<td>Scale settings: <code>min</code> and <code>max</code> attributes.</td></tr>
+			<tr><td>_ticks</td>
+				<td>object</td>
+				<td>Tick mark options: <code>major</code>, <code>minor</code>,
+					<code>size</code>, and <code>position</code> attributes.</td></tr>
+			<tr><td>_title</td>
+				<td>string</td>
+				<td>The title of the axis.</td></tr>
+			<tr><td>_titleFormat</td>
+				<td>object</td>
+				<td>Formatting settings for the title.</td></tr>
+			<tr><td>_titleOffset</td>
+				<td>number</td>
+				<td>The offset for positioning the title.</td></tr>
+		</table>
+	</div>
+	<div id="graphlegend" class="feature">
+		<h2><a name="svglegend">SVG Graph Legend</a></h2>
+		<p>The legend object, SVGGraphLegend, contains details about the legend for the graph.
+			Access the legend via <code><a href="#" onclick="jumpTo('graph', 'legend');">svg.graph.legend</a></code>.</p>
+		<p class="quickref">
+			<a href="#glarea">area</a> |
+			<a href="#glend">end</a> |
+			<a href="#glsettings">settings</a> |
+			<a href="#glshow">show</a> |
+			<a href="#svggraphlegend">SVGGraphLegend</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="svggraphlegend"></a>SVGGraphLegend(graph, bgSettings, textSettings)</td>
+				<td>SVGGraphLegend</td>
+				<td>Create a new graph legend.
+					It is only used internally as part of the graph initialisation.<br><br>
+					<code>graph</code> (<a href="#" onclick="jumpTo('graph', 'svggraph');">SVGGraph</a>)
+					is the parent graph.<br><br>
+					<code>bgSettings</code> (object, optional) is additional formatting
+					settings for the legend background.<br><br>
+					<code>textSettings</code> (object, optional) is additional formatting
+					settings for the legend text.</td></tr>
+			<tr><td><a name="glarea"></a>area(left, top, right, bottom)</td>
+				<td>legend object <i>or</i> number[4]</td>
+				<td>Set or retrieve the legend area.
+					If the parameter value is less than or equal to 1 it is taken as the proportion
+					of the width/height. If more than 1 it is the number of pixels.<br><br>
+					<code>left</code> (number) is the left position or
+					(number[4]) all the positions in an array.<br><br>
+					<code>top</code> (number) is the top position (omitted if left is an array).<br><br>
+					<code>right</code> (number) is the right position (omitted if left is an array).<br><br>
+					<code>bottom</code> (number) is the bottom position (omitted if left is an array).<br><br>
+					<code class="js">svg.graph.legend.area(
+	[0.005, 0.1, 0.125, 0.5]);</code><br><br>
+					If no parameters are provided, the function returns the current area.<br><br>
+					<code class="js">var area = svg.graph.legend.area();
+alert(area[0] + ',' + area[1]);</code></td></tr>
+			<tr><td><a name="glend"></a>end()</td>
+				<td>graph object</td>
+				<td>Finish with this legend and return to the parent graph.<br><br>
+					<code class="js">svg.graph.legend.settings(...).end()...;</code><br><br>
+					<span class="version">Since 1.3.0</span>.</td></tr>
+			<tr><td><a name="glsettings"></a>settings(sampleSize, bgSettings, textSettings)</td>
+				<td>legend object <i>or</i> object</td>
+				<td>Set or retrieve additional settings for the legend area.<br><br>
+					<code>sampleSize</code> (number, optional) the size of the sample box to display.<br><br>
+					<code>bgSettings</code> (object) is additional formatting
+					settings (SVG attributes) for the legend background.<br><br>
+					<code>textSettings</code> (object, optional) is additional formatting
+					settings (SVG attributes) for the legend text.<br><br>
+					<code class="js">svg.graph.legend.settings(
+	{fill: 'lightgoldenrodyellow',
+	stroke: 'gray'});</code><br><br>
+					If no parameters are provided, the function returns the current settings
+					as an object with <code>sampleSize</code>, <code>bgSettings</code>,
+					and <code>textSettings</code> attributes.<br><br>
+					<code class="js">var settings =
+	svg.graph.legend.settings();
+alert(settings.sampleSize);</code></td></tr>
+			<tr><td><a name="glshow"></a>show(show)</td>
+				<td>legend object <i>or</i> boolean</td>
+				<td>Set or retrieve whether the legend should be shown.<br><br>
+					<code>show</code> (boolean) is true to display it, false to hide it.<br><br>
+					<code class="js">svg.graph.legend.show(true);</code><br><br>
+					If no parameters are provided, the function returns the current visibility.<br><br>
+					<code class="js">var visible = svg.graph.legend.show();</code></td></tr>
+		</table>
+		<p>Internally the follow fields are available for graph renderers.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Type</th><th>Comments</th></tr>
+			<tr><td>_area</td>
+				<td>number[4]</td>
+				<td>The legend area: left, top, right, bottom.</td></tr>
+			<tr><td>_bgSettings</td>
+				<td>object</td>
+				<td>Additional formatting settings for the legend background.</td></tr>
+			<tr><td>_sampleSize</td>
+				<td>number</td>
+				<td>The size of the same box to display. Default is 15.</td></tr>
+			<tr><td>_show</td>
+				<td>boolean</td>
+				<td>Show the legend?</td></tr>
+			<tr><td>_textSettings</td>
+				<td>object</td>
+				<td>Additional formatting settings for the legend text.</td></tr>
+		</table>
+	</div>
+</div>
+<p>Contact <a href="index.html">Keith Wood</a> at kbwood{at}iinet.com.au 
+	with comments or suggestions.</p>
+</body>
+</html>

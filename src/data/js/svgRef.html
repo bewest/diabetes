@@ -1,0 +1,1467 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+     "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>jQuery SVG Reference</title>
+<style type="text/css">
+@import "css/jquery.tabs.css";
+@import "css/jquery.bookmark.css";
+@import "css/demo.css";
+
+#tabs ul { width: 100%; }
+li { margin-right: 3em; }
+code { font-size: 115%; }
+table { width: 100%; }
+</style>
+<!--[if IE]><style type="text/css">
+code { font-size: 100%; }
+</style><![endif]-->
+<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
+<script type="text/javascript" src="js/jquery.debug.js"></script>
+<script type="text/javascript" src="js/jquery.tabs.js"></script>
+<script type="text/javascript" src="js/jquery.bookmark.js"></script>
+<script type="text/javascript" src="js/jquery.chili-2.0.js"></script>
+<script type="text/javascript" src="js/demo.js"></script>
+</head>
+<body>
+<h1>jQuery SVG Reference</h1>
+<p>A <a href="http://jquery.com">jQuery</a> <a href="http://jquery.com/plugins/project/svg">plugin</a>
+	that lets you interact with an <a href="http://www.w3.org/TR/SVG11/">SVG</a>
+	canvas. If you find this plugin useful please
+	<a href="http://jquery.com/plugins/project/svg">vote for it</a> on the jQuery site.</p>
+<p>This page provides a documentation reference for working
+	with the plugin <span class="version">v1.4.3</span>.
+	Also see the documentation for the <a href="svggraphRef.html">graphing extension</a>
+	and the <a href="svgplotRef.html">plotting extension</a>.
+	<a href="zip/jquery.svg.doc-1.4.3.zip">Download a copy</a> for your own reference -
+	just add jQuery JavaScript for full functionality.</p>
+<p>See a <a href="svg.html">demonstration</a> of the SVG plugin and download the code from there.
+	Or see a <a href="svgBasics.html">minimal page</a> that you could
+	use as a basis for your own investigations.</p>
+<p style="text-align: center;"><span id="bookmark"></span></p>
+<div id="tabs">
+	<ul>
+		<li><a href="#intro"><span>Introduction</span></a></li>
+		<li><a href="#manager"><span>SVG Manager</span></a></li>
+		<li><a href="#definitions"><span>SVG Defs</span></a></li>
+		<li><a href="#draw"><span>SVG Drawing</span></a></li>
+		<li><a href="#support"><span>Path/Text</span></a></li>
+		<li><a href="#anim"><span>Animation</span></a></li>
+		<li><a href="#filters"><span>Filters</span></a></li>
+	</ul>
+	<div id="intro" class="feature">
+		<h2>Introduction</h2>
+		<p>To use the jQuery SVG plugin include the CSS and the Javascript
+			in the <code>head</code> section of your page.</p>
+		<pre><code class="html">&lt;style type="text/css"&gt;@import "jquery.svg.css";&lt;/style&gt;
+&lt;script type="text/javascript" src="jquery.svg.js"&gt;&lt;/script&gt;</code></pre>
+		<p>Also include any extension packages you may want to use. For example:</p>
+		<pre><code class="html">&lt;script type="text/javascript" src="jquery.svganim.js"&gt;&lt;/script&gt;</code></pre>
+		<p>Attach an SVG canvas to a <code>&lt;div&gt;</code> with the following:</p>
+		<pre><code class="js">$(selector).svg();</code></pre>
+		<p>You can pass additional parameters to this call as <a href="#svgparams">described below</a>.</p>
+		<p>Then, once loaded, retrieve the SVG instance and start working with it:</p>
+		<pre><code class="js">var svg = $('#svgintro').svg('get');
+svg.circle(130, 75, 50, {fill: 'none', stroke: 'red', strokeWidth: 3});</code></pre>
+		<p>Some general notes on the JavaScript implementation:</p>
+		<ul>
+			<li>Additional settings that contain a dash (-) in SVG should be written
+				in camel-case without the dash. Settings that are reserved words
+				in JavaScript must be followed by an underscore. For example,
+				attributes <code>stroke-width</code> and <code>class</code> become:<br>
+				<code class="js">svg.line(10, 10, 90, 90,
+	{stroke: 'blue', strokeWidth: 2, class_: 'myline'});</code></li>
+			<li>For IE, a blank SVG document is initially loaded that registers itself
+				with the plugin and allows access to its internal structure.
+				This is the <code>blank.svg</code> document.
+				Because of this, you <b>must wait</b> for the document to be loaded
+				before accessing the SVG instance and using it.
+				Use the <code>onLoad</code> setting to be notified when loading is complete.</li>
+		</ul>
+		<p><a name="svgparams"></a>Additional parameters may be passed to the initial attachment call.</p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td>$().svg({loadURL: '', onLoad: fn, settings: {}, initPath: ''})</td>
+				<td>jQuery object</td>
+				<td>Attach an SVG canvas to the specified division or inline SVG element.<br><br>
+					<code>loadURL</code> (string, optional) is the URL of the initial document to load.<br>
+					<code>onLoad</code> (function, optional) is a callback functional invoked following loading.
+					It receives a reference to the <a href="#" onclick="jumpTo('definitions', 'svgwrapper');">SVG Wrapper object</a>
+					as a parameter. <code>this</code> refers to the containing division.<br>
+					<code>settings</code> (object, optional) is the new settings to use for this SVG instance.<br>
+					<code>initPath</code> (string, optional) is any additional path to the <code>blank.svg</code> file.<br><br>
+					<code class="js">$(selector).svg();</code><br>
+					<code class="js">$(selector).svg({loadURL: 'lion.svg'});</code><br><br>
+					<span class="version">Since 1.1.0</span> - previously you used
+					<code class="js">$(selector).svg(url, onLoad, settings);</code>.<br>
+					<span class="version">Since 1.2.0</span> - <code>initPath</code> setting and
+					<code>onLoad</code> receives parameter of SVG Wrapper object.<br>
+					<span class="version">Since 1.4.3</span> - allow target object
+					to be inline SVG.</td></tr>
+			<tr><td>$().svg(fn)</td>
+				<td>jQuery object</td>
+				<td>Attach an SVG canvas to the specified division.
+					This is shorthand for <code>$().svg({onLoad: fn})</code><br><br>
+					<code>fn</code> (function) is a callback functional invoked following loading.
+					It receives a reference to the <a href="#" onclick="jumpTo('definitions', 'svgwrapper');">SVG Wrapper object</a>
+					as a parameter. <code>this</code> refers to the containing division.<br><br>
+					<code class="js">$(selector).svg(drawInit);</code><br><br>
+					<span class="version">Since 1.4.0</span>.</td></tr>
+		</table>
+	</div>
+	<div id="manager" class="feature">
+		<h2><a name="svgmanager">SVG Manager</a></h2>
+		<p>The main jQuery SVG package (<code>jquery.svg.js</code>) provides the basic SVG functionality
+			including drawing primitives (rectangles, ellipses, lines, etc.), structural
+			elements (definitions, groups, etc.), and supporting objects (paths and text).</p>
+		<p>The SVG manager, available through the <code>$.svg</code> object,
+			provides the initial entry point for extended SVG functionality.</p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td>addExtension(name, extClass)</td>
+				<td>-</td>
+				<td>Add an extension to the SVG functionality.<br><br>
+					<code>name</code> (string) is the the name of
+					the extension's entry point within the SVG wrapper object<br>
+					<code>extClass</code> (function) is the function that creates a new object
+					that encapsulates the extension's abilities. The function must take a single
+					parameter, which is the reference to the SVG wrapper object so that it
+					may invoke functions therein.<br><br>
+					<code class="js">$.svg.addExtension('graph', SVGGraph);</code></td></tr>
+		</table>
+		<p>The SVG manager also provides two constants.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Value</th><th>Comments</th></tr>
+			<tr><td>svgNS</td>
+				<td>'http://www.w3.org/2000/svg'</td>
+				<td>The standard SVG namespace.</td></tr>
+			<tr><td>xlinkNS</td>
+				<td>'http://www.w3.org/1999/xlink'</td>
+				<td>The standard XLink namespace.</td></tr>
+		</table>
+		<p>And these fields for external use.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Value</th><th>Comments</th></tr>
+			<tr><td>regional</td>
+				<td>object[]</td>
+				<td>Localisation values, indexed by the language code,
+					with '' accessing the default (English settings).
+					Each object should have the following attributes:
+					<code>errorLoadingText</code> and <code>notSupportedText</code>.<br><br>
+					<code class="js">$.svg.regional['fr'] =
+	{errorLoadingText: '...', notSupportedText: '...'};</code></td></tr>
+			<tr><td>local</td>
+				<td>object</td>
+				<td>The current set of localisation values, taken from the array above.<br><br>
+					<code class="js">$.svg.local = $.svg.regional['fr'];</code></td></tr>
+		</table>
+		<p>Internal variables are for use by extension packages.</p>
+		<table border="0">
+			<tr><th>Name</th><th>Value</th><th>Comments</th></tr>
+			<tr><td>_wrapperClass</td>
+				<td><a href="#" onclick="jumpTo('definitions', 'svgwrapper');">SVGWrapper</a></td>
+				<td>The main SVG wrapper class (function). An extension could use
+					this to add features to the wrapper.<br><br>
+					<code class="js">$.extend($.svg._wrapperClass.prototype, {...});</code><br><br>
+					<span class="version">Since 1.2.0</span> - previously you used <code>_rootClass</code>.</td></tr>
+		</table>
+		<p>Other basic functionality is provided by the <code>svg</code> function within jQuery.</p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td>$(selector).svg()</td>
+				<td>jQuery object</td>
+				<td>Attach the SVG functionality as described on the previous tab.</td></tr>
+			<tr><td>$(selector).svg('get')</td>
+				<td><a href="#" onclick="jumpTo('definitions', 'svgwrapper');">SVG wrapper object</a></td>
+				<td>Retrieve the SVG wrapper for the given container.<br><br>
+					<code class="js">var svg = $('#svgexample').svg('get');</code><br><br>
+					<span class="version">Since 1.1.0</span> - previously you used <code class="js">var svg = $.svg.getSVGFor('#svgexample');</code>.</td></tr>
+			<tr><td>$(selector).svg('destroy')</td>
+				<td>jQuery object</td>
+				<td>Remove the SVG functionality from the given container.<br><br>
+					<code class="js">$('#svgexample').svg('destroy');</code><br><br>
+					<span class="version">Since 1.1.0</span>.</td></tr>
+		</table>
+	</div>
+	<div id="definitions" class="feature">
+		<h2><a name="svgwrapper">SVG Definitions</a></h2>
+		<p>The main jQuery SVG package (<code>jquery.svg.js</code>) provides the basic SVG functionality
+			including drawing primitives (rectangles, ellipses, lines, etc.), structural
+			elements (definitions, groups, etc.), and supporting objects (paths and text).</p>
+		<p>The SVG wrapper object encapsulates the actual SVG document and interacts with it.
+			Some functions return the wrapper object itself so that multiple calls may be 
+			strung together. Many others return a reference to the newly created SVG element.</p>
+		<p>Described below are the definition and structural functions of the SVG wrapper object.</p>
+		<p class="quickref">
+			<a href="#add">add</a> |
+			<a href="#change">change</a> |
+			<a href="#clear">clear</a> |
+			<a href="#configure">configure</a> |
+			<a href="#createpath">createPath</a> |
+			<a href="#createtext">createText</a> |
+			<a href="#defs">defs</a> |
+			<a href="#describe">describe</a> |
+			<a href="#getelementbyid">getElementById</a> |
+			<a href="#group">group</a> |
+			<a href="#lineargradient">linearGradient</a> |
+			<a href="#load">load</a> |
+			<a href="#marker">marker</a> |
+			<a href="#mask">mask</a> |
+			<a href="#pattern">pattern</a> |
+			<a href="#radialgradient">radialGradient</a> |
+			<a href="#remove">remove</a> |
+			<a href="#root">root</a> |
+			<a href="#script">script</a> |
+			<a href="#style">style</a> |
+			<a href="#svg">svg</a> |
+			<a href="#symbol">symbol</a> |
+			<a href="#title">title</a> |
+			<a href="#tosvg">toSVG</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="root">root()</a></td>
+				<td>root SVG element</td>
+				<td>Retrieve the root SVG element encapsulated by this wrapper.<br><br>
+					<code class="js">svg.root();</code><br><br>
+					<span class="version">Since 1.2.0</span>.</td></tr>
+			<tr><td><a name="configure">configure(settings, clear)</a></td>
+				<td>this wrapper</td>
+				<td>Configure the SVG wrapper element.<br><br>
+					<code>settings</code> (object) is additional settings for the wrapper.<br>
+					<code>clear</code> (boolean, optional) is true to remove existing
+					attributes first, or false (default) to add to what is already there.<br><br>
+					<code class="js">svg.configure({viewBox: '0 0 100 100'}, true);</code></td></tr>
+			<tr><td><a name="getelementbyid">getElementById(id)</a></td>
+				<td>element</td>
+				<td>Locate a specific element in the SVG document. Returns
+					<code>null</code> if the element cannot be found.<br><br>
+					<code>id</code> (string) is the element's identifier.<br><br>
+					<code class="js">var g = svg.getElementById('group1');</code></td></tr>
+			<tr><td><a name="change">change(element, settings)</a></td>
+				<td>this wrapper</td>
+				<td>Change the settings for a SVG element.<br><br>
+					<code>element</code> (SVG element) is the element to alter.<br>
+					<code>settings</code> (object) is the new settings for this element.<br><br>
+					<code class="js">svg.change(mycircle, {cx: 200, cy: 250});</code><br><br>
+					<span class="version">Since 1.3.1</span></td></tr>
+			<tr><td><a name="title">title(parent, text, settings)</a></td>
+				<td>title element</td>
+				<td>Add a title.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new title or <code>null</code> or omitted for the SVG root.<br>
+					<code>text</code> (string) is the text of the title.<br>
+					<code>settings</code> (object, optional) is additional settings for the title.<br><br>
+					<code class="js">svg.title('SVG Demo');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="describe">describe(parent, text, settings)</a></td>
+				<td>description element</td>
+				<td>Add a description.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new description or <code>null</code> or omitted for the SVG root.<br>
+					<code>text</code> (string) is the text of the description.<br>
+					<code>settings</code> (object, optional) is additional settings for the description.<br><br>
+					<code class="js">svg.describe('This demo ...');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="defs">defs(parent, id, settings)</a></td>
+				<td>defs element</td>
+				<td>Add a definitions node.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new definitions or <code>null</code> or omitted for the SVG root.<br>
+					<code>id</code> (string, optional) is the ID of this definitions element.<br>
+					<code>settings</code> (object, optional) is additional settings for the definitions.<br><br>
+					<code class="js">var defs = svg.defs('myDefs');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="symbol">symbol(parent, id, x1, y1, width, height, settings)</a></td>
+				<td>symbol element</td>
+				<td>Add a symbol definition.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new symbol or <code>null</code> or omitted for the SVG root.<br>
+					<code>id</code> (string) is the ID of this symbol.<br>
+					<code>x1</code> (number) is the left coordinate for this symbol.<br>
+					<code>y1</code> (number) is the top coordinate for this symbol.<br>
+					<code>width</code> (number) is the width of this symbol.<br>
+					<code>height</code> (number) is the height of this symbol.<br>
+					<code>settings</code> (object, optional) is additional settings for the symbol.<br><br>
+					<code class="js">svg.symbol(defs, 'mySym', 10, 20, 30, 40);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code>
+						may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - renamed <code>x2</code> and <code>y2</code>
+						to <code>width</code> and <code>height</code>,
+						<code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="marker">marker(parent, id, refX, refY, mWidth, mHeight, orient, settings)</a></td>
+				<td>marker element</td>
+				<td>Add a marker definition.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new marker or <code>null</code> or omitted for the SVG root.<br>
+					<code>id</code> (string) is the ID of this marker.<br>
+					<code>refX</code> (number) is the x-coordinate for the reference point.<br>
+					<code>refY</code> (number) is the y-coordinate for the reference point.<br>
+					<code>mWidth</code> (number) is the marker viewport width.<br>
+					<code>mHeight</code> (number) is the marker viewport height.<br>
+					<code>orient</code> (string or int, optional) is 'auto' (default) or angle (degrees).<br>
+					<code>settings</code> (object, optional) is additional settings for the marker.<br><br>
+					<code class="js">svg.marker(defs, 'myMarker', 0, 0, 20, 20);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="style">style(parent, styles, settings)</a></td>
+				<td>style element</td>
+				<td>Add a style node.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new style or <code>null</code> or omitted for the SVG root.<br>
+					<code>styles</code> (string) is the CSS styles.<br>
+					<code>settings</code> (object, optional) is additional settings for the node.<br><br>
+					<code class="js">svg.style('#MyUse { fill: blue } ...');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="script">script(parent, script, settings)</a></td>
+				<td>script element</td>
+				<td>Add a script node.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new script or <code>null</code> or omitted for the SVG root.<br>
+					<code>script</code> (string) is the JavaScript code.<br>
+					<code>settings</code> (object, optional) is additional settings for the node.<br><br>
+					<code class="js">svg.script('function circle_click(evt) { ... }');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="lineargradient">linearGradient(parent, id, stops, x1, y1, x2, y2, settings)</a></td>
+				<td>gradient element</td>
+				<td>Add a linear gradient definition.
+					Specify all of <code>x1</code>, <code>y1</code>, <code>x2</code>,
+					<code>y2</code> or none of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new gradient or <code>null</code> or omitted for the SVG root.<br>
+					<code>id</code> (string) is the ID for this gradient.<br>
+					<code>stops</code> (string[][3]) is the gradient stops, each entry has
+					[0] is offset (0.0-1.0 or 0%-100%), [1] is colour, [2] is opacity (optional).<br>
+					<code>x1</code> (number, optional) is the x-coordinate of the gradient start.<br>
+					<code>y1</code> (number, optional) is the y-coordinate of the gradient start.<br>
+					<code>x2</code> (number, optional) is the x-coordinate of the gradient end.<br>
+					<code>y2</code> (number, optional) is the y-coordinate of the gradient end.<br>
+					<code>settings</code> (object, optional) is additional settings for the gradient.<br><br>
+					<code class="js">svg.linearGradient(defs, 'myGrad',
+	[[0, 'white'], [1, 'red']], 0, 0, 800, 0,
+	{gradientUnits: 'userSpaceOnUse'});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="radialgradient">radialGradient(parent, id, stops, cx, cy, r, fx, fy, settings)</a></td>
+				<td>gradient element</td>
+				<td>Add a radial gradient definition.
+					Specify all of <code>cx</code>, <code>cy</code>, <code>r</code>,
+					<code>fx</code>, <code>fy</code> or none of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new gradient or <code>null</code> or omitted for the SVG root.<br>
+					<code>id</code> (string) is the ID for this gradient.<br>
+					<code>stops</code> (string[][3]) is the gradient stops, each entry has
+					[0] is offset, [1] is colour, [2] is opacity (optional).<br>
+					<code>cx</code> (number, optional) is the x-coordinate of the largest circle centre.<br>
+					<code>cy</code> (number, optional) is the y-coordinate of the largest circle centre.<br>
+					<code>r</code> (number, optional) is the radius of the largest circle.<br>
+					<code>fx</code> (number, optional) is the x-coordinate of the gradient focus.<br>
+					<code>fy</code> (number, optional) is the y-coordinate of the gradient focus.<br>
+					<code>settings</code> (object, optional) is additional settings for the gradient.<br><br>
+					<code class="js">svg.radialGradient(defs, 'myGrad',
+	[['0%', 'red'], ['50%', 'blue'], ['100%', 'red']],
+	200, 100, 150, 200, 100,
+	{gradientUnits: 'userSpaceOnUse'});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="pattern">pattern(parent, id, x, y, width, height, vx, vy, vwidth, vheight, settings)</a></td>
+				<td>pattern element</td>
+				<td>Add a pattern definition.
+					Specify all of <code>vx</code>, <code>vy</code>, <code>xwidth</code>,
+					<code>vheight</code> or none of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new pattern or <code>null</code> or omitted for the SVG root.<br>
+					<code>id</code> (string) is the ID for this pattern.<br>
+					<code>x</code> (number) is the x-coordinate for the left edge of the pattern.<br>
+					<code>y</code> (number) is the y-coordinate for the top edge of the pattern.<br>
+					<code>width</code> (number) is the width of the pattern.<br>
+					<code>height</code> (number) is the height of the pattern.<br>
+					<code>vx</code> (number, optional) is the minimum x-coordinate for view box.<br>
+					<code>vy</code> (number, optional) is the minimum y-coordinate for the view box.<br>
+					<code>vwidth</code> (number, optional) is the width of the view box.<br>
+					<code>vheight</code> (number, optional) is the height of the view box.<br>
+					<code>settings</code> (object, optional) is additional settings for the pattern.<br><br>
+					<code class="js">var ptn = svg.pattern(defs, 'myPat', 0, 0, 100, 100,
+	0, 0, 10, 10, {patternUnits: 'userSpaceOnUse'});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="mask">mask(parent, id, x, y, width, height, settings)</a></td>
+				<td>mask element</td>
+				<td>Add a mask definition.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new mask or <code>null</code> or omitted for the SVG root.<br>
+					<code>id</code> (string) is the ID for this mask.<br>
+					<code>x</code> (number) is the x-coordinate for the left edge of the mask.<br>
+					<code>y</code> (number) is the y-coordinate for the top edge of the mask.<br>
+					<code>width</code> (number) is the width of the mask.<br>
+					<code>height</code> (number) is the height of the mask.<br>
+					<code>settings</code> (object, optional) is additional settings for the mask.<br><br>
+					<code class="js">var mask = svg.mask(defs, 'myMask', 0, 0, 800, 300,
+	{maskUnits: 'userSpaceOnUse'});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="svg">svg(parent, x, y, width, height, vx, vy, vwidth, vheight, settings)</a></td>
+				<td>SVG element</td>
+				<td>Add an embedded SVG element.
+					Specify all of <code>vx</code>, <code>vy</code>, <code>vwidth</code>,
+					<code>vheight</code> or none of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new SVG container or <code>null</code> or omitted for the SVG root.<br>
+					<code>x</code> (number) is the x-coordinate for the left edge of the node.<br>
+					<code>y</code> (number) is the y-coordinate for the top edge of the node.<br>
+					<code>width</code> (number) is the width of the node.<br>
+					<code>height</code> (number) is the height of the node.<br>
+					<code>vx</code> (number, optional) is the minimum x-coordinate for view box.<br>
+					<code>vy</code> (number, optional) is the minimum y-coordinate for the view box.<br>
+					<code>vwidth</code> (number, optional) is the width of the view box.<br>
+					<code>vheight</code> (number, optional) is the height of the view box.<br>
+					<code>settings</code> (object, optional) is additional settings for the node.<br><br>
+					<code class="js">var svg2 = svg.svg(100, 100, 200, 200);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="group">group(parent, id, settings)</a></td>
+				<td>group element</td>
+				<td>Create a group. The returned element would then be
+					used as the parent for further SVG elements.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new group or <code>null</code> or omitted for the SVG root.<br>
+					<code>id</code> (string, optional) is the ID of this group.<br>
+					<code>settings</code> (object, optional) is additional settings for the group.<br><br>
+					<code class="js">var g2 = svg.group(g1);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="add">add(parent, node)</a></td>
+				<td>this wrapper</td>
+				<td>Add an existing SVG node to the diagram.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new node or <code>null</code> or omitted for the SVG root.<br>
+					<code>node</code> (element) is the new node to add or
+					(jQuery collection) set of nodes to add.<br><br>
+					<code class="js">svg.add($('#svg1/*'));</code><br><br>
+					<span class="version">Since 1.1.1</span> - now returns the SVG wrapper object.<br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="load">load(url, settings)</a></td>
+				<td>this wrapper</td>
+				<td>Load an external SVG document. Note that the browser may not allow
+					you to load documents from sites other than that of the original page.<br>
+					If no callback is provided and an error arises,
+					the error message is displayed within the SVG container.<br><br>
+					<code>url</code> (string) is the location of the SVG document
+						or the actual SVG document inline.<br>
+					<code>settings</code> (boolean) see <code>addTo</code> below or
+						(function) see <code>onLoad</code> below or
+						(object) additional settings for the load with attributes below:<br>
+						&nbsp;&nbsp;<code>addTo</code> (boolean, optional) true to add to what's
+						already there, or false (the default) to clear the canvas first<br>
+						&nbsp;&nbsp;<code>changeSize</code> (boolean, optional) true to allow the
+						canvas size to change, or false (the default) to retain the original size<br>
+						&nbsp;&nbsp;<code>onLoad</code> (function, optional) callback after the document has
+						loaded, this function receives the SVG wrapper object and an optional error message
+						as parameters, and within which <code>this</code> is the SVG container division.<br><br>
+					<code class="js">svg.load('images/rect01.svg',
+	{addTo: true, onLoad: loadDone});</code><br>
+					<code class="js">svg.load('&lt;svg ...&gt;...&lt;/svg&gt;', loadDone);</code><br><br>
+					<span class="version">Since 1.1.1</span> - previous versions
+					only accepted the URL and addTo parameters,
+					and it now returns the SVG wrapper object.<br><br>
+					<span class="version">Since 1.4.0</span> - <code>svg.load(url, fn)</code>
+					is shorthand for <code>svg.load(url, {onLoad: fn})</code>,
+					accepts inline document for <code>url</code>.</td></tr>
+			<tr><td><a name="remove">remove(node)</a></td>
+				<td>this wrapper</td>
+				<td>Delete a specified node.<br><br>
+					<code>node</code> (element or jQuery) is the drawing node to remove.
+						Only the first element in a jQuery collection is removed.<br><br>
+					<code class="js">svg.remove(circle);</code><br><br>
+					<span class="version">Since 1.1.1</span> - now returns the SVG wrapper object.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>node</code>
+						may be a jQuery object.</td></tr>
+			<tr><td><a name="clear">clear(attrsToo)</a></td>
+				<td>this wrapper</td>
+				<td>Delete everything in the current document.<br><br>
+					<code>attrsToo</code> (boolean, optional) true to clear any
+					wrapper attributes as well, false (default) to leave them.<br><br>
+					<code class="js">svg.clear(true);</code><br><br>
+					<span class="version">Since 1.1.1</span> - now returns the SVG wrapper object.</td></tr>
+			<tr><td><a name="tosvg">toSVG(node)</a></td>
+				<td>SVG text</td>
+				<td>Serialise the current diagram into an SVG text document.<br><br>
+					<code>node</code> (SVG element, optional) is the starting node,
+					which defaults to the root if omitted.<br><br>
+					<code class="js">alert(svg.toSVG());</code><br><br>
+					<span class="version">Since 1.3.1</span> - now accepts optional starting node.</td></tr>
+			<tr><td><a name="createpath">createPath()</a></td>
+				<td><a href="#" onclick="jumpTo('support', 'svgpath');">SVGPath</a></td>
+				<td>Create a new <a href="#" onclick="jumpTo('support', 'svgpath');">SVG path helper</a> for use with
+					<a href="#" onclick="jumpTo('draw', 'path');">path()</a>.<br><br>
+					<code class="js">var path = svg.createPath();</code></td></tr>
+			<tr><td><a name="createtext">createText()</a></td>
+				<td><a href="#" onclick="jumpTo('support', 'svgtext');">SVGText</a></td>
+				<td>Create a new <a href="#" onclick="jumpTo('support', 'svgtext');">SVG text helper</a> for use with
+					<a href="#" onclick="jumpTo('draw', 'text');">text()</a> or
+					<a href="#" onclick="jumpTo('draw', 'textpath');">textpath()</a>.<br><br>
+					<code class="js">var text = svg.createText();</code></td></tr>
+		</table>
+	</div>
+	<div id="draw" class="feature">
+		<h2>SVG Drawing</h2>
+		<p>The main jQuery SVG package (<code>jquery.svg.js</code>) provides the basic SVG functionality
+			including drawing primitives (rectangles, ellipses, lines, etc.), structural
+			elements (definitions, groups, etc.), and supporting objects (paths and text).</p>
+		<p>The SVG wrapper object encapsulates the actual SVG document and interacts with it.
+			Some functions return the wrapper object itself so that multiple calls may be 
+			strung together. Many others return a reference to the newly created SVG element.</p>
+		<p>Described below are the drawing functions of the SVG wrapper object.</p>
+		<p class="quickref">
+			<a href="#circle">circle</a> |
+			<a href="#ellipse">ellipse</a> |
+			<a href="#image">image</a> |
+			<a href="#line">line</a> |
+			<a href="#link">link</a> |
+			<a href="#other">other</a> |
+			<a href="#path">path</a> |
+			<a href="#polygon">polygon</a> |
+			<a href="#polyline">polyline</a> |
+			<a href="#rect">rect</a> |
+			<a href="#text">text</a> |
+			<a href="#textpath">textpath</a> |
+			<a href="#use">use</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="use">use(parent, x, y, width, height, ref, settings)</a></td>
+				<td>use element</td>
+				<td>Add a usage reference.
+					Specify all of <code>x</code>, <code>y</code>, <code>width</code>,
+					<code>height</code> or none of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new node or <code>null</code> or omitted for the SVG root.<br>
+					<code>x</code> (number, optional) is the x-coordinate for the left edge of the node.<br>
+					<code>y</code> (number, optional) is the y-coordinate for the top edge of the node.<br>
+					<code>width</code> (number, optional) is the width of the node.<br>
+					<code>height</code> (number, optional) is the height of the node.<br>
+					<code>ref</code> (string) is the ID of the definition node.<br>
+					<code>settings</code> (object, optional) is additional settings for the node.<br><br>
+					<code class="js">svg.use('#Text', {fill: 'blue', mask: 'url(#Mask)'});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="link">link(parent, ref, settings)</a></td>
+				<td>link element</td>
+				<td>Add a link, which applies to all child elements.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new link or <code>null</code> or omitted for the SVG root.<br>
+					<code>ref</code> (string) is the target URL.<br>
+					<code>settings</code> (object, optional) is additional settings for the link.<br><br>
+					<code class="js">var link = svg.link('http://www.w3.org/TR/SVG11/');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="image">image(parent, x, y, width, height, ref, settings)</a></td>
+				<td>image element</td>
+				<td>Add an image.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new image or <code>null</code> or omitted for the SVG root.<br>
+					<code>x</code> (number) is the x-coordinate for the left edge of the image.<br>
+					<code>y</code> (number) is the y-coordinate for the top edge of the image.<br>
+					<code>width</code> (number) is the width of the image.<br>
+					<code>height</code> (number) is the height of the image.<br>
+					<code>ref</code> (string) the path to the image.<br>
+					<code>settings</code> (object, optional) is additional settings for the image.<br><br>
+					<code class="js">svg.image(100, 100, 50, 200, 'tree.jpg');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="path">path(parent, path, settings)</a></td>
+				<td>path element</td>
+				<td>Draw a path.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new shape or <code>null</code> or omitted for the SVG root.<br><br>
+					<code>path</code> (string or <a href="#" onclick="jumpTo('support', 'svgpath');">SVGPath</a>) is the path to draw.<br><br>
+					<code>settings</code> (object, optional) is additional settings for the shape.<br><br>
+					<code class="js">svg.path(g2, path.move(50, 90).
+	curveC(0, 90, 0, 30, 50, 30).line(150, 30).
+	curveC(200, 30, 200, 90, 150, 90).close(), 
+	{fill: 'none', stroke: '#D90000', strokeWidth: 10});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="rect">rect(parent, x, y, width, height, rx, ry, settings)</a></td>
+				<td>rect element</td>
+				<td>Draw a rectangle.
+					Specify both of <code>rx</code> and <code>ry</code> or neither of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new shape or <code>null</code> or omitted for the SVG root.<br>
+					<code>x</code> (number) is the x-coordinate for the left edge of the rectangle.<br>
+					<code>y</code> (number) is the y-coordinate for the top edge of the rectangle.<br>
+					<code>width</code> (number) is the width of the rectangle.<br>
+					<code>height</code> (number) is the height of the rectangle.<br>
+					<code>rx</code> (number, optional) is the x-radius of the ellipse for the rounded corners.<br>
+					<code>ry</code> (number, optional) is the y-radius of the ellipse for the rounded corners.<br>
+					<code>settings</code> (object, optional) is additional settings for the shape.<br><br>
+					<code class="js">svg.rect(20, 50, 100, 50, 10, 10,
+	{fill: 'yellow', stroke: 'navy', strokeWidth: 5});</code><br><br>
+					<span class="version">Since 1.1.0</span> - previously you used <code class="js">svg.roundrect(...);</code>
+					if you wanted rounded corners.<br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="circle">circle(parent, cx, cy, r, settings)</a></td>
+				<td>circle element</td>
+				<td>Draw a circle.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new shape or <code>null</code> or omitted for the SVG root.<br>
+					<code>cx</code> (number) is the x-coordinate for the centre of the circle.<br>
+					<code>cy</code> (number) is the y-coordinate for the centre of the circle.<br>
+					<code>r</code> (number) is the radius of the circle.<br>
+					<code>settings</code> (object, optional) is additional settings for the shape.<br><br>
+					<code class="js">svg.circle(70, 220, 50, {fill: 'red',
+	stroke: 'blue', strokeWidth: 5});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="ellipse">ellipse(parent, cx, cy, rx, ry, settings)</a></td>
+				<td>ellipse element</td>
+				<td>Draw an ellipse.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new shape or <code>null</code> or omitted for the SVG root.<br>
+					<code>cx</code> (number) is the x-coordinate for the centre of the ellipse.<br>
+					<code>cy</code> (number) is the y-coordinate for the centre of the ellipse.<br>
+					<code>rx</code> (number) is the x-radius of the ellipse.<br>
+					<code>ry</code> (number) is the y-radius of the ellipse.<br>
+					<code>settings</code> (object, optional) is additional settings for the shape.<br><br>
+					<code class="js">svg.ellipse(g, 100, 100, 75, 50, {fill: 'yellow'});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="line">line(parent, x1, y1, x2, y2, settings)</a></td>
+				<td>line element</td>
+				<td>Draw a line.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new shape or <code>null</code> or omitted for the SVG root.<br>
+					<code>x1</code> (number) is the x-coordinate for the start of the line.<br>
+					<code>y1</code> (number) is the y-coordinate for the start of the line.<br>
+					<code>x2</code> (number) is the x-coordinate for the end of the line.<br>
+					<code>y2</code> (number) is the y-coordinate for the end of the line.<br>
+					<code>settings</code> (object, optional) is additional settings for the shape.<br><br>
+					<code class="js">svg.line(g, 450, 120, 550, 20, {strokeWidth: 5});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="polyline">polyline(parent, points, settings)</a></td>
+				<td>polyline element</td>
+				<td>Draw a polygonal line.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new shape or <code>null</code> or omitted for the SVG root.<br>
+					<code>points</code> (number[][2]) is the x-/y-coordinates for the points on the line.<br>
+					<code>settings</code> (object, optional) is additional settings for the shape.<br><br>
+					<code class="js">svg.polyline([[450,250],
+	[475,250],[475,220],[500,220],[500,250],...],
+	{fill: 'none', stroke: 'blue', strokeWidth: 5});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="polygon">polygon(parent, points, settings)</a></td>
+				<td>polygon element</td>
+				<td>Draw a polygonal shape.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new shape or <code>null</code> or omitted for the SVG root.<br>
+					<code>points</code> (number[][2]) is the x-/y-coordinates for the points on the shape.<br>
+					<code>settings</code> (object, optional) is additional settings for the shape.<br><br>
+					<code class="js">svg.polygon([[800,150],[900,180],
+	[900,240],[800,270],[700,240],[700,180]], 
+	{fill: 'lime', stroke: 'blue', strokeWidth: 10});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="text">text(parent, x, y, value, settings)</a></td>
+				<td>text element</td>
+				<td>Draw text.
+					Specify both of <code>x</code> and <code>y</code> or neither of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the text or <code>null</code> or omitted for the SVG root.<br>
+					<code>x</code> (number or number[], optional) is the x-coordinate(s) for the text.<br>
+					<code>y</code> (number or number[], optional) is the y-coordinate(s) for the text.<br>
+					<code>value</code> (string) is the text content or
+					(<a href="#" onclick="jumpTo('support', 'svgtext');">SVGText</a>) text object with spans and references.<br>
+					<code>settings</code> (object, optional) is additional settings for the text.<br><br>
+					<code class="js">svg.text(g3, 52, 76, 'SVG');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="textpath">textpath(parent, path, value, settings)</a></td>
+				<td>text element</td>
+				<td>Draw text along a path.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the text or <code>null</code> or omitted for the SVG root.<br>
+					<code>path</code> (string) is the ID of the path.<br>
+					<code>value</code> (string) is the text content or
+					(<a href="#" onclick="jumpTo('support', 'svgtext');">SVGText</a>) text object with spans and references.<br>
+					<code>settings</code> (object, optional) is additional settings for the text.<br><br>
+					<code class="js">svg.textpath(text, '#MyPath', texts.string('We go ').
+	span('up', {dy: -30, fill: 'red'}).span(',', {dy: 30}).
+	string(' then we go down, then up again'));</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="other">other(parent, name, settings)</a></td>
+				<td>element</td>
+				<td>Add a custom SVG element.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new element or <code>null</code> or omitted for the SVG root.<br>
+					<code>name</code> (string) is the name of the element.<br>
+					<code>settings</code> (object, optional) is additional settings for the element.<br><br>
+					<code class="js">svg.other('switch');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+		</table>
+		<p>Additional internal functions are intended for use by extensions.</p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td>_makeNode(parent, name, settings)</td>
+				<td>element</td>
+				<td>Create a new element and add it to the SVG document.<br><br>
+					<code>parent</code> (element) is the parent node for the new element
+					or <code>null</code> for the SVG root.<br>
+					<code>name</code> (string) is the name of the element.<br>
+					<code>settings</code> (object, optional) is additional settings for the element.<br><br>
+					<code class="js">return this._makeNode(parent, 'filter', $.extend(
+	{id: id, x: x, y: y, width: width, height: height},
+	settings || {}));</code></td></tr>
+			<tr><td>_height()</td>
+				<td>number</td>
+				<td>Retrieve the current height of the SVG container.<br><br>
+					<code class="js">var height = this._wrapper._height();</code></td></tr>
+			<tr><td>_width()</td>
+				<td>number</td>
+				<td>Retrieve the current width of the SVG container.<br><br>
+					<code class="js">var width = this._wrapper._width();</code></td></tr>
+		</table>
+		<p>As are these fields:</p>
+		<table border="0">
+			<tr><th>Name</th><th>Value</th><th>Comments</th></tr>
+			<tr><td>_container</td>
+				<td>HTML element</td>
+				<td>The HTML element that contains the SVG canvas, typically a <code>div</code>.<br><br>
+					<code class="js">this._container.clientWidth;</code></td></tr>
+			<tr><td>_svg</td>
+				<td>SVG element</td>
+				<td>The SVG document element for this wrapper.<br><br>
+					<code class="js">this._svg.ownerDocument.createElementNS(...);</code></td></tr>
+		</table>
+	</div>
+	<div id="support" class="feature">
+		<h2>Path/Text Classes</h2>
+		<p>The main jQuery SVG package (<code>jquery.svg.js</code>) also includes supporting
+			objects such as paths and text definitions.</p>
+		<p class="quickref">
+			<a href="#svgpath">Path</a> |
+			<a href="#svgtext">Text</a>
+		</p>
+		<h3><a name="svgpath">SVG Path</a></h3>
+		<p>The SVG path object, available through the SVG wrapper object by calling
+			<code><a href="#" onclick="jumpTo('definitions', 'createpath');">createPath()</a></code>,
+			allows for the construction of an SVG path.
+			Build the path through this object and then pass it to
+			<code><a href="#" onclick="jumpTo('draw', 'path');">svg.path()</a></code>
+			to render it. Most functions return the path object so that 
+			further calls may be chained together.</p>
+		<pre><code class="js">var path = svg.createPath();
+svg.path(g2, path.move(50, 90).curveC(0, 90, 0, 30, 50, 30).
+	line(150, 30).curveC(200, 30, 200, 90, 150, 90).close(), 
+	{fill: 'none', stroke: '#D90000', strokeWidth: 10});</code></pre>
+		<p class="quickref">
+			<a href="#arc">arc</a> |
+			<a href="#close">close</a> |
+			<a href="#curvec">curveC</a> |
+			<a href="#curveq">curveQ</a> |
+			<a href="#horiz">horiz</a> |
+			<a href="#linep">line</a> |
+			<a href="#move">move</a> |
+			<a href="#pathpath">path</a> |
+			<a href="#resetpath">reset</a> |
+			<a href="#smoothc">smoothC</a> |
+			<a href="#smoothq">smoothQ</a> |
+			<a href="#vert">vert</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="resetpath">reset()</a></td>
+				<td>path</td>
+				<td>Prepare to create a new path.<br><br>
+					<code class="js">path.reset();</code></td></tr>
+			<tr><td><a name="move">move(x, y, relative)</a></td>
+				<td>path object</td>
+				<td>Move the pointer to a position.<br><br>
+					<code>x</code> (number) is x-coordinate to move to or
+					(number[][2]) x-/y-coordinates to move to.<br>
+					<code>y</code> (number) is y-coordinate to move to (omitted if x is array).<br>
+					<code>relative</code> (boolean, optional) true for coordinates relative
+					to the current point, false (default) for coordinates being absolute.<br><br>
+					<code class="js">path.move(50, 100);<br>
+path.move([[50, 100], [70, 120], [90, 100]]);</code><br><br>
+					<span class="version">Since 1.4.1</span> - previously <code>moveTo</code>.</td></tr>
+			<tr><td><a name="linep">line(x, y, relative)</a></td>
+				<td>path object</td>
+				<td>Draw a line to a position.<br><br>
+					<code>x</code> (number) is x-coordinate to move to or
+					(number[][2]) x-/y-coordinates to move to.<br>
+					<code>y</code> (number) is y-coordinate to move to (omitted if x is array).<br>
+					<code>relative</code> (boolean, optional) is true for coordinates relative
+					to the current point, false (default) for coordinates being absolute.<br><br>
+					<code class="js">path.line(50, 100);<br>
+path.line([[50, 100], [70, 120], [90, 100]]);</code><br><br>
+					<span class="version">Since 1.4.1</span> - previously <code>lineTo</code>.</td></tr>
+			<tr><td><a name="horiz">horiz(x, relative)</a></td>
+				<td>path object</td>
+				<td>Draw a horizontal line to a position.<br><br>
+					<code>x</code> (number) is x-coordinate to draw to or
+					(number[]) x-coordinates to draw to.<br>
+					<code>relative</code> (boolean, optional) is true for coordinates relative
+					to the current point, false (default) for coordinates being absolute.<br><br>
+					<code class="js">path.horiz(100, true);</code><br><br>
+					<span class="version">Since 1.4.1</span> - previously <code>horizTo</code>.</td></tr>
+			<tr><td><a name="vert">vert(y, relative)</a></td>
+				<td>path object</td>
+				<td>Draw a vertical line to a position.<br><br>
+					<code>y</code> (number) is y-coordinate to draw to or
+					(number[]) y-coordinates to draw to.<br>
+					<code>relative</code> (boolean, optional) is true for coordinates relative
+					to the current point, false (default) for coordinates being absolute.<br><br>
+					<code class="js">path.vert(-50, true);</code><br><br>
+					<span class="version">Since 1.4.1</span> - previously <code>vertTo</code>.</td></tr>
+			<tr><td><a name="curvec">curveC(x1, y1, x2, y2, x, y, relative)</a></td>
+				<td>path object</td>
+				<td>Draw a cubic B&eacute;zier curve.<br><br>
+					<code>x1</code> (number) is x-coordinate of beginning control point or
+					(number[][6]) x-/y-coordinates of control and end points to draw to.<br>
+					<code>y1</code> (number) is y-coordinate of beginning control point (omitted if x1 is array).<br>
+					<code>x2</code> (number) is x-coordinate of ending control point (omitted if x1 is array).<br>
+					<code>y2</code> (number) is y-coordinate of ending control point (omitted if x1 is array).<br>
+					<code>x</code> (number) is x-coordinate of curve end (omitted if x1 is array).<br>
+					<code>y</code> (number) is y-coordinate of curve end (omitted if x1 is array).<br>
+					<code>relative</code> (boolean, optional) true for coordinates relative
+					to the current point, false (default) for coordinates being absolute.<br><br>
+					<code class="js">path.curveC(200, 100, 300, 0, 400, 100);<br>
+path.curveC([[200, 100, 300, 0, 400, 100],
+	[500, 200, 600, 300, 700, 200],
+	[800, 100, 900, 100, 900, 100]]);</code><br><br>
+					<span class="version">Since 1.4.1</span> - previously <code>curveCTo</code>.</td></tr>
+			<tr><td><a name="smoothc">smoothC(x2, y2, x, y, relative)</a></td>
+				<td>path object</td>
+				<td>Continue a cubic B&eacute;zier curve.
+					Starting control point is the reflection of the previous end control point.<br><br>
+					<code>x2</code> (number) is x-coordinate of ending control point or
+					(number[][4]) x-/y-coordinates of control and end points to draw to.<br>
+					<code>y2</code> (number) is y-coordinate of ending control point (omitted if x2 is array).<br>
+					<code>x</code> (number) is x-coordinate of curve end (omitted if x2 is array).<br>
+					<code>y</code> (number) is y-coordinate of curve end (omitted if x2 is array).<br>
+					<code>relative</code> (boolean, optional) true for coordinates relative
+					to the current point, false (default) for coordinates being absolute.<br><br>
+					<code class="js">path.smoothC(300, 0, 400, 100);</code><br><br>
+					<span class="version">Since 1.4.1</span> - previously <code>smoothCTo</code>.</td></tr>
+			<tr><td><a name="curveq">curveQ(x1, y1, x, y, relative)</a></td>
+				<td>path object</td>
+				<td>Draw a quadratic B&eacute;zier curve.<br><br>
+					<code>x1</code> (number) is x-coordinate of control point or
+					(number[][4]) x-/y-coordinates of control and end points to draw to.<br>
+					<code>y1</code> (number) is y-coordinate of control point (omitted if x1 is array).<br>
+					<code>x</code> (number) is x-coordinate of curve end (omitted if x1 is array).<br>
+					<code>y</code> (number) is y-coordinate of curve end (omitted if x1 is array).<br>
+					<code>relative</code> (boolean, optional) is true for coordinates relative
+					to the current point, false (default) for coordinates being absolute.<br><br>
+					<code class="js">path.curveQ(400, 50, 600, 300);</code><br><br>
+					<span class="version">Since 1.4.1</span> - previously <code>curveQTo</code>.</td></tr>
+			<tr><td><a name="smoothq">smoothQ(x, y, relative)</a></td>
+				<td>path object</td>
+				<td>Continue a quadratic B&eacute;zier curve.
+					Control point is the reflection of the previous control point.<br><br>
+					<code>x</code> (number) is x-coordinate of curve end or
+					(number[][2]) x-/y-coordinates of points to draw to.<br>
+					<code>y</code> (number) is y-coordinate of curve end (omitted if x is array).<br>
+					<code>relative</code> (boolean, optional) is true for coordinates relative
+					to the current point, false (default) for coordinates being absolute.<br><br>
+					<code class="js">path.smoothQ(1000, 300);</code><br><br>
+					<span class="version">Since 1.4.1</span> - previously <code>smoothQTo</code>.</td></tr>
+			<tr><td><a name="arc">arc(rx, ry, xRotate, large, clockwise, x, y, relative)</a></td>
+				<td>path object</td>
+				<td>Draw an arc to a position.<br><br>
+					<code>rx</code> (number) is x-radius of arc or
+					(number/boolean[][7]) x-/y-coordinates and flags for points to draw to.<br>
+					<code>ry</code> (number) is y-radius of arc (omitted if rx is array).<br>
+					<code>xRotate</code> (number) is x-axis rotation (degrees, clockwise) (omitted if rx is array).<br>
+					<code>large</code> (boolean) is true (or 1) to draw the large part of the arc,
+					false (or 0) to draw the small part (omitted if rx is array).<br>
+					<code>clockwise</code> (boolean) is true (or 1) to draw the clockwise arc,
+					false (or 0) to draw the anti-clockwise arc (omitted if rx is array).<br>
+					<code>x</code> (number) is x-coordinate of arc end (omitted if rx is array).<br>
+					<code>y</code> (number) is y-coordinate of arc end (omitted if rx is array).<br>
+					<code>relative</code> (boolean, optional) true for coordinates relative
+					to the current point, false (default) for coordinates being absolute.<br><br>
+					<code class="js">path.arc(25, 25, -30, false, true, 50, -25);<br>
+path.arc([[25, 25, -30, 0, 1, 50, -25],
+	[25, 50, -30, 0, 1, 50, -25],
+	[25, 75, -30, 0, 1, 50, -25]]);</code><br><br>
+					<span class="version">Since 1.4.1</span> - previously <code>arcTo</code>.</td></tr>
+			<tr><td><a name="close">close()</a></td>
+				<td>path object</td>
+				<td>Close the current path.<br><br>
+					<code class="js">path.close();</code></td></tr>
+			<tr><td><a name="pathpath">path()</a></td>
+				<td>string</td>
+				<td>Return the SVG string encoding of the specified path.<br><br>
+					<code class="js">$.log(path.path());</code></td></tr>
+		</table>
+		<h3><a name="svgtext">SVG Text</a></h3>
+		<p>The SVG text object, available through the SVG wrapper object by calling
+			<code><a href="#" onclick="jumpTo('definitions', 'createtext');">createText()</a></code>,
+			allows for the construction of an SVG text hierarchy.
+			Build the text up through this object and then pass it to
+			<code><a href="#" onclick="jumpTo('draw', 'text');">svg.text()</a></code>
+			or <code><a href="#" onclick="jumpTo('draw', 'textpath');">svg.textpath()</a></code>
+			to render it. Most functions return the text object 
+			so that  further calls may be chained together.</p>
+		<pre><code class="js">var texts = svg.createText();
+svg.textpath(text, '#MyPath', texts.string('We go ').
+	span('up', {dy: -30, fill: 'red'}).
+	span(',', {dy: 30}).string(' then we go down, then up again'));</code></pre>
+		<p class="quickref" style="display: none;">
+			<a href="#pathtext">path</a> |
+			<a href="#ref">ref</a> |
+			<a href="#resettext">reset</a> |
+			<a href="#span">span</a> |
+			<a href="#string">string</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="resettext">reset()</a></td>
+				<td>text object</td>
+				<td>Prepare to create a new text object.<br><br>
+					<code class="js">texts.reset();</code></td></tr>
+			<tr><td><a name="string">string(value)</a></td>
+				<td>text object</td>
+				<td>Add a straight string value.<br><br>
+					<code>value</code> (string) is the actual text.<br><br>
+					<code class="js">texts.string('We go ');</code></td></tr>
+			<tr><td><a name="span">span(value, settings)</a></td>
+				<td>text object</td>
+				<td>Add a separate text span that has its own settings.<br><br>
+					<code>value</code> (string) is the actual text.<br>
+					<code>settings</code> (object) is the settings for this text.<br><br>
+					<code class="js">texts.span('up', {dy: -30, fill: 'red'});</code></td></tr>
+			<tr><td><a name="ref">ref(id, settings)</a></td>
+				<td>text object</td>
+				<td>Add a reference to a previously defined text string.<br><br>
+					<code>id</code> (string) is the ID of the actual text.<br>
+					<code>settings</code> (object) is the settings for this text.<br><br>
+					<code class="js">texts.ref('#MyText');</code></td></tr>
+			<tr><td><a name="pathtext">path(id, value, settings)</a></td>
+				<td>text object</td>
+				<td>Add text drawn along a path.<br><br>
+					<code>id</code> (string) is the ID of the path.<br>
+					<code>value</code> (string) is the actual text.<br>
+					<code>settings</code> (object) is the settings for this text.<br><br>
+					<code class="js">texts.path('#MyPath', 'Skipping along');</code></td></tr>
+		</table>
+	</div>
+	<div id="anim" class="feature">
+		<h2><a name="svganim">SVG Attribute Animation</a></h2>
+		<p>The jQuery SVG animation extension (<code>jquery.svganim.js</code>) allows the standard
+			jQuery <code><a href="http://docs.jquery.com/Effects/animate">animate</a></code>
+			function to be applied to several of the SVG attributes.<br>
+			<span class="version">Since 1.1.0.</span></p>
+		<p>All attributes must be prefixed by 'svg' when passing them
+			to <code>animate</code> and be written in camel-case.
+			Many of the values may be expressed as exact pixels or as percentages.
+			You can also use the '+=' or '-=' prefixes for relative values.</p>
+		<pre><code class="js">var myrect = svg.rect(25, 25, 150, '25%', 10, 10,
+	{fill: 'none', stroke: 'blue', strokeWidth: 3,
+	transform: 'rotate(0, 100, 75)'});
+$(myrect).animate({svgWidth: 200, svgHeight: '50%',
+	svgStrokeWidth: '+=7', svgStroke: 'aqua'}, 2000);</code></pre>
+		<p>The following attributes may be animated in this manner:</p>
+		<table border="0">
+			<tr><th>Attribute</th><th>Elements</th><th>Type</th><th>Comments</th></tr>
+			<tr><td>x</td>
+				<td>svg, rect, text</td>
+				<td>numeric&nbsp;</td>
+				<td>Change the shape's left edge.<br><br>
+					<code class="js">$(shape).animate({svgX: 200}, 2000);</code></td></tr>
+			<tr><td>y</td>
+				<td>svg, rect, text</td>
+				<td>numeric</td>
+				<td>Change the shape's top edge.<br><br>
+					<code class="js">$(shape).animate({svgY: '50%'}, 2000);</code></td></tr>
+			<tr><td>width</td>
+				<td>svg, rect</td>
+				<td>numeric</td>
+				<td>Change the shape's width.<br><br>
+					<code class="js">$(shape).animate({svgWidth: 300}, 2000);</code></td></tr>
+			<tr><td>height</td>
+				<td>svg, rect</td>
+				<td>numeric</td>
+				<td>Change the shape's height.<br><br>
+					<code class="js">$(shape).animate({svgHeight: '25%'}, 2000);</code></td></tr>
+			<tr><td>cx</td>
+				<td>circle, ellipse</td>
+				<td>numeric</td>
+				<td>Change the shape's centre x-coordinate.<br><br>
+					<code class="js">$(shape).animate({svgCx: 200}, 2000);</code></td></tr>
+			<tr><td>cy</td>
+				<td>circle, ellipse</td>
+				<td>numeric</td>
+				<td>Change the shape's centre y-coordinate.<br><br>
+					<code class="js">$(shape).animate({svgCy: 100}, 2000);</code></td></tr>
+			<tr><td>r</td>
+				<td>circle</td>
+				<td>numeric</td>
+				<td>Change the shape's radius.<br><br>
+					<code class="js">$(shape).animate({svgR: 30}, 2000);</code></td></tr>
+			<tr><td>rx</td>
+				<td>rect, ellipse</td>
+				<td>numeric</td>
+				<td>Change the shape's horizontal radius (for rounded corners on rect).<br><br>
+					<code class="js">$(shape).animate({svgRx: 20}, 2000);</code></td></tr>
+			<tr><td>ry</td>
+				<td>rect, ellipse</td>
+				<td>numeric</td>
+				<td>Change the shape's vertical radius (for rounded corners on rect).<br><br>
+					<code class="js">$(shape).animate({svgRy: 30}, 2000);</code></td></tr>
+			<tr><td>x1</td>
+				<td>line</td>
+				<td>numeric</td>
+				<td>Change the shape's starting x-coordinate.<br><br>
+					<code class="js">$(shape).animate({svgX1: 200}, 2000);</code></td></tr>
+			<tr><td>y1</td>
+				<td>line</td>
+				<td>numeric</td>
+				<td>Change the shape's starting y-coordinate.<br><br>
+					<code class="js">$(shape).animate({svgY1: 100}, 2000);</code></td></tr>
+			<tr><td>x2</td>
+				<td>line</td>
+				<td>numeric</td>
+				<td>Change the shape's ending x-coordinate.<br><br>
+					<code class="js">$(shape).animate({svgX2: 200}, 2000);</code></td></tr>
+			<tr><td>y2</td>
+				<td>line</td>
+				<td>numeric</td>
+				<td>Change the shape's ending y-coordinate.<br><br>
+					<code class="js">$(shape).animate({svgY2: 300}, 2000);</code></td></tr>
+			<tr><td>font-size</td>
+				<td>group, text</td>
+				<td>numeric</td>
+				<td>Change the shape's text size.<br><br>
+					<code class="js">$(shape).animate({svgFontSize: 30}, 2000);</code></td></tr>
+			<tr><td>opacity</td>
+				<td>group, rect, circle, ellipse, line, polyline, polygon, path, text</td>
+				<td>numeric</td>
+				<td>Change the shape's overall opacity. Values range between 0.0 and 1.0.<br><br>
+					<code class="js">$(shape).animate({svgOpacity: 0.5}, 2000);</code></td></tr>
+			<tr><td>fill</td>
+				<td>group, rect, circle, ellipse, polygon, path, text</td>
+				<td>colour</td>
+				<td>Change the shape's internal colour. Colour values may be expressed as
+					'rgb(n,n,n)' (0-255 or 0-100%), as '#rrggbb' or '#rgb' (hexadecimal), or as a
+					<a href="http://www.w3.org/TR/SVG11/types.html#ColorKeywords">named SVG colour</a>.<br><br>
+					<code class="js">$(shape).animate({svgFill: 'lightblue'}, 2000);</code></td></tr>
+			<tr><td>fill-opacity</td>
+				<td>group, rect, circle, ellipse, polygon, path, text</td>
+				<td>numeric</td>
+				<td>Change the shape's internal colour opacity. Values range between 0.0 and 1.0.<br><br>
+					<code class="js">$(shape).animate({svgFillOpacity: 0.5}, 2000);</code></td></tr>
+			<tr><td>stroke</td>
+				<td>group, rect, circle, ellipse, line, polyline, polygon, path, text</td>
+				<td>colour</td>
+				<td>Change the shape's border colour. See <code>fill</code>
+					above for acceptable colour values.<br><br>
+					<code class="js">$(shape).animate({svgStroke:
+	'rgb(0,255,255)'}, 2000);</code></td></tr>
+			<tr><td>stroke-width</td>
+				<td>group, rect, circle, ellipse, line, polyline, polygon, path, text</td>
+				<td>numeric</td>
+				<td>Change the shape's border width.<br><br>
+					<code class="js">$(shape).animate({svgStrokeWidth: 10}, 2000);</code></td></tr>
+			<tr><td>stroke-opacity</td>
+				<td>group, rect, circle, ellipse, line, polyline, polygon, path, text</td>
+				<td>numeric</td>
+				<td>Change the shape's border colour opacity. Values range between 0.0 and 1.0.<br><br>
+					<code class="js">$(shape).animate({svgStrokeOpacity: 0.5}, 2000);</code></td></tr>
+			<tr><td>transform</td>
+				<td>group, rect, circle, ellipse, line, polyline, polygon, path, text</td>
+				<td>text</td>
+				<td>Change the shape's transformation. For more details see the
+					<a href="http://www.w3.org/TR/SVG11/coords.html">SVG transformation</a> page.<br><br>
+					<code class="js">$(shape).animate({svgTransform:
+	'rotate(45,200,100)'}, 2000);</code><br><br>
+					<span class="version">Since 1.3.2</span> - added matrix support.</td></tr>
+			<tr><td>viewBox</td>
+				<td>svg, symbol, marker, pattern</td>
+				<td>text</td>
+				<td>Change the shape's viewport. For more details see the
+					<a href="http://www.w3.org/TR/SVG11/coords.html#ViewBoxAttribute">SVG viewBox</a> definition.<br><br>
+					<code class="js">$(shape).animate({svgViewBox:
+	'150, 87, 300, 175'}, 2000);</code><br><br>
+					<span class="version">Since 1.3.0</span>.</td></tr>
+		</table>
+	</div>
+	<div id="filters" class="feature">
+		<h2>SVG Filters</h2>
+		<p>The jQuery SVG filter extension (<code>jquery.svgfilter.js</code>) provides support for
+			SVG filters. See the <a href="http://www.w3.org/TR/SVG11/filters.html">SVG specification</a>
+			for more details.</p>
+		<p>Note that SVG filter support is not consistent across browsers.</p>
+		<p>The SVG filter entry point is within the SVG wrapper object as
+			<code>svg.filters</code>, which allows you to create the various filter types
+			defined by SVG (although they may not all be supported by your browser).</p>
+		<pre><code class="js">var filter = svg.filter(defs, 'MyFilter', 0, 0, 200, 120, 
+	{filterUnits: 'userSpaceOnUse'});
+svg.filters.gaussianBlur(filter, 'blur', 'SourceAlpha', 4);</code></pre>
+		<p class="quickref">
+			<a href="#blend">blend</a> |
+			<a href="#colormatrix">colorMatrix</a> |
+			<a href="#componenttransfer">componentTransfer</a> |
+			<a href="#composite">composite</a> |
+			<a href="#convolvematrix">convolveMatrix</a> |
+			<a href="#diffuselighting">diffuseLighting</a> |
+			<a href="#displacementmap">displacementMap</a> |
+			<a href="#distantlight">distantLight</a> |
+			<a href="#filter">filter</a> |
+			<a href="#flood">flood</a> |
+			<a href="#gaussianblur">gaussianBlur</a> |
+			<a href="#imagefilter">image</a> |
+			<a href="#merge">merge</a> |
+			<a href="#morphology">morphology</a> |
+			<a href="#offset">offset</a> |
+			<a href="#pointlight">pointLight</a> |
+			<a href="#specularlighting">specularLighting</a> |
+			<a href="#spotlight">spotLight</a> |
+			<a href="#tile">tile</a> |
+			<a href="#turbulence">turbulence</a>
+		</p>
+		<p style="clear: both;"></p>
+		<table border="0">
+			<tr><th>Signature</th><th>Returns</th><th>Comments</th></tr>
+			<tr><td><a name="filter">filter(parent, id, x, y, width, height, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a filter definition.
+					Note that this method is directly on the SVG wrapper object,
+					not under the <code>filters</code> entry point. The remaining filter methods
+					below are connected to one of these filter definitions (as the parent).<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>id</code> (string) is the ID for this filter.<br>
+					<code>x</code> (number) is the x-coordinate for the left edge of the filter.<br>
+					<code>y</code> (number) is the y-coordinate for the top edge of the filter.<br>
+					<code>width</code> (number) is the width of the filter.<br>
+					<code>height</code> (number) is the height of the filter.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">var filter = svg.filter(defs, 'MyFilter', 0, 0,
+	200, 120, {filterUnits: 'userSpaceOnUse'});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="distantlight">distantLight(parent, result, azimuth, elevation, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a distant light filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>azimuth</code> (number) is the angle (degrees) in the XY plane for the light source.<br>
+					<code>elevation</code> (number) is the angle (degrees) in the YZ plane for the light source.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.distantLight(filter, 'lit', 45, 60);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="pointlight">pointLight(parent, result, x, y, z, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a point light filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>x</code> (number) is the x-coordinate for the light source.<br>
+					<code>y</code> (number) is the y-coordinate for the light source.<br>
+					<code>z</code> (number) is the z-coordinate for the light source.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.pointLight(filter, '',
+	-5000, -10000, 20000);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="spotlight">spotLight(parent, result, x, y, z, toX, toY, toZ, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a spot light filter.
+					Specify all of <code>toX</code>, <code>toY</code>, <code>toZ</code> or none of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>x</code> (number) is the x-coordinate for the light source.<br>
+					<code>y</code> (number) is the y-coordinate for the light source.<br>
+					<code>z</code> (number) is the z-coordinate for the light source.<br>
+					<code>toX</code> (number, optional) is the x-coordinate for where the light is pointing.<br>
+					<code>toY</code> (number, optional) is the y-coordinate for where the light is pointing.<br>
+					<code>toZ</code> (number, optional) is the z-coordinate for where the light is pointing.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.spotLight(filter, 'lit', 10, 20, 30);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="blend">blend(parent, result, mode, in1, in2, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a blend filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>mode</code> (string) is 'normal', 'multiply', 'screen', 'darken', or 'lighten'.<br>
+					<code>in1</code> (string) is the first image to blend.<br>
+					<code>in2</code> (string) is the second image to blend.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.blend(filter, 'blended', 'darken',
+	'SourceGraphic', 'BackgroundImage');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="colormatrix">colorMatrix(parent, result, in1, type, values, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a colour matrix filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>in1</code> (string) is the source to colour.<br>
+					<code>type</code> (string) is 'matrix', 'saturate', 'hueRotate', or 'luminanceToAlpha'.<br>
+					<code>values</code> (number[4][5]) for 'matrix' the matrix (5x4) values to apply or
+					(number) for 'saturate' 0.0 to 1.0 or (number) for 'hueRotate' degrees or
+					omitted for 'luminanceToAlpha'.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.colorMatrix(filter,
+	'', 'SourceGraphic', 'matrix',
+	[[0.33, 0.33, 0.33, 0, 0],
+	[0.33, 0.33, 0.33, 0, 0],
+	[0.33, 0.33, 0.33, 0, 0],
+	[0.33, 0.33, 0.33, 0, 0]]);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="componenttransfer">componentTransfer(parent, result, functions, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a component transfer filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>functions</code> (object[3 or 4]) is one for each of RGB and A (alpha, optional)
+					for each entry: [0] (string) is 'identity', 'table', 'discrete', 'linear', or 'gamma',
+					[1] (number[]) is for 'table' or 'discrete' the list of interpolation or step values OR
+					(number) for 'linear' the slope, for 'gamma' the amplitude,
+					[2] (number) is for 'linear' the intercept, for 'gamma' the exponent,
+					[3] (number) is for 'gamma' the offset.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.componentTransfer(filter, '',
+	[['table', [0, 0, 1, 1]],
+	['table', [1, 1, 0, 0]],
+	['table', [0, 1, 1, 0]]]);
+svg.filters.componentTransfer(filter, '',
+	[['gamma', 2, 5, 0], ['gamma', 2, 3, 0],
+	['gamma', 2, 1, 0]]);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="composite">composite(parent, result, operator, in1, in2, k1, k2, k3, k4, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a composite filter.
+					Specify all of <code>k1</code>, <code>k2</code>, <code>k3</code>,
+					<code>k4</code> or none of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>operator</code> (string) is 'over', 'in', 'out', 'atop', 'xor', or 'arithmetic'.<br>
+					<code>in1</code> (string) is the first filter to compose.<br>
+					<code>in2</code> (string) is the second filter to compose.<br>
+					<code>k1</code> (number, optional) is for 'arithmetic'.<br>
+					<code>k2</code> (number, optional) is for 'arithmetic'.<br>
+					<code>k3</code> (number, optional) is for 'arithmetic'.<br>
+					<code>k4</code> (number, optional) is for 'arithmetic'.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.composite(filter, 'specOut', 'in',
+	'specOut', 'SourceAlpha');<br>
+svg.filters.composite(filter, 'litPaint',
+	'arithmetic', 'SourceGraphic',
+	'specOut', 0, 1, 1, 0);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="convolvematrix">convolveMatrix(parent, result, order, matrix, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a convolve matrix filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>order</code> (int or 'int int') is the size(s) of the matrix.<br>
+					<code>matrix</code> (number[][]) is the kernel matrix for the convolution.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.convolveMatrix(filter, '', 3,
+	[[1, 1, 1], [1, 3, 1], [1, 1, 1]]);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="diffuselighting">diffuseLighting(parent, result, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a diffuse lighting filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>colour</code> (string, optional) is the lighting colour.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.diffuseLighting(filter, '', 'red');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="displacementmap">displacementMap(parent, result, in1, in2, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a displacement map filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>in1</code> (string) is the source image.<br>
+					<code>in2</code> (string) is the displacement image.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.displacementMap(filter, '',
+	'SourceGraphic', 'displaceImg');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="flood">flood(parent, result, x, y, width, height, colour, opacity, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a flood filter.
+					Specify all of <code>x</code>, <code>y</code>, <code>width</code>,
+					<code>height</code> or none of them.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>x</code> (number, optional) is the left coordinate of the rectangle.<br>
+					<code>y</code> (number, optional) is the top coordinate of the rectangle.<br>
+					<code>width</code> (number, optional) is the width of the rectangle.<br>
+					<code>height</code> (number, optional) is the height of the rectangle.<br>
+					<code>colour</code> (string) is the colour to fill with.<br>
+					<code>opacity</code> (number) is the opacity 0.0-1.0.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.flood(filter, '', 'yellow', 0.5);<br>
+svg.filters.flood(filter, '', 10, 20, 100, 50,
+	'green', 0.1);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="gaussianblur">gaussianBlur(parent, result, in1, stdDevX, stdDevY, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a Gaussian blur filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>in1</code> (string) is the source filter.<br>
+					<code>stdDevX</code> (number) is the standard deviation along the x-axis.<br>
+					<code>stdDevY</code> (number, optional) is the standard deviation along the y-axis,
+					defaults to <code>stdDevX</code>.<br>
+					<code>settings </code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.gaussianBlur(filter,
+	'blur', 'SourceAlpha', 4);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="imagefilter">image(parent, result, href, settings)</a></td>
+				<td>filter element</td>
+				<td>Add an image filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>href</code> (string) is the URL of the image.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.image(filter, '',
+	'/images/texture.jpg');</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="merge">merge(parent, result, refs, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a merge filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>refs</code> (string[]) is the IDs of the filters to merge.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.merge(filter, '',
+	['offsetBlur', 'litPaint']);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="morphology">morphology(parent, result, in1, operator, radiusX, radiusY, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a morphology filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>in1</code> (string) is the source filter.<br>
+					<code>operator</code> (string) is 'erode' or 'dilate'.<br>
+					<code>radiusX</code> (number) is the size of the operation in the x-axis.<br>
+					<code>radiusY</code> (number, optional) is the size of the operation in the y-axis,
+					defaults to <code>radiusX</code>.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.morphology(filter, '',
+	'SourceGraphic', 'dilate', 6);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="offset">offset(parent, result, in1, dx, dy, settings)</a></td>
+				<td>filter element</td>
+				<td>Add an offset filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>in1</code> (string) is the source filter.<br>
+					<code>dX</code> (number) is the offset in the x-axis.<br>
+					<code>dY</code> (number) is the offset in the y-axis.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.offset(filter, 'offsetBlur',
+	'blur', 4, 4);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="specularlighting">specularLighting(parent, result, in1, surfaceScale, specularConstant, specularExponent, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a specular lighting filter.
+					Numeric params are only optional if following numeric params are also omitted.
+					Add one of <a href="#distantlight"><code>distantLight</code></a>,
+					<a href="#pointlight"><code>pointLight</code></a>, or
+					<a href="#spotlight"><code>spotLight</code></a>
+					as a child to specify the light source.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>in1</code> (string) is the source filter.<br>
+					<code>surfaceScale</code> (number, optional) is the surface height when Ain = 1.<br>
+					<code>specularConstant</code> (number, optional) is the ks in Phong lighting model.<br>
+					<code>specularExponent</code> (number, optional) is the shininess 1.0-128.0.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.specularLighting(filter, 'specOut',
+	'blur', 5, 0.75, 20,
+	{lightingColor: '#bbbbbb'});</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="tile">tile(parent, result, in1, x, y, width, height, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a tile filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>in1</code> (string) is the source filter.<br>
+					<code>x</code> (number) is the left coordinate of the rectangle.<br>
+					<code>y</code> (number) is the top coordinate of the rectangle.<br>
+					<code>width</code> (number) is the width of the rectangle.<br>
+					<code>height</code> (number) is the height of the rectangle.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.tile(filter, 'tiled',
+	'img', 50, 60, 100, 200);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+			<tr><td><a name="turbulence">turbulence(parent, result, type, baseFreq, octaves, settings)</a></td>
+				<td>filter element</td>
+				<td>Add a turbulence filter.<br><br>
+					<code>parent</code> (element or jQuery, optional) is the parent node
+					for the new filter or <code>null</code> or omitted for the SVG root.<br>
+					<code>result</code> (string) is the ID of this filter.<br>
+					<code>type</code> (string) is 'fractalNoise' or 'turbulence'.<br>
+					<code>baseFreq</code> (number or 'number number') is the base frequency,
+					optionally separated into x- and y-components.<br>
+					<code>octaves</code> (number, optional) is the amount of turbulence.<br>
+					<code>settings</code> (object, optional) is additional settings for the filter.<br><br>
+					<code class="js">svg.filters.turbulence(filter, '',
+	'turbulence', 0.05, 2);</code><br><br>
+					<span class="version">Since 1.2.1</span> - <code>parent</code> may be omitted if <code>null</code>.<br><br>
+					<span class="version">Since 1.4.3</span> - <code>parent</code> may be a jQuery object.</td></tr>
+		</table>
+	</div>
+</div>
+<p>Contact <a href="index.html">Keith Wood</a> at kbwood{at}iinet.com.au 
+	with comments or suggestions.</p>
+</body>
+</html>
