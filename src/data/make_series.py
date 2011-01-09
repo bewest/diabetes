@@ -153,7 +153,6 @@ def giant_timeseries( ts ):
 
 if __name__ == '__main__':
   print "Generate a chart of a timeseries."
-  data = [[3,4], [4,8], [5,3], [9,1]]
 
   parser = get_opt_parser( )
   options, args = parser.parse_args( sys.argv )
