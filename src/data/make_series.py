@@ -110,45 +110,31 @@ def giant_timeseries( ts ):
   PREFER = ( 120, 135 )
   SAFE = ( 70, 140 )
 
-  #xlim = [ 0,  10.0 ]
-  #YMAX = ts.max( ) * 1.1
-  #ylim = [ 0,  YMAX ]
   fig = Figure( ( 20.3, 3.5 ), 300 )
   canvas = FigureCanvas(fig)
-  #xticks = [ 1,2,3,4,5,6,7,8  ]
-  #ax = fig.add_subplot(111, xlim=xlim, ylim=ylim,
+
   ax = fig.add_subplot(111)
-  #data = [[False, False], [1,200],[4, 100],[6, 120]]
-  #ax.plot(data)
-  #D = dict( data )
+
+
   preferspan = ax.axhspan( SAFE[0], SAFE[1],
                            facecolor='g', alpha=0.2,
                            edgecolor = '#003333',
                            linewidth=1
                          )
-  log.debug( "axhspan props" )
-  log.debug( pformat( plt.setp( preferspan ) ) )
 
   # visualize glucose using stems
   markers, stems, baselines = ax.stem( ts.time, ts.value,
            linefmt='b:' )
-  log.debug( "stem properties" )
-  log.debug( pformat( plt.setp( stems ) ) )
   plt.setp( markers, color='red', linewidth=.5,
             marker='o'
           )
   plt.setp( baselines, marker='None' ) 
   fig.autofmt_xdate( )
 
-  # visualize average with a line plot
-  #glucose_max  = df.max( 1 )
-  #glucose_plot = ax.plot( glucose_max
-
   ax.set_title('glucose history')
   ax.grid(True)
   ax.set_xlabel('time')
   ax.set_ylabel('glucose mm/dL')
-  #fig.legend( stems, ts.index, 'top' )
   return canvas
 
 if __name__ == '__main__':
