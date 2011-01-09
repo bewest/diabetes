@@ -30,6 +30,16 @@ log.setLevel( logging.DEBUG )
 log.debug( 'hello world' )
 data = {}
 
+def get_opt_parser( ):
+  from optparse import OptionParser
+  usage = """usage = "usage: %prog [options] input output"""
+  parser = OptionParser(usage=usage)
+  parser.add_option("-q", "--quiet",
+                    action="store_false", dest="verbose", default=True,
+                    help="don't print status messages to stdout")
+
+  return parser
+
 
 class DefaultRecord( object ):
   __fields__ = [ 'date', 'time', 'reading' ]
@@ -120,12 +130,8 @@ def giant_timeseries( ts ):
   log.debug( pformat( plt.setp( preferspan ) ) )
 
   # visualize glucose using stems
-  #markers, stems, baselines, = ax.stem( ts.values,
   markers, stems, baselines = ax.stem( ts.time, ts.value,
-  #markers, stems, baselines, = ax.stem( ts.dates, ts.data,
-           linefmt='b:'
-           #markerfmt='o'
-           )
+           linefmt='b:' )
   log.debug( "stem properties" )
   log.debug( pformat( plt.setp( stems ) ) )
   plt.setp( markers, color='red', linewidth=.5,
@@ -149,10 +155,16 @@ if __name__ == '__main__':
   print "Generate a chart of a timeseries."
   data = [[3,4], [4,8], [5,3], [9,1]]
 
-  data = get_series( sys.argv[ 1 ] )
+  parser = get_opt_parser( )
+  options, args = parser.parse_args( sys.argv )
+  infile, outfile = args[ 0 ], args[ 1 ]
+  if infile == '-':
+    infile = sys.stdout
+
+  data = get_series( infile )
 
   canvas = giant_timeseries( data )
-  canvas.print_figure('test.png')
+  canvas.print_figure(outfile)
 
 
 
