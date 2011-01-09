@@ -21,6 +21,7 @@ import pandas
 import pandas.io
 import pandas.io.parsers
 
+import insulaudit
 import logging
 logging.basicConfig( stream=sys.stdout )
 log = logging.getLogger( 'data.timseries.hacking' )
@@ -92,42 +93,10 @@ def get_pandas( name ):
   return pandas.io.parsers.parseText( stream )
 
 def get_series( name ):
-  data = None, None
-  with data_stream( name ) as stream:
-    data = get_data( stream )
-  return data
+  from insulaudit.data import glucose
+  return glucose.load_file( name )
 
-
-if __name__ == '__main__':
-  print "Generate a chart of a timeseries."
-  data = [[3,4], [4,8], [5,3], [9,1]]
-
-  index, data = get_series( sys.argv[ 1 ] )
-
-  #dataList = list( data.values( ) )
-  log.debug( pformat( data ) )
-  ts = timeseries.time_series( data.values( ), data.keys( ) )
-  ts.sort_chronologically( )
-  #log.debug( "##### scikits timeseries #####" )
-  #log.debug( pformat( ts ) )
-
-
-  log.debug( "##### pandas dump #####" )
-  #drange = pandas.DateRange( data[ 'glucose' ] )
-  ts = pandas.Series( data )
-  #D  = { 'glucose': ts }
-  #df = pandas.DataFrame( { 'glucose': ts }, columns=['glucose'] )
-  log.debug( pformat( ts ) )
-  log.debug( "##### index #####" )
-  #log.debug( pformat( ts.index ) )
-  log.debug( "##### values #####" )
-  #log.debug( pformat( ts.values( ) ) )
-  log.debug( "##### data #####" )
-  #log.debug( pformat( ts.data ) )
-
-
-
-  
+def giant_timeseries( ts ):
   PREFER = ( 120, 135 )
   SAFE = ( 70, 140 )
 
@@ -152,7 +121,7 @@ if __name__ == '__main__':
 
   # visualize glucose using stems
   #markers, stems, baselines, = ax.stem( ts.values,
-  markers, stems, baselines = ax.stem( ts.index, ts.values,
+  markers, stems, baselines = ax.stem( ts.time, ts.value,
   #markers, stems, baselines, = ax.stem( ts.dates, ts.data,
            linefmt='b:'
            #markerfmt='o'
@@ -174,6 +143,15 @@ if __name__ == '__main__':
   ax.set_xlabel('time')
   ax.set_ylabel('glucose mm/dL')
   #fig.legend( stems, ts.index, 'top' )
+  return canvas
+
+if __name__ == '__main__':
+  print "Generate a chart of a timeseries."
+  data = [[3,4], [4,8], [5,3], [9,1]]
+
+  data = get_series( sys.argv[ 1 ] )
+
+  canvas = giant_timeseries( data )
   canvas.print_figure('test.png')
 
 

@@ -4,17 +4,34 @@
 <title>Test</title>
 <style type="text/css">
 </style>
-<script type="text/language" src=""></script>
-<script type="text/language">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+
+<script type="text/javascript" src="js/jquery.svg.js"></script>
+
+<script type="text/javascript">
+(function($) {
+  $(document).ready( function( ) {
+    console.log( 'ready' );
+    var svg = $( '#svg' )[ 0 ];
+    var svgdoc  = $(svg).svg( 'after',
+                    svg.getSVGDocument( ),
+                    svg, { } );
+    console.log( svg, $(svg).svg( 'get' ) );
+  } );
+})( jQuery );
 </script>
 </head>
 <body>
 
-
-
 <h1>Test</h1>
+<a href="map.html">map test</a>
 
-<img src="./test.svg" type="image/svg+xml" width="600px">
+<div id="svg_embed">
+<embed id="svg"
+       src="./test.svg"
+       type="image/svg+xml"
+       ></embed>
+</div>
 
 </body>
 </html>
