@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
   parser = get_opt_parser( )
   options, args = parser.parse_args( sys.argv )
-  infile, outfile = args[ 0 ], args[ 1 ]
+  infile, outfile = args[ 1 ], args[ 2 ]
   if infile == '-':
     infile = sys.stdout
 
