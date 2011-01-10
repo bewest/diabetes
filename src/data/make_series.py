@@ -2,6 +2,7 @@
 
 #from matplotlib.backends.backend_svg import FigureCanvasSVG as FigureCanvas
 from matplotlib.dates import AutoDateLocator
+from matplotlib import dates
 from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvas
 
 from matplotlib.figure import Figure
@@ -52,7 +53,9 @@ def giant_timeseries( ts ):
 
   # visualize glucose using stems
   # XXX: gets a list of days.
-  # timestamps = glucose.get_days( ts.time )
+  timestamps = glucose.get_days( ts.time )
+  xmin, xmax = timestamps[ 0 ], timestamps[ -1 ]
+  ax.set_xlim( [ xmin, xmax ] )
   markers, stems, baselines = ax.stem( ts.time, ts.value,
            linefmt='b:' )
   plt.setp( markers, color='red', linewidth=.5,
@@ -64,6 +67,11 @@ def giant_timeseries( ts ):
   ax.set_title('glucose history')
   ax.grid(True)
   ax.set_xlabel('time')
+
+  xmin, xmax = ax.get_xlim( )
+  log.info( pformat( {
+    'xlim': [ dates.num2date( xmin ), dates.num2date( xmax ) ],
+  } ) )
 
   ax.set_ylabel('glucose mm/dL')
   return canvas
