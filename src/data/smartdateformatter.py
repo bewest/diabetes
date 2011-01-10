@@ -2,7 +2,7 @@
 """
 http://stackoverflow.com/questions/3002155/matplotlib-autodatelocator-custom-date-formatting
 
-asked Jun 8 '10 at 23:41
+asked Jun 8 2010 at 23:41
 jawonlee
 
 I'm using Matplotlib to dynamically generate .png charts from a database. The
@@ -53,9 +53,8 @@ python matplotlib
 
 ===========================================================
 
-edited Jun 12 '10 at 6:00
-  
-answered Jun 9 '10 at 18:15
+edited Jun 12 2010 at 6:00
+answered Jun 9 2010 at 18:15
 Jouni K. Seppänen
 6,5561126
 
@@ -68,15 +67,14 @@ development code you can. You could probably just copy the version from the
 trunk into your own code.
   
 ===========================================================
-
 Unfortunately, my problem with the AutoDateFormatter is that it won't let you
 custom-format various levels. So its minute-level formatting is going to be in
-"HH:MM:SS Timezone", whether you like it or not. – jawonlee Jun 11 '10 at 23:29
+"HH:MM:SS Timezone", whether you like it or not. – jawonlee Jun 11 2010 at 23:29
 
 ===========================================================
   
 I edited the answer to mention that the development version is better in this
-respect than the released one. – Jouni K. Seppänen Jun 12 '10 at 6:01
+respect than the released one. – Jouni K. Seppänen Jun 12 2010 at 6:01
 """
 
 #####

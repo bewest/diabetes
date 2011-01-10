@@ -35,9 +35,48 @@ def get_opt_parser( ):
 def get_series( name ):
   return glucose.load_file( name )
 
+PREFER = ( 120, 135 )
+SAFE = ( 70, 140 )
+
+def month_timeseries( ts ):
+  pass
+
+def daily_timseries( ts ):
+  fig = Figure( ( 20.3, 3.5 ), 300 )
+  canvas = FigureCanvas(fig)
+  ax = fig.add_subplot(111)
+
+  preferspan = ax.axhspan( SAFE[0], SAFE[1],
+                           facecolor='g', alpha=0.2,
+                           edgecolor = '#003333',
+                           linewidth=1
+                         )
+  # visualize glucose using stems
+  # XXX: gets a list of days.
+  timestamps = glucose.get_days( ts.time )
+  xmin, xmax = timestamps[ 0 ], timestamps[ -1 ]
+  ax.set_xlim( [ xmin, xmax ] )
+  markers, stems, baselines = ax.stem( ts.time, ts.value,
+           linefmt='b:' )
+  plt.setp( markers, color='red', linewidth=.5,
+            marker='o'
+          )
+  plt.setp( baselines, marker='None' ) 
+  fig.autofmt_xdate( )
+
+  ax.set_title('glucose history')
+  ax.grid(True)
+  ax.set_xlabel('time')
+
+  xmin, xmax = ax.get_xlim( )
+  log.info( pformat( {
+    'xlim': [ dates.num2date( xmin ), dates.num2date( xmax ) ],
+  } ) )
+
+  ax.set_ylabel('glucose mm/dL')
+  return canvas
+  
 def giant_timeseries( ts ):
-  PREFER = ( 120, 135 )
-  SAFE = ( 70, 140 )
 
   fig = Figure( ( 20.3, 3.5 ), 300 )
   canvas = FigureCanvas(fig)
@@ -87,7 +126,7 @@ if __name__ == '__main__':
 
   data = get_series( infile )
 
-  canvas = giant_timeseries( data )
+  canvas = daily_timseries( data )
   canvas.print_figure(outfile)
 
 

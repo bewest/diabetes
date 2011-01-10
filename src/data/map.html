@@ -17,30 +17,105 @@
 <script type="text/javascript" src="js/jquery.svg.js"></script>
 
 <script type="text/javascript">
+  function custom_map_example() {
+      var myOptions = {
+          zoom: 15,
+          center: new google.maps.LatLng(37.2008385157313, -93.2812106609344),
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
+      var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+      var BuildingsLayer = new google.maps.ImageMapType({
+          getTileUrl: function(coord, zoom) {
+              return "http://search.missouristate.edu/map/tilesets/baselayer/" + zoom + "_" + coord.x + "_" + coord.y + ".png";
+          },
+          tileSize: new google.maps.Size(256, 256),
+          isPng: true
+      });
+
+
+      var openStreet = new google.maps.ImageMapType({
+        getTileUrl: function(ll, z) {
+          return "http://tile.openstreetmap.org/" + z + "/" + ll.x + "/" + ll.y + ".png";
+        },
+       tileSize: new google.maps.Size(256, 256),
+       isPng: true,
+       maxZoom: 18,
+       name: "OSM",
+       alt: "Open Streetmap tiles"
+      });
+
+
+      map.overlayMapTypes.push(BuildingsLayer);
+
+      var ParkingLayer = new google.maps.ImageMapType({
+          getTileUrl: function(coord, zoom) {
+              return "http://search.missouristate.edu/map/tilesets/parkinglot/" + zoom + "_" + coord.x + "_" + coord.y + ".png";
+          },
+          minZoom: 12,
+          tileSize: new google.maps.Size(256, 256),
+          isPng: true
+      });
+
+      map.overlayMapTypes.push(ParkingLayer);
+  }
+
+
+  var HelloLayer = new google.maps.ImageMapType({
+    getTileUrl: function(ll, z) {
+      var url = "./december.svg?" + z + "/" + ll.x + "/" + ll.y + "";
+      console.log( this, arguments, url );
+      return url;
+    },
+    tileSize: new google.maps.Size(256, 256),
+    isPng: false,
+    maxZoom: 18,
+    name: "hello",
+    alt: "hello tiles"
+  });
+
 (function($) {
   $(document).ready( function( ) {
     console.log( 'ready' );
     window.test = { };
     test.svg = $( '#svg' )[ 0 ];
-    test.svgdoc  = $(test.svg).svg( 'after',
-                    test.svg.getSVGDocument( ),
-                    test.svg, { } );
-    console.log( svg, $(svg).svg( 'get' ) );
-    test.map = $( '#map' );
 
+    test.map = $( '#map' );
+    // test.map = $( '#map' );
+    var latlng = new google.maps.LatLng(-34.397, 150.644);
     var myOptions = {
       zoom: 8,
       center: latlng,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      mapTypeControlOptions: {
+        // mapTypeIds: ['osm', google.maps.MapTypeId.ROADMAP],
+        mapTypeIds: [ 'HelloLayer', google.maps.MapTypeId.ROADMAP ],
+        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+      }
+
     };
+
+
     test.gmap = new google.maps.Map( test.map[ 0 ], myOptions );
+    //test.gmap.overlayMapTypes.push(HelloLayer);
+
+    // test.gmap.overlayMapTypes.insertAt(0, HelloLayer);
+    test.gmap.mapTypes.set('HelloLayer', HelloLayer);
+    test.gmap.setMapTypeId('HelloLayer');
+
+
   } );
 
     
 })( jQuery );
+
+function init( ) {
+    
+
+}
 </script>
 </head>
-<body>
+<body onload="init( )">
 
 <h1>Test</h1>
 
@@ -53,6 +128,9 @@
 <div id="map_embed">
 <div id="map"></div>
 </div>
+
+<script type="type/javascript">
+</script>
 
 </body>
 </html>
