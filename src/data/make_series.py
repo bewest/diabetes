@@ -42,7 +42,7 @@ def month_timeseries( ts ):
   pass
 
 def daily_timseries( ts ):
-  fig = Figure( ( 20.3, 3.5 ), 300 )
+  fig = Figure( ( 2.56, 2.56 ), 300 )
   canvas = FigureCanvas(fig)
   ax = fig.add_subplot(111)
 
@@ -73,7 +73,28 @@ def daily_timseries( ts ):
     'xlim': [ dates.num2date( xmin ), dates.num2date( xmax ) ],
   } ) )
 
-  ax.set_ylabel('glucose mm/dL')
+  #ax.set_ylabel('glucose mm/dL')
+  return canvas
+
+def daily_axis( ts ):
+  # http://matplotlib.sourceforge.net/mpl_toolkits/axes_grid/users/overview.html
+  fig = Figure( ( 2.56, 2.56 ), 300 )
+  canvas = FigureCanvas(fig)
+
+  ax = fig.add_subplot(111)
+
+  preferspan = ax.axhspan( SAFE[0], SAFE[1],
+                           facecolor='g', alpha=0.2,
+                           edgecolor = '#003333',
+                           linewidth=1
+                         )
+  timestamps = glucose.get_days( ts.time )
+  xmin, xmax = timestamps[ 0 ], timestamps[ -1 ]
+  ax.set_xlim( [ xmin, xmax ] )
+  #fig.autofmt_xdate( )
+
+  ax.grid(True)
+
   return canvas
   
 def giant_timeseries( ts ):
@@ -126,7 +147,8 @@ if __name__ == '__main__':
 
   data = get_series( infile )
 
-  canvas = daily_timseries( data )
+  #canvas = daily_timseries( data )
+  canvas = daily_axis( data )
   canvas.print_figure(outfile)
 
 

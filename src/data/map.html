@@ -61,9 +61,10 @@
   }
 
 
+  prefix = "file:///home/bewest/Documents/bb/diabetes/src/data/"
   var HelloLayer = new google.maps.ImageMapType({
     getTileUrl: function(ll, z) {
-      var url = "./december.svg?" + z + "/" + ll.x + "/" + ll.y + "";
+      var url = prefix + "./test.png#?" + z + "/" + ll.x + "/" + ll.y + "";
       console.log( this, arguments, url );
       return url;
     },
