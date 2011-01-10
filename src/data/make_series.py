@@ -1,12 +1,16 @@
 #!/usr/bin/python
 
 #from matplotlib.backends.backend_svg import FigureCanvasSVG as FigureCanvas
+from matplotlib.dates import AutoDateLocator
 from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvas
 
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 import sys
 from pprint import pformat
+import numpy as np
+
+from insulaudit.data import glucose
 
 import insulaudit
 import logging
@@ -28,7 +32,6 @@ def get_opt_parser( ):
   return parser
 
 def get_series( name ):
-  from insulaudit.data import glucose
   return glucose.load_file( name )
 
 def giant_timeseries( ts ):
@@ -48,6 +51,8 @@ def giant_timeseries( ts ):
                          )
 
   # visualize glucose using stems
+  # XXX: gets a list of days.
+  # timestamps = glucose.get_days( ts.time )
   markers, stems, baselines = ax.stem( ts.time, ts.value,
            linefmt='b:' )
   plt.setp( markers, color='red', linewidth=.5,
@@ -59,6 +64,7 @@ def giant_timeseries( ts ):
   ax.set_title('glucose history')
   ax.grid(True)
   ax.set_xlabel('time')
+
   ax.set_ylabel('glucose mm/dL')
   return canvas
 
