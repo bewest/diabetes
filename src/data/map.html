@@ -75,6 +75,70 @@
     alt: "hello tiles"
   });
 
+ 
+function HelloProjection() {
+  console.log( 'HelloProjection', this, arguments );
+};
+
+HelloProjection.prototype.fromLatLngToPoint = function(latLng) {
+
+  var origin = this.worldOrigin_;
+  var x = origin.x + this.worldCoordinatePerLonDegree_ * latLng.lng();
+
+  // Note that latitude is measured from the world coordinate origin
+  // at the top left of the map.
+  var latRadians = degreesToRadians(latLng.lat());
+  var y = origin.y - this.worldCoordinateLatRange * Math.sin(latRadians);
+ 
+  return new google.maps.Point(x, y);
+};
+
+HelloProjection.prototype.fromPointToLatLng = function(point) {
+
+  var y = point.y;
+  var x = point.x;
+  
+  if (y < 0) {
+    y = 0;
+  }
+  if (y >= GALL_PETERS_RANGE_Y) {
+    y = GALL_PETERS_RANGE_Y;
+  }
+ 
+  var origin = this.worldOrigin_;
+  var lng = (x - origin.x) / this.worldCoordinatePerLonDegree_;
+  var latRadians = Math.asin((origin.y - y) / this.worldCoordinateLatRange);
+  var lat = radiansToDegrees(latRadians);
+  return new google.maps.LatLng(lat, lng);
+};
+  
+/*
+      var numTiles = 1 << zoom;
+
+      // Don't wrap tiles vertically.
+      if (coord.y < 0 || coord.y >= numTiles) {
+        return null;
+      }
+
+      // Wrap tiles horizontally.
+      var x = ((coord.x % numTiles) + numTiles) % numTiles;  
+
+      // For simplicity, we use a tileset consisting of 1 tile at zoom level 0
+      // and 4 tiles at zoom level 1.
+      var baseURL = 'images/';
+      baseURL += 'gall-peters_' + zoom + '_' + x + '_' + coord.y + '.png';
+      return baseURL;
+
+    tileSize: new google.maps.Size(800, 512),
+    isPng: true,
+    minZoom: 0,
+    maxZoom: 1,
+    name: 'Gall-Peters'
+*/
+  
+  gallPetersMapType.projection = new GallPetersProjection();  
+
+
 (function($) {
   $(document).ready( function( ) {
     console.log( 'ready' );

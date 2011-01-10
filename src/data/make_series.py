@@ -7,6 +7,8 @@ from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvas
 
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1 import ImageGrid
+
 import sys
 from pprint import pformat
 import numpy as np
@@ -91,6 +93,8 @@ def daily_axis( ts ):
   timestamps = glucose.get_days( ts.time )
   xmin, xmax = timestamps[ 0 ], timestamps[ -1 ]
   ax.set_xlim( [ xmin, xmax ] )
+  ax.set_ylim( [ ts.value.min( ) *.85 , 600 ] )
+  log.info( pformat( timestamps ) )
   #fig.autofmt_xdate( )
 
   ax.grid(True)
@@ -106,7 +110,7 @@ def giant_timeseries( ts ):
 
 
   preferspan = ax.axhspan( SAFE[0], SAFE[1],
-                           facecolor='g', alpha=0.2,
+                           facecolor='g', alpha=0.35,
                            edgecolor = '#003333',
                            linewidth=1
                          )
@@ -127,6 +131,14 @@ def giant_timeseries( ts ):
   ax.set_title('glucose history')
   ax.grid(True)
   ax.set_xlabel('time')
+  majorLocator   = dates.DayLocator( )
+  majorFormatter = dates.AutoDateFormatter( majorLocator )
+
+  ax.xaxis.set_major_locator(majorLocator)
+  ax.xaxis.set_major_formatter(majorFormatter)
+
+  #ax.xaxis.set_minor_locator(minorLocator)
+  #ax.xaxis.set_minor_formatter(minorFormatter)
 
   xmin, xmax = ax.get_xlim( )
   log.info( pformat( {
@@ -148,7 +160,8 @@ if __name__ == '__main__':
   data = get_series( infile )
 
   #canvas = daily_timseries( data )
-  canvas = daily_axis( data )
+  #canvas = daily_axis( data )
+  canvas = giant_timeseries( data )
   canvas.print_figure(outfile)
 
 
