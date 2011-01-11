@@ -74,7 +74,6 @@
     name: "hello",
     alt: "hello tiles"
   });
-
  
 function HelloProjection() {
   console.log( 'HelloProjection', this, arguments );
@@ -82,6 +81,9 @@ function HelloProjection() {
 
 HelloProjection.prototype.fromLatLngToPoint = function(latLng) {
 
+  var x = latLng.lng();
+  var y = latLng.lat();
+  return new google.maps.Point(x, y);
   var origin = this.worldOrigin_;
   var x = origin.x + this.worldCoordinatePerLonDegree_ * latLng.lng();
 
@@ -97,6 +99,7 @@ HelloProjection.prototype.fromPointToLatLng = function(point) {
 
   var y = point.y;
   var x = point.x;
+  return new google.maps.LatLng(y, x)
   
   if (y < 0) {
     y = 0;
@@ -113,6 +116,7 @@ HelloProjection.prototype.fromPointToLatLng = function(point) {
 };
   
 /*
+var getTile = function( coord,  zoom ) {
       var numTiles = 1 << zoom;
 
       // Don't wrap tiles vertically.
@@ -134,10 +138,12 @@ HelloProjection.prototype.fromPointToLatLng = function(point) {
     minZoom: 0,
     maxZoom: 1,
     name: 'Gall-Peters'
+  }
 */
   
-  gallPetersMapType.projection = new GallPetersProjection();  
+  // gallPetersMapType.projection = new GallPetersProjection();  
 
+HelloLayer.projection = new HelloProjection();  
 
 (function($) {
   $(document).ready( function( ) {
