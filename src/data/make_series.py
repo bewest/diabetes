@@ -78,6 +78,60 @@ def daily_timseries( ts ):
   #ax.set_ylabel('glucose mm/dL')
   return canvas
 
+def tiled_axis( ts ):
+  fig = Figure( ( 2.56 * 4, 2.56 * 4), 300 )
+  canvas = FigureCanvas(fig)
+  ax = fig.add_subplot(111)
+  preferspan = ax.axhspan( SAFE[0], SAFE[1],
+                           facecolor='g', alpha=0.2,
+                           edgecolor = '#003333',
+                           linewidth=1
+                         )
+  # visualize glucose using stems
+  # XXX: gets a list of days.
+  halfday = dates.relativedelta( days=2, hours=12 )
+  timestamps = glucose.get_days( ts.time )
+  # pad half a day so that major ticks show up in the middle, not on the edges
+  xmin, xmax = ( timestamps[  0 ] - halfday,
+                 timestamps[ -1 ] + halfday )
+  ax.set_xlim( [ xmin, xmax ] )
+  markers, stems, baselines = ax.stem( ts.time, ts.value,
+           linefmt='b:' )
+  plt.setp( markers, color='red', linewidth=.5,
+            marker='o'
+          )
+  plt.setp( baselines, marker='None' ) 
+
+  ax.set_title('glucose history')
+  ax.grid(True)
+  ax.set_xlabel('time')
+
+  majorLocator   = dates.DayLocator( )
+  majorFormatter = dates.AutoDateFormatter( majorLocator )
+
+  minorLocator   = dates.HourLocator( interval=6 )
+  minorFormatter = dates.AutoDateFormatter( minorLocator )
+
+  ax.xaxis.set_major_locator(majorLocator)
+  ax.xaxis.set_major_formatter(majorFormatter)
+
+  ax.xaxis.set_minor_locator(minorLocator)
+  ax.xaxis.set_minor_formatter(minorFormatter)
+
+  fig.autofmt_xdate( )
+  labels = ax.get_xminorticklabels()
+  plt.setp(labels, rotation=30, fontsize='small')
+
+  xmin, xmax = ax.get_xlim( )
+  
+  log.info( pformat( {
+    'xlim': [ dates.num2date( xmin ), dates.num2date( xmax ) ],
+    'xticks': dates.num2date( ax.get_xticks( ) ),
+  } ) )
+
+  #ax.set_ylabel('glucose mm/dL')
+  return canvas
+
 def daily_axis( ts ):
   # http://matplotlib.sourceforge.net/mpl_toolkits/axes_grid/users/overview.html
   fig = Figure( ( 2.56, 2.56 ), 300 )
@@ -161,7 +215,8 @@ if __name__ == '__main__':
 
   #canvas = daily_timseries( data )
   #canvas = daily_axis( data )
-  canvas = giant_timeseries( data )
+  #canvas = giant_timeseries( data )
+  canvas = tiled_axis( data )
   canvas.print_figure(outfile)
 
 

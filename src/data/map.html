@@ -83,6 +83,7 @@ HelloProjection.prototype.fromLatLngToPoint = function(latLng) {
 
   var x = latLng.lng();
   var y = latLng.lat();
+  console.log( 'fromLatLngToPoint', this, arguments );
   return new google.maps.Point(x, y);
   var origin = this.worldOrigin_;
   var x = origin.x + this.worldCoordinatePerLonDegree_ * latLng.lng();
@@ -99,6 +100,7 @@ HelloProjection.prototype.fromPointToLatLng = function(point) {
 
   var y = point.y;
   var x = point.x;
+  console.log( 'fromPointToLatLng', this, arguments );
   return new google.maps.LatLng(y, x)
   
   if (y < 0) {
