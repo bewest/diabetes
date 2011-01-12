@@ -85,29 +85,29 @@ def tiled_axis( ts ):
 
   grid = ImageGrid(fig, 111, # similar to subplot(111)
                   nrows_ncols = (3, 1),
-                  axes_pad = 0.1,
+                  axes_pad = 0.5,
                   add_all=True,
                   label_mode = "L",
                   )
-  halfday = dates.relativedelta( days=2, hours=12 )
+  # pad half a day so that major ticks show up in the middle, not on the edges
+  delta = dates.relativedelta( days=2, hours=12 )
+  # XXX: gets a list of days.
   timestamps = glucose.get_days( ts.time )
-  for i, day in enumerate(timestamps):
-    ax = grid[i]
-    #make_plot( ax, 
+  xmin, xmax = ( timestamps[  0 ] - delta,
+                 timestamps[ -1 ] + delta )
 
+  fig.autofmt_xdate( )
 
-  def make_plot( ax ):
+  def make_plot( ax, limit ):
 
     preferspan = ax.axhspan( SAFE[0], SAFE[1],
                              facecolor='g', alpha=0.2,
                              edgecolor = '#003333',
                              linewidth=1
                            )
+  def draw_glucose( ax, limit ):
+    xmin, xmax = limit
     # visualize glucose using stems
-    # XXX: gets a list of days.
-    # pad half a day so that major ticks show up in the middle, not on the edges
-    xmin, xmax = ( timestamps[  0 ] - halfday,
-                   timestamps[ -1 ] + halfday )
     ax.set_xlim( [ xmin, xmax ] )
     markers, stems, baselines = ax.stem( ts.time, ts.value,
              linefmt='b:' )
@@ -116,9 +116,16 @@ def tiled_axis( ts ):
             )
     plt.setp( baselines, marker='None' ) 
 
+  def draw_title( ax, limit ):
     ax.set_title('glucose history')
+
+  def get_axis( ax, limit ):
+    xmin, xmax = limit
+    ax.set_xlim( [ xmin, xmax ] )
+
     ax.grid(True)
-    ax.set_xlabel('time')
+    #ax.set_ylim( [ ts.value.min( ) *.85 , 600 ] )
+    #ax.set_xlabel('time')
 
     majorLocator   = dates.DayLocator( )
     majorFormatter = dates.AutoDateFormatter( majorLocator )
@@ -126,15 +133,15 @@ def tiled_axis( ts ):
     minorLocator   = dates.HourLocator( interval=6 )
     minorFormatter = dates.AutoDateFormatter( minorLocator )
 
-    ax.xaxis.set_major_locator(majorLocator)
-    ax.xaxis.set_major_formatter(majorFormatter)
+    #ax.xaxis.set_major_locator(majorLocator)
+    #ax.xaxis.set_major_formatter(majorFormatter)
 
     ax.xaxis.set_minor_locator(minorLocator)
     ax.xaxis.set_minor_formatter(minorFormatter)
 
-    fig.autofmt_xdate( )
     labels = ax.get_xminorticklabels()
     plt.setp(labels, rotation=30, fontsize='small')
+    plt.setp(ax.get_xmajorticklabels(), rotation=30, fontsize='big')
 
     xmin, xmax = ax.get_xlim( )
     
@@ -143,7 +150,11 @@ def tiled_axis( ts ):
       'xticks': dates.num2date( ax.get_xticks( ) ),
     } ) )
 
-  make_plot( ax )
+  for i, day in enumerate(timestamps):
+    ax = grid[i]
+    get_axis( ax, [ day, day + delta ] )
+    #make_plot( ax, 
+
   #ax.set_ylabel('glucose mm/dL')
   return canvas
 
