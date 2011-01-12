@@ -70,6 +70,22 @@ def daily_timseries( ts ):
   ax.grid(True)
   ax.set_xlabel('time')
 
+  majorLocator   = dates.DayLocator( )
+  majorFormatter = dates.AutoDateFormatter( majorLocator )
+
+  minorLocator   = dates.HourLocator( interval=6 )
+  minorFormatter = dates.AutoDateFormatter( minorLocator )
+
+  ax.xaxis.set_major_locator(majorLocator)
+  ax.xaxis.set_major_formatter(majorFormatter)
+
+  ax.xaxis.set_minor_locator(minorLocator)
+  ax.xaxis.set_minor_formatter(minorFormatter)
+
+  labels = ax.get_xminorticklabels()
+  plt.setp(labels, rotation=30, fontsize='small')
+  plt.setp(ax.get_xmajorticklabels(), rotation=30, fontsize='medium')
+
   xmin, xmax = ax.get_xlim( )
   log.info( pformat( {
     'xlim': [ dates.num2date( xmin ), dates.num2date( xmax ) ],
@@ -78,7 +94,7 @@ def daily_timseries( ts ):
   #ax.set_ylabel('glucose mm/dL')
   return canvas
 
-def tiled_axis( ts ):
+def tiled_axis( ts, filename=None ):
   fig = Figure( ( 2.56 * 4, 2.56 * 4), 300 )
   canvas = FigureCanvas(fig)
   #ax = fig.add_subplot(111)
@@ -141,7 +157,7 @@ def tiled_axis( ts ):
 
     labels = ax.get_xminorticklabels()
     plt.setp(labels, rotation=30, fontsize='small')
-    plt.setp(ax.get_xmajorticklabels(), rotation=30, fontsize='big')
+    plt.setp(ax.get_xmajorticklabels(), rotation=30, fontsize='medium')
 
     xmin, xmax = ax.get_xlim( )
     
@@ -153,6 +169,10 @@ def tiled_axis( ts ):
   for i, day in enumerate(timestamps):
     ax = grid[i]
     get_axis( ax, [ day, day + delta ] )
+    name = '%s-%d.png' % ( day.isoformat( ), i )
+    #fig.savefig( name )
+    canvas.print_figure(name)
+    # fig.clf()
     #make_plot( ax, 
 
   #ax.set_ylabel('glucose mm/dL')
@@ -198,7 +218,8 @@ def giant_timeseries( ts ):
   # visualize glucose using stems
   # XXX: gets a list of days.
   timestamps = glucose.get_days( ts.time )
-  xmin, xmax = timestamps[ 0 ], timestamps[ -1 ]
+  delta = dates.relativedelta( days=1, hours=12 )
+  xmin, xmax = ( timestamps[ 0 ], timestamps[ -1 ] + delta )
   ax.set_xlim( [ xmin, xmax ] )
   markers, stems, baselines = ax.stem( ts.time, ts.value,
            linefmt='b:' )
@@ -211,14 +232,23 @@ def giant_timeseries( ts ):
   ax.set_title('glucose history')
   ax.grid(True)
   ax.set_xlabel('time')
+
   majorLocator   = dates.DayLocator( )
   majorFormatter = dates.AutoDateFormatter( majorLocator )
+
+  minorLocator   = dates.HourLocator( interval=6 )
+  minorFormatter = dates.AutoDateFormatter( minorLocator )
 
   ax.xaxis.set_major_locator(majorLocator)
   ax.xaxis.set_major_formatter(majorFormatter)
 
-  #ax.xaxis.set_minor_locator(minorLocator)
-  #ax.xaxis.set_minor_formatter(minorFormatter)
+  ax.xaxis.set_minor_locator(minorLocator)
+  ax.xaxis.set_minor_formatter(minorFormatter)
+
+  labels = ax.get_xminorticklabels()
+  plt.setp(labels, rotation=30, fontsize='small')
+  plt.setp(ax.get_xmajorticklabels(), rotation=30, fontsize='medium')
+
 
   xmin, xmax = ax.get_xlim( )
   log.info( pformat( {
@@ -235,14 +265,16 @@ if __name__ == '__main__':
   options, args = parser.parse_args( sys.argv )
   infile, outfile = args[ 1 ], args[ 2 ]
   if infile == '-':
-    infile = sys.stdout
+    infile = sys.stdin
 
+  log.info( 'infile: %s' % infile )
   data = get_series( infile )
 
   #canvas = daily_timseries( data )
   #canvas = daily_axis( data )
-  #canvas = giant_timeseries( data )
-  canvas = tiled_axis( data )
+  #canvas = last_day( data )
+  canvas = giant_timeseries( data )
+  #canvas = tiled_axis( data )
   canvas.print_figure(outfile)
 
 
