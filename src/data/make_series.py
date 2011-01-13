@@ -43,33 +43,9 @@ SAFE = ( 70, 140 )
 def month_timeseries( ts ):
   pass
 
-def daily_timseries( ts ):
-  fig = Figure( ( 2.56, 2.56 ), 300 )
-  canvas = FigureCanvas(fig)
-  ax = fig.add_subplot(111)
-
-  preferspan = ax.axhspan( SAFE[0], SAFE[1],
-                           facecolor='g', alpha=0.2,
-                           edgecolor = '#003333',
-                           linewidth=1
-                         )
-  # visualize glucose using stems
-  # XXX: gets a list of days.
-  timestamps = glucose.get_days( ts.time )
-  xmin, xmax = timestamps[ 0 ], timestamps[ -1 ]
-  ax.set_xlim( [ xmin, xmax ] )
-  markers, stems, baselines = ax.stem( ts.time, ts.value,
-           linefmt='b:' )
-  plt.setp( markers, color='red', linewidth=.5,
-            marker='o'
-          )
-  plt.setp( baselines, marker='None' ) 
-  fig.autofmt_xdate( )
-
-  ax.set_title('glucose history')
-  ax.grid(True)
-  ax.set_xlabel('time')
-
+def set_daily_locators( ax, rotation=30,
+                            majorfontsize='small',
+                            minorfontsize='xx-small' ):
   majorLocator   = dates.DayLocator( )
   majorFormatter = dates.AutoDateFormatter( majorLocator )
 
@@ -82,16 +58,49 @@ def daily_timseries( ts ):
   ax.xaxis.set_minor_locator(minorLocator)
   ax.xaxis.set_minor_formatter(minorFormatter)
 
-  labels = ax.get_xminorticklabels()
-  plt.setp(labels, rotation=30, fontsize='small')
-  plt.setp(ax.get_xmajorticklabels(), rotation=30, fontsize='medium')
+  plt.setp(ax.get_xmajorticklabels(), rotation=rotation, fontsize=majorfontsize)
+  plt.setp(ax.get_xminorticklabels(), rotation=rotation, fontsize=minorfontsize)
+
+def plot_glucose_stems( ax, ts ):
+  # visualize glucose using stems
+  markers, stems, baselines = ax.stem( ts.time, ts.value,
+           linefmt='b:' )
+  plt.setp( markers, color='red', linewidth=.5,
+            marker='o' )
+  plt.setp( baselines, marker='None' ) 
+
+def daily_timseries( ts ):
+  fig = Figure( ( 2.56, 2.56 ), 300 )
+  canvas = FigureCanvas(fig)
+  ax = fig.add_axes((0,0,1,1))
+
+  ax.set_ylim( [ 0 , 500 ] )
+
+  preferspan = ax.axhspan( SAFE[0], SAFE[1],
+                           facecolor='g', alpha=0.2,
+                           edgecolor = '#003333',
+                           linewidth=1
+                         )
+  # XXX: gets a list of days.
+  timestamps = glucose.get_days( ts.time )
+  halfday = dates.relativedelta( hours=12 )
+  soleday = dates.relativedelta( days=1 )
+  xmin, xmax = ( timestamps[ 0 ], timestamps[ 1 ] + soleday )
+  ax.set_xlim( [ xmin, xmax ] )
+  #fig.autofmt_xdate( )
+  #plot_glucose_stems( ax, ts )
+  plt.setp(ax.get_xminorticklabels(), visible=False )
+  plt.setp(ax.get_xmajorticklabels(), visible=False )
+  plt.setp(ax.get_ymajorticklabels(), visible=False )
+  plt.setp(ax.get_yminorticklabels(), visible=False )
+
+  ax.grid(True)
 
   xmin, xmax = ax.get_xlim( )
   log.info( pformat( {
     'xlim': [ dates.num2date( xmin ), dates.num2date( xmax ) ],
   } ) )
 
-  #ax.set_ylabel('glucose mm/dL')
   return canvas
 
 def tiled_axis( ts, filename=None ):
@@ -206,7 +215,7 @@ def giant_timeseries( ts ):
   fig = Figure( ( 20.3, 3.5 ), 300 )
   canvas = FigureCanvas(fig)
 
-  ax = fig.add_subplot(111)
+  ax = fig.add_subplot(111, padding=0)
 
 
   preferspan = ax.axhspan( SAFE[0], SAFE[1],
@@ -219,7 +228,10 @@ def giant_timeseries( ts ):
   # XXX: gets a list of days.
   timestamps = glucose.get_days( ts.time )
   delta = dates.relativedelta( days=1, hours=12 )
-  xmin, xmax = ( timestamps[ 0 ], timestamps[ -1 ] + delta )
+  oneday = dates.relativedelta( days=1 )
+  xmin, xmax = ( timestamps[ 0 ], timestamps[ -1 ] )
+  
+  
   ax.set_xlim( [ xmin, xmax ] )
   markers, stems, baselines = ax.stem( ts.time, ts.value,
            linefmt='b:' )
@@ -270,12 +282,12 @@ if __name__ == '__main__':
   log.info( 'infile: %s' % infile )
   data = get_series( infile )
 
-  #canvas = daily_timseries( data )
+  canvas = daily_timseries( data )
   #canvas = daily_axis( data )
   #canvas = last_day( data )
-  canvas = giant_timeseries( data )
+  #canvas = giant_timeseries( data )
   #canvas = tiled_axis( data )
-  canvas.print_figure(outfile)
+  canvas.print_figure(outfile, pad_inches=None)
 
 
 
