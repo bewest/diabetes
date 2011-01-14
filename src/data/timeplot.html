@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Test</title>
+<style type="text/css">
+</style>
+  <script src="http://api.simile-widgets.org/timeplot/1.1/timeplot-api.js" 
+     type="text/javascript"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+
+<script type="text/javascript" src="js/jquery.svg.js"></script>
+
+<script type="text/javascript">
+(function($) {
+  console.log( this, arguments );
+  $(document).load( function( ) {
+    console.log( 'ready' );
+    var svg = $( '#svg' )[ 0 ];
+    var svgdoc  = $(svg).svg( 'after',
+                    svg.getSVGDocument( ),
+                    svg, { } );
+    console.log( svg, $(svg).svg( 'get' ) );
+  } );
+  onLoad( );
+  console.log( timeplot );
+})( jQuery );
+
+
+
+var timeplot;
+ 
+function onLoad() {
+  var plotInfo = [
+    Timeplot.createPlotInfo({
+      id: "plot1"
+    })
+  ];
+ 
+  console.log( jQuery( 'my-timeplot' ), jQuery( 'my-timeplot' )[ 0 ] );
+  timeplot = Timeplot.create( jQuery("my-timeplot")[0], plotInfo );
+}
+ 
+var resizeTimerID = null;
+function onResize() {
+    if (resizeTimerID == null) {
+        resizeTimerID = window.setTimeout(function() {
+            resizeTimerID = null;
+            timeplot.repaint();
+        }, 100);
+    }
+}
+
+
+/*
+(function($) {
+  $(document).load(onLoad);
+
+})( jQuery );
+(function($) {
+  console.log( this, arguments );
+  // $(document).load(onLoad);
+})( jQuery );
+*/
+
+</script>
+</head>
+<body>
+
+<h1>Test</h1>
+<a href="map.html">map test</a>
+
+<div id="svg_embed">
+<embed id="svg"
+       src="./test.svg"
+       type="image/svg+xml"
+       ></embed>
+
+<img src="./tile.png"/>
+</div>
+
+<div>
+
+</div>
+<div id="timeplot_wrapper">
+<div id="my-timeplot"></div>
+</div>
+
+
+</body>
+</html>
