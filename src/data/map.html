@@ -5,7 +5,7 @@
 <style type="text/css">
 #map { 
   width: 80%;
-  height: 10em;
+  height: 256px;
   border: 2px solid brown;
 }
 </style>
@@ -17,48 +17,59 @@
 <script type="text/javascript" src="js/jquery.svg.js"></script>
 
 <script type="text/javascript">
-  function custom_map_example() {
-      var myOptions = {
-          zoom: 15,
-          center: new google.maps.LatLng(37.2008385157313, -93.2812106609344),
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-      }
-      var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+// clone of Linden Lab stuff?
+// http://code.google.com/p/openmetaverse/source/browse/trunk/Simian/GridFrontend/map.php?r=425
+// The relative or absolute URL of your SimianGrid map tile folder
+var TILE_HOST = "/Grid/map/";
 
-      var BuildingsLayer = new google.maps.ImageMapType({
-          getTileUrl: function(coord, zoom) {
-              return "http://search.missouristate.edu/map/tilesets/baselayer/" + zoom + "_" + coord.x + "_" + coord.y + ".png";
-          },
-          tileSize: new google.maps.Size(256, 256),
-          isPng: true
-      });
+// The maximum width/height of the grid in regions (must be a power of two)
+var GRID_WIDTH_IN_REGIONS = 7;
+// Map from a GRID_WIDTH_IN_REGIONS x GRID_WIDTH_IN_REGIONS square to Lat/Long (0, 0),(-90, 90) 
+var SCALE_FACTOR = 90.0 / GRID_WIDTH_IN_REGIONS;
 
+euclidTileUrl = function(coord, zoom) {
+  // var gridZoom = 8 - zoom;
+  var gridZoom = zoom;
+  //var regions_per_tile_edge = Math.pow(2, gridZoom - 1);
+  var regions_per_tile_edge = Math.pow(2, gridZoom );
+      
+  // Convert from tile coordinates to world coordinates
+  var x = coord.x * regions_per_tile_edge;
+  var y = coord.y * regions_per_tile_edge;
+  
+  // Flip the y axis
+  y = -y;
+      
+  // Orient the y axis from the bottom-left corner instead of the top-left
+  y -= regions_per_tile_edge;
+  
+  // Adjust x/y to the lower-left tile for this zoom level
+  x -= x % regions_per_tile_edge;
+  y -= y % regions_per_tile_edge;  
+  
+  return "t-" + x + "-" + y + ".png#" + gridZoom;
+};
 
-      var openStreet = new google.maps.ImageMapType({
-        getTileUrl: function(ll, z) {
-          return "http://tile.openstreetmap.org/" + z + "/" + ll.x + "/" + ll.y + ".png";
-        },
-       tileSize: new google.maps.Size(256, 256),
-       isPng: true,
-       maxZoom: 18,
-       name: "OSM",
-       alt: "Open Streetmap tiles"
-      });
+// Override the default Mercator projection with Euclidean projection
+// (insert oblig. Flatland reference here)
+function EuclideanProjection() {
+};
 
+EuclideanProjection.prototype.fromLatLngToPoint = function(latLng, opt_point) {
+        var point = opt_point || new google.maps.Point(0, 0);
+        
+    point.x = latLng.lng() / SCALE_FACTOR;
+    point.y = latLng.lat() / SCALE_FACTOR;
+    
+        return point;
+};
 
-      map.overlayMapTypes.push(BuildingsLayer);
-
-      var ParkingLayer = new google.maps.ImageMapType({
-          getTileUrl: function(coord, zoom) {
-              return "http://search.missouristate.edu/map/tilesets/parkinglot/" + zoom + "_" + coord.x + "_" + coord.y + ".png";
-          },
-          minZoom: 12,
-          tileSize: new google.maps.Size(256, 256),
-          isPng: true
-      });
-
-      map.overlayMapTypes.push(ParkingLayer);
-  }
+EuclideanProjection.prototype.fromPointToLatLng = function(point) {
+    var lng = point.x * SCALE_FACTOR;
+    var lat = point.y * SCALE_FACTOR;
+    
+        return new google.maps.LatLng(lat, lng, true);
+};
 
 
   prefix = "file:///home/bewest/Documents/bb/diabetes/src/data/"
@@ -66,11 +77,18 @@
     getTileUrl: function(ll, z) {
       var url = prefix + "tiles/t-" + ll.x + "-" + ll.y + ".png#" + z;
       console.log( this, arguments, url );
+      // console.log( new EuclideanProjection(6) );
+      // console.log( 'projection', this.projection );
+      console.log( 'center', test.gmap.getCenter( ) );
+      // console.log( 'center 2 ll',
+      //           this.projection.fromPointToLatLng( test.gmap.getCenter( ) ) );
+      // return prefix + 'tiles/' + euclidTileUrl( ll, z );
       return url;
     },
     tileSize: new google.maps.Size(256, 256),
     isPng: false,
-    maxZoom: 18,
+    maxZoom: 5,
+    projection: new EuclideanProjection(6),
     name: "hello",
     alt: "hello tiles"
   });
@@ -143,7 +161,6 @@ var getTile = function( coord,  zoom ) {
   }
 */
   
-  // gallPetersMapType.projection = new GallPetersProjection();  
 
 // HelloLayer.projection = new HelloProjection();  
 
@@ -162,7 +179,7 @@ function logevent( ) {
     // test.map = $( '#map' );
     var latlng = new google.maps.LatLng(0, 0);
     var myOptions = {
-      zoom: 8,
+      zoom: 0,
       center: latlng,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       mapTypeControlOptions: {
@@ -185,72 +202,14 @@ function logevent( ) {
     test.gmap.mapTypes.set('HelloLayer', HelloLayer);
     test.gmap.setMapTypeId('HelloLayer');
 
+    // test.gmap.panBy( y=-256 )
+
 
   } );
 
     
 })( jQuery );
 
-
-// http://maps.forum.nu/gm_function_plotter.html
-// ====== Create the Euclidean Projection for the flat map ======
-// == Constructor ==
-function EuclideanProjection(maxzoom){
-  this.pixelsPerLonDegree = [];
-  this.pixelsPerLonRadian = [];
-  this.pixelOrigo = [];
-  this.tileBounds = [];
-  var b = 256;
-  var c = 1;
-  for(var d = 0; d < maxzoom ; d++){
-    var e = b/2;
-    this.pixelsPerLonDegree.push(b / 360);
-    this.pixelsPerLonRadian.push(b / (2*Math.PI));
-    this.pixelOrigo.push(new GPoint(e,e));
-    this.tileBounds.push(c);
-    b *= 2;
-    c *= 2
-  }
-}
-
-// == Attach it to the GProjection() class ==
-// EuclideanProjection.prototype = new GProjection();
-// EuclideanProjection.prototype = new google.maps.Projection( )
-
-
-// == A method for converting latitudes and longitudes to pixel coordinates == 
-EuclideanProjection.prototype.fromLatLngToPixel = function(a,b){
-  var c = Math.round(this.pixelOrigo[b].x + a.lng()* this.pixelsPerLonDegree[b]);
-  var d = Math.round(this.pixelOrigo[b].y + (-1 * a.lat()) * this.pixelsPerLonDegree[b]);
-  return new GPoint(c,d)
-};
-
-// == a method for converting pixel coordinates to latitudes and longitudes ==
-EuclideanProjection.prototype.fromPixelToLatLng = function(a,b,c){
-  var d = (a.x - this.pixelOrigo[b].x) / this.pixelsPerLonDegree[b];
-  var e = -1 * (a.y - this.pixelOrigo[b].y) / this.pixelsPerLonDegree[b];
-  return new GLatLng(e,d,c)
-};
-
-// == a method that checks if the y value is in range, and wraps the x value ==
-EuclideanProjection.prototype.tileCheckRange = function(a,b,c){
-  var d=this.tileBounds[b];
-  if (a.y < 0 || a.y >= d) {
-    return false;
-  }
-  if(a.x < 0 || a.x >= d){
-    a.x = a.x % d;
-    if ( a.x < 0 ){
-      a.x += d;
-    }
-  }
-  return true
-}
-
-// == a method that returns the width of the tilespace ==     
-EuclideanProjection.prototype.getWrapWidth = function(zoom) {
-  return this.tileBounds[zoom] * 256;
-}
 
 
 
