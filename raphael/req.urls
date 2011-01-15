@@ -1,0 +1,13 @@
+# base url:  http://mabp.kiev.ua/
+# wget -B http://mabp.kiev.ua/ -i req.urls -P ./js/
+http://mabp.kiev.ua/wp-content/themes/inove/js/jquery-1.4.3.min.js
+http://mabp.kiev.ua/wp-content/themes/inove/js/jquery-ui-1.8.6.custom.min.js
+/content/source/raphael/raphael-1.5.2.js
+/content/source/raphael/g.raphael.js
+/content/source/raphael/g.pie.js
+/content/source/raphael/g.line.js
+/content/source/raphael/g.dot.js
+/content/source/raphael/g.bar.js
+/content/source/googlemaps/RaphaelOverlay-0.9.3.js
+/content/examples/graphael-overlay.js
+# EOF
