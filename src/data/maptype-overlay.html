@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html> 
+<head>
+<title>Google Maps JavaScript API v3 Example: Overlay MapTypes</title>
+<link href="http://code.google.com/apis/maps/documentation/javascript/examples/standard.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>  
+<script type="text/javascript" src="js/euclid.js"></script>
+<script type="text/javascript"> 
+  var euclid = new EuclidProjection(2, 6, 6);
+  prefix = "file:///home/bewest/Documents/bb/diabetes/src/data/"
+  var HelloLayer = new google.maps.ImageMapType({
+    getTileUrl: function(coord, z) {
+      var x = coord.x;
+      var y = coord.y ;
+      var url = prefix + "tiles/t-" + coord.x + "-" + coord.y + ".png#" + z;
+      console.log( this, arguments, url );
+      return url;
+    },
+    tileSize: new google.maps.Size(256, 256),
+    isPng: false,
+    maxZoom: 5,
+    // projection: euclid,
+    name: "hello",
+    opacity: 0.3,
+    projection: euclid,
+    alt: "hello tiles"
+  });
+  HelloLayer.projects = euclid;
+  function CoordMapType(tileSize) {
+    this.tileSize = tileSize;
+  }
+ 
+  CoordMapType.prototype.getProjection = function() {
+    return euclid;
+  }
+  CoordMapType.prototype.getTile = function(coord, zoom, ownerDocument) {
+    var div = ownerDocument.createElement('DIV');
+    div.innerHTML = coord;
+    div.style.width = this.tileSize.width + 'px';
+    div.style.height = this.tileSize.height + 'px';
+    div.style.fontSize = '10';
+    div.style.borderStyle = 'solid';
+    div.style.borderWidth = '1px';
+    div.style.borderColor = '#AAAAAA';
+    div.style.background = 'none';
+    return div;
+  };
+ 
+  var map;
+  var zero = new google.maps.LatLng(0, 0);
+  
+  function initialize() {
+    var mapOptions = {
+      zoom: 0,
+      center: zero,
+      mapTypeId: 'HelloLayer',
+      mapTypeIds: [ 'HelloLayer', google.maps.MapTypeId.ROADMAP ],
+    };
+    map = new google.maps.Map(document.getElementById("map_canvas"),
+                                      mapOptions);
+
+    // Insert this overlay map type as the first overlay map type at
+    // position 0. Note that all overlay map types appear on top of
+    // their parent base map.
+    map.overlayMapTypes.insertAt(
+        0, new CoordMapType(new google.maps.Size(256, 256)));
+    // map.mapTypes.set('hello', HelloLayer );
+    map.overlayMapTypes.insertAt(1, HelloLayer);
+    map.setMapTypeId('hello' );
+    map.set('projection', euclid);
+  }
+</script> 
+</head> 
+<body onload="initialize()"> 
+  <div id="map_canvas" style="width: 640px; height: 480px;">map div</div> 
+</body> 
+</html> 

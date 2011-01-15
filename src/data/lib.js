@@ -128,6 +128,7 @@ isPng: true,
 
 */
 
+/*
 // http://maps.forum.nu/gm_function_plotter.html
 // ====== Create the Euclidean Projection for the flat map ======
 // == Constructor ==
@@ -194,6 +195,7 @@ EuclideanProjection.prototype.getWrapWidth = function(zoom) {
   return this.tileBounds[zoom] * 256;
 }
 
+*/
 
 
 // old random hacking.
