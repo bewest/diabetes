@@ -7,7 +7,6 @@ no-hg.*
 *.pyc
 *.pyo
 
-tiles*
 
 #####
 # EOF
