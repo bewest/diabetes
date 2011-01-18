@@ -35,13 +35,12 @@
     tileSize: new google.maps.Size(256, 256),
     isPng: false,
     maxZoom: 5,
-    // projection: euclid,
     name: "hello",
     opacity: 0.3,
     projection: euclid,
     alt: "hello tiles"
   });
-  //HelloLayer.projection = euclid;
+
   function CoordMapType(tileSize) {
     this.tileSize = tileSize;
     this.name = 'coord';
@@ -86,7 +85,7 @@
     // their parent base map.
     map.overlayMapTypes.insertAt(
         0, new CoordMapType(new google.maps.Size(256, 256)));
-    // map.mapTypes.set('hello', HelloLayer );
+
     map.mapTypes.set('hello', HelloLayer);
     map.setMapTypeId('hello' );
     map.set('projection', euclid);
