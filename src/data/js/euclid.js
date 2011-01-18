@@ -49,9 +49,9 @@ EuclidProjection.prototype.fromLatLngToPoint = function(ll){
 EuclidProjection.prototype.fromLatLngToAxis = function(ll) {
   // Note that latitude is measured from the world coordinate origin
   // at the top left of the map.
-  var x = ( this._px_per_lng * ll.lng());
-  var delta = ( this._px_per_lat * ll.lat() * -1);
-  var y = delta * -1;
+  var x      = ( this._px_per_lng * ll.lng());
+  var delta  = ( this._px_per_lat * ll.lat() * -1);
+  var y      = delta * -1;
   var result = new google.maps.Point(x, y);
   return result;
 
@@ -81,8 +81,8 @@ EuclidProjection.prototype.fromAxisToLatLng = function(axis){
 
 EuclidProjection.prototype.fromPointToAxis = function(world) {
   var origin = this._origin;
-  var x    = (world.x - origin.x);
-  var y    = (world.y - origin.y) * -1;
+  var x      = (world.x - origin.x);
+  var y      = (world.y - origin.y) * -1;
   var result = new google.maps.Point(x, y);
   return result;
 
