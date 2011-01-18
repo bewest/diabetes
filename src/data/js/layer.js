@@ -63,9 +63,13 @@
     // in latlngs and convert them to pixels coordinates.
     // We'll use these coordinates to resize the DIV.
     var xxyy = this._point;
-    console.log( 'draw', this, arguments  );
-    var ne = new google.maps.Point( 128, 128 );
-    var sw = new google.maps.Point( -128, -128 );
+    console.log( 'draw', this, arguments );
+    var center = this.getMap( ).getCenter( );
+    var xxxx = this._projection.fromLatLngToAxis( center );
+    // XXX: use this projection to find the boundaries for the new middle.
+    // overlayProjection.fromLatLngToDivPixel( 
+    var ne = this._projection.fromAxisToWorld( new google.maps.Point( xxxx.x + 128, 128 ) );
+    var sw = this._projection.fromAxisToWorld( new google.maps.Point( xxxx.x + -128, -128 ) );
 
     // Resize the image's DIV to fit the indicated dimensions.
     var div = this._div;
