@@ -44,6 +44,7 @@
   //HelloLayer.projection = euclid;
   function CoordMapType(tileSize) {
     this.tileSize = tileSize;
+    this.name = 'coord';
   }
  
   CoordMapType.prototype.getProjection = function() {
@@ -68,9 +69,14 @@
   function initialize() {
     var mapOptions = {
       zoom: 0,
+      mapTypeControl: true,
       center: zero,
-      mapTypeId: 'HelloLayer',
-      mapTypeIds: [ 'HelloLayer', google.maps.MapTypeId.ROADMAP ],
+      mapTypeId: 'hello',
+
+      mapTypeControlOptions : {
+        mapTypeIds: ['coordinate', 'hello', google.maps.MapTypeId.ROADMAP],
+        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+      }
     };
     map = new google.maps.Map(document.getElementById("map_canvas"),
                                       mapOptions);
@@ -81,13 +87,14 @@
     map.overlayMapTypes.insertAt(
         0, new CoordMapType(new google.maps.Size(256, 256)));
     // map.mapTypes.set('hello', HelloLayer );
-    map.overlayMapTypes.insertAt(1, HelloLayer);
-    map.setMapTypeId('HelloLayer' );
+    map.mapTypes.set('hello', HelloLayer);
+    map.setMapTypeId('hello' );
     map.set('projection', euclid);
   }
 </script> 
 </head> 
 <body onload="initialize()"> 
+<h1>playing with google projections/overlays</h1>
   <div id="map_canvas" style="width: 640px; height: 480px;">map div</div> 
 </body> 
 </html> 
