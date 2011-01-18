@@ -35,30 +35,6 @@ function EuclidProjection(tiles, tilesize, lng_ticks, lat_ticks ){
   return this;
 }
 
-EuclidProjection.prototype.fromLatLngToAxis = function(ll) {
-  // Note that latitude is measured from the world coordinate origin
-  // at the top left of the map.
-  var x = ( this._px_per_lng * ll.lng());
-  var delta = ( this._px_per_lat * ll.lat() * -1);
-  var y = delta * -1;
-  var result = new google.maps.Point(x, y);
-  return result;
-
-}
-EuclidProjection.prototype.fromPointToAxis = function(world) {
-  var origin = this._origin;
-  var x    = (world.x - origin.x);
-  var y    = (world.y - origin.y) * -1;
-  var result = new google.maps.Point(x, y);
-  return result;
-
-}
-
-EuclidProjection.prototype.fromAxisToWorld = function(axis) {
-  var result = axis;
-  return result;
-}
-
 
 EuclidProjection.prototype.fromLatLngToPoint = function(ll){
   // 
@@ -70,16 +46,44 @@ EuclidProjection.prototype.fromLatLngToPoint = function(ll){
   
 }
 
+EuclidProjection.prototype.fromLatLngToAxis = function(ll) {
+  // Note that latitude is measured from the world coordinate origin
+  // at the top left of the map.
+  var x = ( this._px_per_lng * ll.lng());
+  var delta = ( this._px_per_lat * ll.lat() * -1);
+  var y = delta * -1;
+  var result = new google.maps.Point(x, y);
+  return result;
+
+}
+
+EuclidProjection.prototype.fromAxisToWorld = function(axis) {
+  var result = axis;
+  return result;
+}
 EuclidProjection.prototype.fromPointToLatLng = function(point, noWrap) {
   // XXX: what is noWrap? it's passed occasionally
   var y      = point.y;
   var x      = point.x;
   var axis   = this.fromPointToAxis( point );
+  var result = this.fromAxisToLatLng( axis );
+  // console.log( 'p2ll', this, arguments, result );
+  return result;
+
+}
+
+EuclidProjection.prototype.fromAxisToLatLng = function(axis){
   var lng    = (axis.x) / this._px_per_lng;
   var lat    = (axis.y) / this._px_per_lat * -1;
-  // lat = invertX( lat, this._tilesize, this._num_tiles ) * 1;
   var result = new google.maps.LatLng(lat, lng);
-  // console.log( 'p2ll', this, arguments, result );
+  return result;
+}
+
+EuclidProjection.prototype.fromPointToAxis = function(world) {
+  var origin = this._origin;
+  var x    = (world.x - origin.x);
+  var y    = (world.y - origin.y) * -1;
+  var result = new google.maps.Point(x, y);
   return result;
 
 }
