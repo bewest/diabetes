@@ -49,7 +49,7 @@ def draw_tile( name ):
            transform = ax.transAxes )
   ax.grid(True)
 
-  canvas.print_figure( name )
+  fig.savefig( name, transparent=True )
 
 
 
