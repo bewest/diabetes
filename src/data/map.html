@@ -42,8 +42,6 @@ function HelloProjection() {
   console.log( 'HelloProjection', this, arguments );
 };
 
-
-
 HelloProjection.prototype.fromLatLngToPoint = function(latLng) {
 
   var x = latLng.lng();
@@ -108,6 +106,7 @@ var getTile = function( coord,  zoom ) {
   }
 */
   
+  // gallPetersMapType.projection = new GallPetersProjection();  
 
 // HelloLayer.projection = euclid;
 
@@ -115,8 +114,6 @@ function logevent( ) {
   console.log( 'event', this, arguments );
   console.log( 'projection?', this.getProjection ? this.getProjection( ) : null );
 }
-
-
 
 (function($) {
   $(document).ready( function( ) {
@@ -166,6 +163,7 @@ function logevent( ) {
     
   } );
 
+    
 })( jQuery );
 
 var lib = (function( $ ) {

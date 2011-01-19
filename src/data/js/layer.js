@@ -68,8 +68,13 @@
     var xxxx = this._projection.fromLatLngToAxis( center );
     // XXX: use this projection to find the boundaries for the new middle.
     // overlayProjection.fromLatLngToDivPixel( 
-    var ne = this._projection.fromAxisToWorld( new google.maps.Point( xxxx.x + 128, 128 ) );
-    var sw = this._projection.fromAxisToWorld( new google.maps.Point( xxxx.x + -128, -128 ) );
+    var ne = overlayProjection.fromLatLngToDivPixel(
+              this._projection.fromAxisToLatLng( new google.maps.Point( xxxx.x , 128 ) )
+           );
+    console.log( 'center', center, xxxx, ne );
+    var sw = overlayProjection.fromLatLngToDivPixel(
+              this._projection.fromAxisToLatLng( new google.maps.Point( xxxx.x , -128 ) )
+           );
 
     // Resize the image's DIV to fit the indicated dimensions.
     var div = this._div;
