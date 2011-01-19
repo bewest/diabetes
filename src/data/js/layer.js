@@ -64,24 +64,44 @@
     // We'll use these coordinates to resize the DIV.
     var xxyy = this._point;
     console.log( 'draw', this, arguments );
+    // return;
     var center = this.getMap( ).getCenter( );
-    var xxxx = this._projection.fromLatLngToAxis( center );
+    var bounds = this.getMap( ).getBounds( );
+    
+    var axis = this._projection.fromLatLngToAxis( center );
     // XXX: use this projection to find the boundaries for the new middle.
     // overlayProjection.fromLatLngToDivPixel( 
+    
+    var ne = bounds.getNorthEast();
+    var sw = bounds.getSouthWest();
+    var l = bounds.getSouthWest().lng();
+    var b = bounds.getSouthWest().lat();
+    var t = bounds.getNorthEast().lat();
+    var r = bounds.getNorthEast().lng();
+    var middle = new google.maps.LatLng( b + ( t - b ) / 2.25,
+                                         l + ( r - l ) / 2.25 );
+    /*
     var ne = overlayProjection.fromLatLngToDivPixel(
-              this._projection.fromAxisToLatLng( new google.maps.Point( xxxx.x , 128 ) )
+              this._projection.fromAxisToLatLng( new google.maps.Point( -128 , 128 ) )
            );
-    console.log( 'center', center, xxxx, ne );
+    */
+
+    var middleXY = overlayProjection.fromLatLngToDivPixel( middle );
+    console.log( 'center', center, axis, middleXY );
+    /*
     var sw = overlayProjection.fromLatLngToDivPixel(
-              this._projection.fromAxisToLatLng( new google.maps.Point( xxxx.x , -128 ) )
+              this._projection.fromAxisToLatLng( new google.maps.Point( +128 , -128 ) )
            );
+    */
 
     // Resize the image's DIV to fit the indicated dimensions.
     var div = this._div;
-    div.style.left = sw.x + 'px';
-    div.style.top = ne.y + 'px';
-    div.style.width = (ne.x - sw.x) + 'px';
-    div.style.height = (sw.y - ne.y) + 'px';
+    var result = middleXY;
+    div.style.left   = result.x.toString( ) + 'px';
+    div.style.top    = result.y.toString( ) + 'px';
+    div.style.width  = '256px';
+    div.style.height = '256px';
+    console.log( middle, div );
   }
 
   FloatingOverlay.prototype.onRemove = function() {
