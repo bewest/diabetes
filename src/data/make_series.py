@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 #from matplotlib.backends.backend_svg import FigureCanvasSVG as FigureCanvas
+import user
 from matplotlib.dates import AutoDateLocator
 from matplotlib import dates
 from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvas
@@ -215,7 +216,7 @@ def giant_timeseries( ts ):
   fig = Figure( ( 20.3, 3.5 ), 300 )
   canvas = FigureCanvas(fig)
 
-  ax = fig.add_subplot(111, padding=0)
+  ax = fig.add_subplot(111)
 
 
   preferspan = ax.axhspan( SAFE[0], SAFE[1],
@@ -282,12 +283,12 @@ if __name__ == '__main__':
   log.info( 'infile: %s' % infile )
   data = get_series( infile )
 
-  canvas = daily_timseries( data )
+  #canvas = daily_timseries( data )
   #canvas = daily_axis( data )
   #canvas = last_day( data )
-  #canvas = giant_timeseries( data )
+  canvas = giant_timeseries( data )
   #canvas = tiled_axis( data )
-  canvas.print_figure(outfile, pad_inches=None)
+  canvas.print_figure(outfile)
 
 
 
