@@ -16,7 +16,7 @@
  * Inherits from:
  *  - <OpenLayers.Layer.Grid>
  */
-OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
+var XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
     
     /**
      * APIProperty: isBaseLayer
@@ -119,6 +119,7 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
      */
     getURL: function (bounds) {
         var xyz = this.getXYZ(bounds);
+        console.log( this, arguments, xyz );
         var url = this.url;
         if (url instanceof Array) {
             var s = '' + xyz.x + xyz.y + xyz.z;
