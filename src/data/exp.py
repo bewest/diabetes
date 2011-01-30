@@ -262,8 +262,5 @@ if __name__ == '__main__':
   #canvas.print_figure( outfile, transparent=True )
   canvas.figure.savefig( outfile, transparent=True)
 
-
-
-
 #####
 # EOF
