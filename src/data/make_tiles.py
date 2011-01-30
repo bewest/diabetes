@@ -7,6 +7,13 @@ from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 import datetime
+import sys
+import logging
+import optparse
+log = logging.getLogger( )
+logging.basicConfig(stream=sys.stdout)
+log.setLevel(logging.INFO)
+log.info('hello world')
 
 def day_range( start, end ):
   pass
@@ -51,6 +58,13 @@ def draw_tile( name ):
 
   fig.savefig( name, transparent=True )
 
+def get_opts( ):
+  parser = optparse.OptionParser()
+  parser.add_option('-v', '--verbose', dest='verbose'
+                   )
+
+def main( ):
+  pass
 
 
 if __name__ == '__main__':
