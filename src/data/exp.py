@@ -213,15 +213,6 @@ def grid( data ):
     #print tick.get_ydata()
     
     
-  print yaxis
-  #print repr(yaxis.get_ticklines(minor=True))
-
-  two = fig.add_subplot(5, 1, 5, alpha=0.2 )
-  two.patch.set_alpha(.15)
-  two.text( .5, .5, 'foo', 
-         horizontalalignment='center',
-         verticalalignment='center',
-         transform = two.transAxes, alpha=.20 )
     
   return canvas
 
