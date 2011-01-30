@@ -174,6 +174,22 @@ def config_yaxis( ax ):
   ax.yaxis.set_major_locator( ticker.FixedLocator( tick_locs ) )
   ax.yaxis.set_major_formatter(ticker.FixedFormatter( tick_locs ))
 
+def y_axis_panel( ):
+  """Just get the yaxis"""
+  """TODO: more sensitive ticks?"""
+  fig = Figure( ( .64, 5.12 ), 300 )
+  canvas = FigureCanvas(fig)
+  ax = fig.add_axes((.9,1./3.,1.,.5))
+  ax.grid(True)
+  config_yaxis( ax )
+  safe_span(ax)
+  ax.xaxis.set_visible(False)
+  return canvas
+
+def x_axis_panel( ):
+  fig = Figure( ( 2.56, 2.56 ), 300 )
+  canvas = FigureCanvas(fig)
+
 def grid( data ):
   fig = Figure( ( 2.56, 2.56 ), 300 )
   canvas = FigureCanvas(fig)
@@ -241,8 +257,10 @@ if __name__ == '__main__':
     records = glucose.glucose_for_day( data, day )
     n = day.strftime( '%Y-%m-%d' )
     
-  canvas = grid( data )
-  canvas.print_figure(outfile)
+  canvas = y_axis_panel( )
+  #canvas.print_png(outfile, transparent=True)
+  #canvas.print_figure( outfile, transparent=True )
+  canvas.figure.savefig( outfile, transparent=True)
 
 
 
