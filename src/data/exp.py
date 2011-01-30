@@ -168,9 +168,12 @@ def daily_axis( ts ):
 
   return canvas
 
-def glucose_ticks( ):
-  return ticker.FixedLocator( [40, 70 ] )
-  
+def config_yaxis( ax ):
+  ax.set_ylim( [ 40, 400 ] )
+  tick_locs = [40,70,140,200,300,400]
+  ax.yaxis.set_major_locator( ticker.FixedLocator( tick_locs ) )
+  ax.yaxis.set_major_formatter(ticker.FixedFormatter( tick_locs ))
+
 def grid( data ):
   fig = Figure( ( 2.56, 2.56 ), 300 )
   canvas = FigureCanvas(fig)
@@ -182,7 +185,6 @@ def grid( data ):
   ax = fig.add_axes((.5,0,1,1))
   xmin, xmax = days[ 0 ], days[ -1 ]
   ax.set_xlim( [ xmin, xmax ] )
-  ax.set_ylim( [ 40, 400 ] )
   ax.grid(True)
   safe_span(ax)
   one = ax.text( .50, .50, name,
@@ -195,25 +197,9 @@ def grid( data ):
            horizontalalignment='center',
            verticalalignment='center',
            transform = ax.transAxes )
-  #ax.yaxis.set_major_locator(glucose_ticks())
-  #ax.yaxis.set_major_formatter(ticker.FixedFormatter( [0, 40,70,140,200,300,400] ))
-  ax.yaxis.set_minor_locator(ticker.MaxNLocator( 100, steps=[ 1, 5, 10 ]) )
   set_daily_locators( ax )
-  #ax.autofmt_xdate( True)
-  plt.setp(ax.get_xminorticklabels(), visible=True )
-  plt.setp(ax.get_xmajorticklabels(), visible=True )
-  plt.setp(ax.get_ymajorticklabels(), visible=True )
-  plt.setp(ax.get_yminorticklabels(), visible=True )
+  config_yaxis( ax )
 
-  yaxis = ax.get_yaxis()
-  #plt.setp(yaxis.get_minorticklines()
-  for i, tick in enumerate(yaxis.get_minorticklines()):
-    if i % 5 == 0:
-      tick.set( linewidth=5, xdata=[0,5] )
-    #print tick.get_ydata()
-    
-    
-    
   return canvas
 
 
