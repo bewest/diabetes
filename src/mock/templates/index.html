@@ -5,15 +5,34 @@
 <link rel="stylesheet" href="./static/style.css" type="text/css" />
 <style type="text/css">
 </style>
-<script src="http://openlayers.org/api/OpenLayers.js"></script>
 </head>
 <body>
+<%
+import cherrypy
+from pprint import pformat
+%>
 
 <h1>SIMPLE</h1>
 <p><span>${salutation}</span>
    <span>${target}</span>
 </p>
+<ol>
+  <li><a href="./list">List Chart Anatomy</a></li>
+</ol>
+<pre>
+url
+${cherrypy.url('list')}
+dir()
+${pformat(dir())}
+locals()
+${pformat(locals())}
+pageargs
+${pformat(pageargs)}
+</pre>
 
+<div id="map" class="smallmap"></div>
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="http://proj4js.org/lib/proj4js-compressed.js"></script>
 </body>
 </html>
 
