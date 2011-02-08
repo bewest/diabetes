@@ -283,10 +283,10 @@ if __name__ == '__main__':
   log.info( 'infile: %s' % infile )
   data = get_series( infile )
 
-  canvas = daily_timseries( data )
+  #canvas = daily_timseries( data )
   #canvas = daily_axis( data )
   #canvas = last_day( data )
-  #canvas = giant_timeseries( data )
+  canvas = giant_timeseries( data )
   #canvas = tiled_axis( data )
   canvas.print_figure(outfile)
 
