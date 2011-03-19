@@ -70,6 +70,7 @@ function add(ll) {
 */
 
 OpenLayers.DOTS_PER_INCH = 300;
+//OpenLayers.DOTS_PER_INCH = 4.25;
 // left, bottom, right, top
 var extent = new OpenLayers.Bounds(-(50), -(.7), (50), 5.1 );
 // ft?
@@ -96,7 +97,7 @@ $(document).ready( function() {
   //, resolutions: [ 64, 32, 16, 8, 4, 2, 1, .5, .25, .0125 ]
   //, resolutions: [ 64, 32, 16, 8, 4 ]
   //, resolutions: [ 1, 51, 51, 50/2560, 1/4, 1/8 ]
-  , resolutions: [ 50/2560 ]
+  , resolutions: [ 50/2560, 50/2560 ]
   //, minResolution: 1
   //, maxResolution: 3
   , projection: 'PLANE'
