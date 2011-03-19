@@ -112,11 +112,13 @@ $(document).ready( function() {
   );
   me.map.addLayers([me.wms]);
   me.map.zoomToExtent(extent);
+  /*
   me.map.events.register("mousemove", me.map, function(e) { 
     var position = this.events.getMousePosition(e);
     var ll       = this.getLonLatFromPixel(e.xy);
     OpenLayers.Util.getElement("coords").innerHTML = "" + position + "<br>" + ll;
   });
+  */
   me.map.addControl(new OpenLayers.Control.MousePosition());
   me.map.addControl(new OpenLayers.Control.Scale());
   me.map.addControl(new OpenLayers.Control.ScaleLine());
