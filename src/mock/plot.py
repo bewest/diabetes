@@ -45,7 +45,7 @@ def x_axis_panel( ):
   return get_image_buffer( canvas )
 
 def debug(msg):
-  fig = Figure( (2.56, 2.56), 300 )
+  fig = Figure( (2.56, 2.56), 300, linewidth=.5 )
   canvas = FigureCanvas(fig)
   ax = fig.add_axes((0,0,1,1))
   ax.grid(True)

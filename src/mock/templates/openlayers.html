@@ -110,7 +110,9 @@ $(document).ready( function() {
     "DEBUG",
     //"./graph/debug?x=\$\{x}&y=\$\{y}&z=\$\{z}",
     "./graph/debug?",
-    {layers: 'basic', type: 'png'}
+    {layers: 'basic',
+    gutter: 1,
+    type: 'png'}
   );
   me.map.addLayers([me.wms]);
   me.map.zoomToExtent(extent);
@@ -123,7 +125,9 @@ $(document).ready( function() {
   */
   me.map.addControl(new OpenLayers.Control.MousePosition());
   me.map.addControl(new OpenLayers.Control.Scale());
-  me.map.addControl(new OpenLayers.Control.ScaleLine());
+  me.scaleline = new OpenLayers.Control.ScaleLine();
+  me.map.addControl(me.scaleline);
+  me.scaleline.activate();
   me.markers = new OpenLayers.Layer.Markers("markers");
   me.map.addLayer(me.markers);
   
