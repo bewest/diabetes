@@ -37,7 +37,21 @@ def y_axis_panel( ):
 
 def x_axis_panel( ):
   fig = Figure( ( 2.56, 2.56 ), 300 )
+  ax = fig.add_axes((0,0,1,1))
+  ax.grid(True)
+  config_yaxis( ax )
+  safe_span(ax)
   canvas = FigureCanvas(fig)
+  return get_image_buffer( canvas )
+
+def debug(msg):
+  fig = Figure( (2.56, 2.56), 300 )
+  canvas = FigureCanvas(fig)
+  ax = fig.add_axes((0,0,1,1))
+  ax.grid(True)
+  ax.text( 0, 1, msg,
+           verticalalignment='top',
+           transform=ax.transAxes )
   return get_image_buffer( canvas )
 
 def get_image_buffer( canvas ):
