@@ -10,6 +10,10 @@
 
 }
 
+#map .YAxisControl {
+  position: absolute;
+  left: 3ex;
+}
 </style>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">
 </script>
@@ -64,6 +68,11 @@ function add(ll) {
 * 
 * LonLat should be in feet
 *
+* World Height = 4 tiles * 5 feet 
+* 20 feet
+* 240 inches
+* tilepixels = 1024
+* 
 * 
 *
 */
@@ -79,6 +88,24 @@ var me = (function($) {
 console.log('hello');
 var me = { };
 
+var YAxisControl = OpenLayers.Class(OpenLayers.Control, {
+  maxWidth: 64,
+  element: null,
+  _img: null,
+  draw: function() {
+    OpenLayers.Control.prototype.draw.apply(this,arguments);
+    var xy = this.map.getPixelFromLonLat( new OpenLayers.LonLat( 0, 5 ) );
+    this.element = document.createElement('DIV');
+    this.element.className = "YAxisControl";
+    this.element.style.top = ( xy.y - 64) + 'px';
+    this._img = document.createElement('IMG');
+    this._img.src = './graph/yaxis';
+    this.element.appendChild(this._img);
+    return this.element;
+
+  }
+});
+
 /*
 * scale = units ( default inches )
 * resolution = map units / pixel
@@ -91,12 +118,9 @@ $(document).ready( function() {
     restrictedExtent: extent
   , minExtent: minExtent
   , maxExtent: maxExtent
-  // , minResolution: maxExtent
-  // , maxResolution: maxExtent
-  //, resolutions: [ 64, 32, 16, 8, 4, 2, 1, .5, .25, .0125 ]
   //, resolutions: [ 64, 32, 16, 8, 4 ]
   //, resolutions: [ 1, 51, 51, 50/2560, 1/4, 1/8 ]
-  , resolutions: [ 50/2560, 50/2560 ]
+  , resolutions: [ 50/2560.0, 50/2560.0 ]
   //, minResolution: 1
   //, maxResolution: 3
   , projection: 'PLANE'
@@ -109,9 +133,9 @@ $(document).ready( function() {
     "DEBUG",
     //"./graph/debug?x=\$\{x}&y=\$\{y}&z=\$\{z}",
     "./graph/debug?",
-    {layers: 'basic',
-    gutter: 21,
-    type: 'png'}
+    { layers: 'basic',
+      gutter: 21,
+      type: 'png'}
   );
   me.map.addLayers([me.wms]);
   me.map.zoomToExtent(extent);
@@ -124,6 +148,8 @@ $(document).ready( function() {
   */
   me.map.addControl(new OpenLayers.Control.MousePosition());
   me.map.addControl(new OpenLayers.Control.Scale());
+  me.yaxis = new YAxisControl();
+  me.map.addControl(me.yaxis);
   me.scaleline = new OpenLayers.Control.ScaleLine();
   me.map.addControl(me.scaleline);
   me.scaleline.activate();

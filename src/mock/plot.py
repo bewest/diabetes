@@ -18,17 +18,17 @@ def safe_span( ax ):
   return preferspan
 
 def config_yaxis( ax ):
-  ax.set_ylim( [ 40, 400 ] )
-  tick_locs = [40,70,140,200,300,400]
+  ax.set_ylim( [ 0, 400 ] )
+  tick_locs = [0, 40,70,140,200,300,400]
   ax.yaxis.set_major_locator( ticker.FixedLocator( tick_locs ) )
   ax.yaxis.set_major_formatter(ticker.FixedFormatter( tick_locs ))
 
-def y_axis_panel( ):
+def y_axis_panel(size=(.64, 3.84)):
   """Just get the yaxis"""
   """TODO: more sensitive ticks?"""
-  fig = Figure( ( .64, 5.12 ), 300 )
+  fig = Figure( size, 300 )
   canvas = FigureCanvas(fig)
-  ax = fig.add_axes((.9,1./3.,1.,.5))
+  ax = fig.add_axes((.9, 1/6., 1., 2/3.0))
   ax.grid(True)
   config_yaxis( ax )
   safe_span(ax)
