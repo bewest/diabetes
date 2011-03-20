@@ -43,6 +43,13 @@ function add(ll) {
 
 }
 
+function glucose(x, y) {
+  var lat = (y/400) * 5;
+  var ll = new OpenLayers.LonLat(x, lat );
+  var marker = add( ll );
+  return marker;
+}
+
 //var extent = new OpenLayers.Bounds(8, 44.5, 19, 50);
 /*
 * tileSize = 256
@@ -134,7 +141,7 @@ $(document).ready( function() {
     //"./graph/debug?x=\$\{x}&y=\$\{y}&z=\$\{z}",
     "./graph/debug?",
     { layers: 'basic',
-      gutter: 21,
+      gutter: 24,
       type: 'png'}
   );
   me.map.addLayers([me.wms]);
@@ -183,6 +190,13 @@ function test() {
   add(new OpenLayers.LonLat( 0, 3 ) );
   add(new OpenLayers.LonLat( 0, 4 ) );
   add(new OpenLayers.LonLat( 0, 5 ) );
+
+  glucose( -.75, 40 );
+  glucose( -.75, 70 );
+  glucose( -.75, 100 );
+  glucose( -.75, 140 );
+  glucose( -.75, 200);
+  glucose( -.75, 300);
 }
 
 </script>
