@@ -77,6 +77,10 @@ class Graph(GeneralHandler):
       return plot.debug( debug_str )
 
     @cherrypy.expose
+    def dot(self):
+      return plot.dot( )
+
+    @cherrypy.expose
     def yaxis(self):
       return plot.y_axis_panel( )
 

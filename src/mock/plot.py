@@ -17,11 +17,12 @@ def safe_span( ax ):
                          )
   return preferspan
 
-def config_yaxis( ax ):
+def config_yaxis( ax, formatter=True ):
   ax.set_ylim( [ 0, 400 ] )
   tick_locs = [0, 40,70,140,200,300,400]
   ax.yaxis.set_major_locator( ticker.FixedLocator( tick_locs ) )
-  ax.yaxis.set_major_formatter(ticker.FixedFormatter( tick_locs ))
+  if formatter:
+    ax.yaxis.set_major_formatter(ticker.FixedFormatter( tick_locs ))
 
 def y_axis_panel(size=(.64, 3.84)):
   """Just get the yaxis"""
@@ -44,10 +45,24 @@ def x_axis_panel( ):
   canvas = FigureCanvas(fig)
   return get_image_buffer( canvas )
 
+def dot( color='r' ):
+  fig = Figure( ( .12, .12 ), 300 )
+  canvas = FigureCanvas(fig)
+  ax = fig.add_axes((0,0,1,1), frameon=False)
+  ax.set_ylim([0,1])
+  ax.set_xlim([0,1])
+  ax.plot(.5, .5, 'ro')
+  ax.grid(False)
+  ax.tick_params('both', width=0, length=0)
+  return get_image_buffer( canvas )
+
+  
+
 def debug(msg):
   fig = Figure( (2.56, 2.56), 300, linewidth=.5 )
   canvas = FigureCanvas(fig)
   ax = fig.add_axes((0,0,1,1))
+  config_yaxis( ax, formatter=False )
   ax.grid(True)
   ax.text( 0, 1, msg,
            verticalalignment='top',

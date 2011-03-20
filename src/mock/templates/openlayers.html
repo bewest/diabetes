@@ -30,10 +30,11 @@ Proj4js.defs["PLANE"] = "+proj=eqc +lat_ts=1 +lon_0=0 +x_0=0 +y_0=0 +a=0 +b=0 +u
 
 
 function add(ll) {
-  var url = 'http://www.openlayers.org/dev/img/marker.png';
-  var sz = new OpenLayers.Size(21, 25);
+  //var url = 'http://www.openlayers.org/dev/img/marker.png';
+  var url = './static/dot.png';
+  var sz = new OpenLayers.Size(12, 12);
   var calculateOffset = function(size) {
-    return new OpenLayers.Pixel(-(size.w/2), -size.h);
+    return new OpenLayers.Pixel(-(size.w/2)+0, -(size.h/2)-3);
   };
   var icon = new OpenLayers.Icon(url, sz, null, calculateOffset);
 
@@ -141,8 +142,9 @@ $(document).ready( function() {
     //"./graph/debug?x=\$\{x}&y=\$\{y}&z=\$\{z}",
     "./graph/debug?",
     { layers: 'basic',
-      gutter: 21,
-      type: 'png'}
+      // gutter: 21,
+      gutter: 16,
+      type: 'png' }
   );
   me.map.addLayers([me.wms]);
   me.map.zoomToExtent(extent);
