@@ -103,17 +103,26 @@ var YAxisControl = OpenLayers.Class(OpenLayers.Control, {
   draw: function() {
     OpenLayers.Control.prototype.draw.apply(this,arguments);
     var xy = this.map.getPixelFromLonLat( new OpenLayers.LonLat( 0, 5 ) );
-    this.element = document.createElement('DIV');
-    this.element.className = "YAxisControl";
-    this.element.style.top = ( xy.y - 64) + 'px';
+    //this.element = document.createElement('DIV');
+    this.div.className += "YAxisControl";
+    this.div.style.top = ( xy.y - 64) + 'px';
     this._img = document.createElement('IMG');
     this._img.src = './graph/yaxis';
-    this.element.appendChild(this._img);
-    return this.element;
+    this.div.appendChild(this._img);
+    //this.div.appendChild(this.element);
+    return this.div;
 
+  },
+  moveTo: function(px) {
+    if ((px != null) && (this.div != null)) {
+      this.div.style.left = px.x + 'px';
+      this.div.style.top  = px.y + 'px';
+    }
   }
 });
+var SafeGlucoseControl = OpenLayers.Class(OpenLayers.Control, {
 
+});
 /*
 * scale = units ( default inches )
 * resolution = map units / pixel
