@@ -9,7 +9,7 @@ if (!Proj4js.defs.PLANE) {
  * getZoomForExtent
  *
  */
-var CartesianPlan = OpenLayers.Class(OpenLayers.Layer.MapServer, {
+var CartesianLayer = OpenLayers.Class(OpenLayers.Layer.MapServer, {
   getViewPortPxFromLonLat: function(lonlat) {
     var px = null,
         resolution, extent,
@@ -26,7 +26,7 @@ var CartesianPlan = OpenLayers.Class(OpenLayers.Layer.MapServer, {
     return px;
   },
   getLonLatFromViewPortPx: function (viewPortPx) {
-    var lonlat = null
+    var lonlat = null,
         size, center, res,
         delta_x, delta_y,
         scale_x, scale_y, // choose scale vs res?
@@ -53,6 +53,6 @@ var CartesianPlan = OpenLayers.Class(OpenLayers.Layer.MapServer, {
     return lonlat;
   },
   getZoomForExtent: function (extent, closest) {
-    return OpenLayers.Layer.MapServer.getZoomForExtent.apply(this, arguments);
+    return OpenLayers.Layer.prototype.getZoomForExtent.apply(this, arguments);
   }
 });
