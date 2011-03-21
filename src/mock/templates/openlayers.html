@@ -120,6 +120,8 @@ var YAxisControl = OpenLayers.Class(OpenLayers.Control, {
     }
   }
 });
+var LinearMap = OpenLayers.Class(OpenLayers.Layer, {
+});
 var SafeGlucoseControl = OpenLayers.Class(OpenLayers.Control, {
 
 });
@@ -152,7 +154,7 @@ $(document).ready( function() {
     "./graph/debug?",
     { layers: 'basic',
       // gutter: 21,
-      gutter: 16,
+      // gutter: 16,
       type: 'png' }
   );
   me.map.addLayers([me.wms]);
@@ -166,6 +168,7 @@ $(document).ready( function() {
   */
   me.map.addControl(new OpenLayers.Control.MousePosition());
   me.map.addControl(new OpenLayers.Control.Scale());
+  me.map.addControl(new OpenLayers.Control.OverviewMap());
   me.yaxis = new YAxisControl();
   me.map.addControl(me.yaxis);
   me.scaleline = new OpenLayers.Control.ScaleLine();
