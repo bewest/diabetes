@@ -41,8 +41,8 @@ var CartesianLayer = OpenLayers.Class(OpenLayers.Layer.MapServer, {
         delta_x = viewPortPx.x - (size.w / 2);
         delta_y = viewPortPx.y - (size.h / 2);
 
-        lon = center.lon + delta_x * res;
-        lat = center.lat - delta_y * res;
+        lon = center.lon + delta_x * (res * 1);
+        lat = center.lat - delta_y * (res * 1);
         lonlat  = new OpenLayers.LonLat(lon, lat);
 
         if (this.wrapDateLine) {
