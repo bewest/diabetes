@@ -7,10 +7,10 @@ if (!Proj4js.defs.PLANE) {
  * getLonLatFromViewPortPx
  * getViewPortPxFromLonLat
  * getZoomForExtent
- *
+ * @request Second.js
  */
 var CartesianLayer = OpenLayers.Class(OpenLayers.Layer.MapServer, {
-  getViewPortPxFromLonLat: function(lonlat) {
+  getViewPortPxFromLonLat: function (lonlat) {
     var px = null,
         resolution, extent,
         res_x, res_y;

@@ -21,6 +21,7 @@
 <script src="http://openlayers.org/api/OpenLayers.js"></script>
 <script src="http://proj4js.org/lib/proj4js-compressed.js"></script>
 <script src="./static/XYZ.js"></script>
+<script src="./static/Second.js"></script>
 <script src="./static/CartesianLayer.js"></script>
 <script type="text/javascript">
 
@@ -89,10 +90,15 @@ function glucose(x, y) {
 OpenLayers.DOTS_PER_INCH = 300;
 //OpenLayers.DOTS_PER_INCH = 4.25;
 // left, bottom, right, top
-var extent = new OpenLayers.Bounds(-(50), -(.7), (50), 5.1 );
+var tilesize   = 256;
+var secondsday = 86400;
+var hours      = 24;
+var extent = new OpenLayers.Bounds(-(hours * 5), -(hours * .1), (hours * 5), (hours * 1.05) );
 // ft?
+// var left, bottom, right, top 
 var minExtent = new OpenLayers.Bounds(-1, -1, 1, 1);
-var maxExtent = new OpenLayers.Bounds(-(50), -(10), 50, 10);
+var maxExtent = new OpenLayers.Bounds(-(hours * 5), -(hours * 2), hours * 5, (hours * 2));
+var resolutions = [ 24/256 ];
 var me = (function($) {
 console.log('hello');
 var me = { };
@@ -140,7 +146,8 @@ $(document).ready( function() {
   , maxExtent: maxExtent
   //, resolutions: [ 64, 32, 16, 8, 4 ]
   //, resolutions: [ 1, 51, 51, 50/2560, 1/4, 1/8 ]
-  , resolutions: [ 50/2560.0, 50/2560.0 ]
+  //, resolutions: [ 50/2560.0, 50/2560.0 ]
+  , resolutions: resolutions
   //, minResolution: 1
   //, maxResolution: 3
   , projection: 'PLANE'
@@ -161,21 +168,22 @@ $(document).ready( function() {
   );
   me.map.addLayers([me.wms]);
   me.map.zoomToExtent(extent);
-  /*
   me.map.events.register("mousemove", me.map, function(e) { 
     var position = this.events.getMousePosition(e);
     var ll       = this.getLonLatFromPixel(e.xy);
+  /*
     OpenLayers.Util.getElement("coords").innerHTML = "" + position + "<br>" + ll;
-  });
   */
+    $('#time').text(new Second(ll.lon));
+  });
   me.map.addControl(new OpenLayers.Control.MousePosition());
   me.map.addControl(new OpenLayers.Control.Scale());
   me.map.addControl(new OpenLayers.Control.OverviewMap());
   me.yaxis = new YAxisControl();
   me.map.addControl(me.yaxis);
-  me.scaleline = new OpenLayers.Control.ScaleLine();
-  me.map.addControl(me.scaleline);
-  me.scaleline.activate();
+  //me.scaleline = new OpenLayers.Control.ScaleLine();
+  //me.map.addControl(me.scaleline);
+  //me.scaleline.activate();
   me.markers = new OpenLayers.Layer.Markers("markers");
   me.map.addLayer(me.markers);
   
@@ -226,6 +234,7 @@ function test() {
 <div id="map"></div>
 <div id="debug">
   <span id="coords"></span>
+  <div id="time"></div>
 </div>
 
 </body>
