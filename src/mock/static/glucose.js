@@ -2,7 +2,15 @@
 if (!Proj4js.defs.PLANE) {
   Proj4js.defs['PLANE'] = "+proj=eqc +lat_ts=1 +lon_0=0 +x_0=0 +y_0=0 +a=0 +b=0 +units=ft +k_0=1";
 }
-var TiledGrid = OpenLayers.Class(OpenLayers.Layer.Grid, {
+/**
+ *
+ * getLonLatFromViewPortPx
+ * getViewPortPxFromLonLat
+ * getZoomForExtent
+ * @request Second.js
+ * Allows subclasses to independently override the resolution for x or y axis.
+ */
+var GlucoseDay = OpenLayers.Class(OpenLayers.Layer.MapServer, {
   res_x : null,
   res_y : null,
   getXResolution: function () {
@@ -25,6 +33,12 @@ var TiledGrid = OpenLayers.Class(OpenLayers.Layer.Grid, {
     }
     return res;
   },
+  getGlucoseFromLat: function (lat) {
+
+  },
+  getLatFromGlucose: function (glucose) {
+
+  },
   getViewPortPxFromLonLat: function (lonlat) {
     var px    = null, res, extent,
         res_x = this.getXResolution(),
@@ -37,7 +51,7 @@ var TiledGrid = OpenLayers.Class(OpenLayers.Layer.Grid, {
       extent = this.map.getExtent();
       px     = new OpenLayers.Pixel(
         (1/res * (lonlat.lon - extent.left)),
-        (1/res * (extent.top - lonlat.lat)));
+        (1/(400/256) * (extent.top - (lonlat.lat)) ));
     }
     return px;
   },
@@ -52,7 +66,7 @@ var TiledGrid = OpenLayers.Class(OpenLayers.Layer.Grid, {
       size   = this.map.getSize();
       center = this.map.getCenter();
       if (center) {
-        res = this.map.getResolution();
+        res    = this.map.getResolution();
         res_x  = this.getXResolution();
         res_y  = this.getYResolution();
         
@@ -60,7 +74,7 @@ var TiledGrid = OpenLayers.Class(OpenLayers.Layer.Grid, {
         delta_y = viewPortPx.y - (size.h / 2);
 
         lon = center.lon + delta_x * (res);
-        lat = center.lat - delta_y * (res);
+        lat = (center.lat - delta_y * (400/256));
         lonlat  = new OpenLayers.LonLat(lon, lat);
 
         if (this.wrapDateLine) {
@@ -74,4 +88,3 @@ var TiledGrid = OpenLayers.Class(OpenLayers.Layer.Grid, {
     return OpenLayers.Layer.prototype.getZoomForExtent.apply(this, arguments);
   }
 });
-
