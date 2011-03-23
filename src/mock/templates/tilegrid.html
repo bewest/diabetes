@@ -45,8 +45,9 @@ function add(ll) {
 }
 
 function glucose(x, y) {
-  var lat = (y/400) * 5;
-  var ll = new OpenLayers.LonLat(x, lat );
+  //var lat = (y/400) * 5;
+  //var lat = y;
+  var ll = new OpenLayers.LonLat(x, y);
   var marker = add( ll );
   return marker;
 }
@@ -91,12 +92,12 @@ OpenLayers.DOTS_PER_INCH = 300;
 var tilesize   = 256;
 var secondsday = 86400;
 var hours      = 24;
-var extent = new OpenLayers.Bounds(-(50), -(.7), (50), (5.1) );
+var extent = new OpenLayers.Bounds(-(hours * 5), -(hours * .1), (hours * 5), (hours * 1.05) );
 // ft?
 // var left, bottom, right, top 
 var minExtent = new OpenLayers.Bounds(-1, -1, 1, 1);
-var maxExtent = new OpenLayers.Bounds(-(10 * 5), -(10), (10 * 5), (10));
-var resolutions = [ 5/256 ];
+var maxExtent = new OpenLayers.Bounds(-(hours * 5), -(hours * 2), hours * 5, (hours * 2));
+var resolutions = [ 24/256 ];
 var me = (function($) {
 console.log('hello');
 var me = { };
@@ -157,7 +158,9 @@ $(document).ready( function() {
   me.map = new OpenLayers.Map('map', options);
   //me.wms = new OpenLayers.Layer.WMS(
   //me.wms = new OpenLayers.Layer.TMS(
-  me.wms = new OpenLayers.Layer.MapServer(
+  //me.wms = new OpenLayers.Layer.MapServer(
+  //me.wms = new CartesianLayer(
+  me.wms = new GlucoseLayer(
     "DEBUG",
     //"./graph/debug?x=\$\{x}&y=\$\{y}&z=\$\{z}",
     "./graph/debug?",
@@ -181,7 +184,7 @@ $(document).ready( function() {
   me.map.addControl(new OpenLayers.Control.OverviewMap());
   me.yaxis = new YAxisControl();
   me.map.addControl(me.yaxis);
-  me.scaleline = new OpenLayers.Control.ScaleLine();
+  //me.scaleline = new OpenLayers.Control.ScaleLine();
   //me.map.addControl(me.scaleline);
   //me.scaleline.activate();
   me.markers = new OpenLayers.Layer.Markers("markers");
@@ -237,5 +240,6 @@ function test() {
   <div id="time"></div>
 </div>
 
+<p>Try to specify a grid of tiles.</p>
 </body>
 </html>

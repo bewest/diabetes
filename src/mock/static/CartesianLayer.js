@@ -8,20 +8,44 @@ if (!Proj4js.defs.PLANE) {
  * getViewPortPxFromLonLat
  * getZoomForExtent
  * @request Second.js
+ * Allows subclasses to independently override the resolution for x or y axis.
  */
 var CartesianLayer = OpenLayers.Class(OpenLayers.Layer.MapServer, {
+  res_x : null,
+  res_y : null,
+  getXResolution: function () {
+    var res  = null,
+    viewSize = this.map.getSize(),
+    extent   = this.getExtent();
+
+    if ((viewSize != null) && (extent != null)) {
+      res = extent.getWidth() / viewSize.w;
+    }
+    return res;
+  },
+  getYResolution: function () {
+    var res  = null,
+    viewSize = this.map.getSize(),
+    extent   = this.getExtent();
+
+    if ((viewSize != null) && (extent != null)) {
+      res = extent.getHeight() / viewSize.h;
+    }
+    return res;
+  },
   getViewPortPxFromLonLat: function (lonlat) {
-    var px = null,
-        resolution, extent,
-        res_x, res_y;
+    var px    = null, res, extent,
+        res_x = this.getXResolution(),
+        res_y = this.getYResolution();
     if (lonlat != null) {
-      // TODO: separate resolutions
-      resolution = this.map.getResolution();
-      extent     = this.map.getExtent();
-      px         = new OpenLayers.Pixel(
-        (1/resolution * (lonlat.lon - extent.left)),
-        (1/resolution * (extent.top - lonlat.lat))
-      );
+      res    = this.map.getResolution();
+      res_x  = res_x == null ? res : res_x;
+      res_y  = res_y == null ? res : res_y;
+
+      extent = this.map.getExtent();
+      px     = new OpenLayers.Pixel(
+        (1/res * (lonlat.lon - extent.left)),
+        (1/res * (extent.top - lonlat.lat)));
     }
     return px;
   },
@@ -29,20 +53,22 @@ var CartesianLayer = OpenLayers.Class(OpenLayers.Layer.MapServer, {
     var lonlat = null,
         size, center, res,
         delta_x, delta_y,
-        scale_x, scale_y, // choose scale vs res?
-        res_x, res_y,
+        res_x = null,
+        res_y = null,
         lon, lat;
     if (viewPortPx != null) {
       size   = this.map.getSize();
       center = this.map.getCenter();
       if (center) {
         res = this.map.getResolution();
+        res_x  = this.getXResolution();
+        res_y  = this.getYResolution();
         
         delta_x = viewPortPx.x - (size.w / 2);
         delta_y = viewPortPx.y - (size.h / 2);
 
-        lon = center.lon + delta_x * (res * 1);
-        lat = center.lat - delta_y * (res * 1);
+        lon = center.lon + delta_x * (res);
+        lat = center.lat - delta_y * (res);
         lonlat  = new OpenLayers.LonLat(lon, lat);
 
         if (this.wrapDateLine) {
