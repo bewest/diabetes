@@ -92,12 +92,13 @@ OpenLayers.DOTS_PER_INCH = 300;
 var tilesize   = 256;
 var secondsday = 86400;
 var hours      = 24;
-var extent = new OpenLayers.Bounds(-(50), -(.7), (50), (5.1) );
+var extent = new OpenLayers.Bounds(-(hours * 10), -(100), (hours * 10), (700) );
 // ft?
 // var left, bottom, right, top 
 var minExtent = new OpenLayers.Bounds(-1, -1, 1, 1);
-var maxExtent = new OpenLayers.Bounds(-(10 * 5), -(10), (10 * 5), (10));
-var resolutions = [ 5/256 ];
+var maxExtent = new OpenLayers.Bounds(-(10 * hours), -(hours * 5),
+                                       (10 * hours),  (hours * 5));
+var resolutions = [ hours/256 ];
 var me = (function($) {
 console.log('hello');
 var me = { };

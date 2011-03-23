@@ -51,9 +51,19 @@ var GlucoseDay = OpenLayers.Class(OpenLayers.Layer.MapServer, {
       extent = this.map.getExtent();
       px     = new OpenLayers.Pixel(
         (1/res * (lonlat.lon - extent.left)),
-        (1/(400/256) * (extent.top - (lonlat.lat)) ));
+        (1/res_y * (extent.top - (lonlat.lat)) ));
     }
     return px;
+  },
+  getExtent: function() {
+    var extent = null;
+    var size = this.map.getSize();
+    var tlPx = new OpenLayers.Pixel(0,0);
+    //var tlLL = this
+    return this.getMaxExtent();
+
+  },
+  calculateBounds: function(center, resolution, res_y) {
   },
   getLonLatFromViewPortPx: function (viewPortPx) {
     var lonlat = null,
@@ -74,7 +84,7 @@ var GlucoseDay = OpenLayers.Class(OpenLayers.Layer.MapServer, {
         delta_y = viewPortPx.y - (size.h / 2);
 
         lon = center.lon + delta_x * (res);
-        lat = (center.lat - delta_y * (400/256));
+        lat = (center.lat - delta_y * (res_y));
         lonlat  = new OpenLayers.LonLat(lon, lat);
 
         if (this.wrapDateLine) {
