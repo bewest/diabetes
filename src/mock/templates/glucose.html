@@ -82,7 +82,32 @@ function glucose(x, y) {
 * 240 inches
 * tilepixels = 1024
 * 
+* map calls:
+* moveTo
 * 
+* explicitly provided for overriding
+* getExtent
+* getResolution
+* getUnits
+* getScale
+* getZoomForExtent
+* getResolutionForZoom
+* getZoomForResolution
+* 
+* Translation
+* getLonLatFromViewPortPx
+* getViewPortPxFromLonLat
+* 
+* zoomToScale does some scaling
+* 
+* 
+* 
+* properties:
+* events
+* project via getProjection/getProjectionObject
+* maxResolution via getMaxResolution
+* maxExtent via getMaxExtent
+* numZoomLevels via getNumZoomLevels
 *
 */
 
@@ -92,12 +117,12 @@ OpenLayers.DOTS_PER_INCH = 300;
 var tilesize   = 256;
 var secondsday = 86400;
 var hours      = 24;
-var extent = new OpenLayers.Bounds(-(hours * 10), -(100), (hours * 10), (700) );
+var extent = new OpenLayers.Bounds(-(hours * 5), -(50), (hours * 5), (440) );
 // ft?
 // var left, bottom, right, top 
 var minExtent = new OpenLayers.Bounds(-1, -1, 1, 1);
-var maxExtent = new OpenLayers.Bounds(-(10 * hours), -(hours * 5),
-                                       (10 * hours),  (hours * 5));
+var maxExtent = new OpenLayers.Bounds(-(5 * hours), -(400 * 2),
+                                       (5 * hours),  (400 * 2));
 var resolutions = [ hours/256 ];
 var me = (function($) {
 console.log('hello');
@@ -109,7 +134,7 @@ var YAxisControl = OpenLayers.Class(OpenLayers.Control, {
   _img: null,
   draw: function() {
     OpenLayers.Control.prototype.draw.apply(this,arguments);
-    var xy = this.map.getPixelFromLonLat( new OpenLayers.LonLat( 0, 5 ) );
+    var xy = this.map.getPixelFromLonLat( new OpenLayers.LonLat( 0, 400 ) );
     //this.element = document.createElement('DIV');
     this.div.className += "YAxisControl";
     this.div.style.top = ( xy.y - 64) + 'px';
