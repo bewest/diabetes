@@ -224,8 +224,8 @@ var InspectMoveTo = OpenLayers.Class({
     var self = this;
     this.run = function () {
       console.log( 'run' );
-      var result = self.original.apply(this, arguments);
-      // var result = self.originalCopy.apply(this, arguments);
+      //var result = self.original.apply(this, arguments);
+      var result = self.originalCopy.apply(this, arguments);
       console.log( arguments, result );
       return result;
     };
