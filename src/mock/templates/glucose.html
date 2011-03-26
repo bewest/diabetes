@@ -15,6 +15,7 @@
   left: 3ex;
 }
 </style>
+<link type="text/css" rel="stylesheet" href="/static/theme/default/style.css">
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">
 </script>
 <script type="text/javascript"> jQuery.noConflict(); </script>
@@ -121,7 +122,7 @@ OpenLayers.DOTS_PER_INCH = 300;
 var tilesize   = 256;
 var secondsday = 86400;
 var hours      = 24;
-var extent = new OpenLayers.Bounds(-(hours * 5), -(50), (hours * 5), (420) );
+var extent = new OpenLayers.Bounds(-(hours * 5), -(45), (hours * 5), (420) );
 // ft?
 // var left, bottom, right, top 
 var minExtent = new OpenLayers.Bounds(-1, -1, 1, 1);
@@ -208,7 +209,8 @@ $(document).ready( function() {
   */
     $('#time').text(new Second(ll.lon));
   });
-  me.map.addControl(new OpenLayers.Control.MousePosition());
+  me.mouser = new OpenLayers.Control.MousePosition();
+  me.map.addControl(me.mouser);
   me.map.addControl(new OpenLayers.Control.Scale());
   me.map.addControl(new OpenLayers.Control.OverviewMap());
   me.yaxis = new YAxisControl();

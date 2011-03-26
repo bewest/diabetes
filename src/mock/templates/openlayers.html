@@ -176,7 +176,8 @@ $(document).ready( function() {
   */
     $('#time').text(new Second(ll.lon));
   });
-  me.map.addControl(new OpenLayers.Control.MousePosition());
+  me.mouser = new OpenLayers.Control.MousePosition();
+  me.map.addControl(me.mouser);
   me.map.addControl(new OpenLayers.Control.Scale());
   me.map.addControl(new OpenLayers.Control.OverviewMap());
   me.yaxis = new YAxisControl();

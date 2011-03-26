@@ -47,6 +47,9 @@ var GlucoseDay = OpenLayers.Class( OpenLayers.Layer.MapServer,
   //addOptions: OpenLayers.Layer.MapServer.prototype.addOptions,
   //setZindex: OpenLayers.Layer.prototype.setZIndex,
   //moveTo: OpenLayers.Map.prototype.moveTo,
+  getResolution: function () {
+    return this.getXResolution.apply(this, arguments);
+  },
   getXResolution: function () {
     return 24/256;
     var res  = null,
