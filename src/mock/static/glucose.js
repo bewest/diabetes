@@ -106,7 +106,7 @@ var GlucoseDay = OpenLayers.Class( OpenLayers.Layer.MapServer,
     var extent = null;
     var size = this.map.getSize();
     var tlPx = new OpenLayers.Pixel(0,0),
-        tlLL =  this.getLonLatFromViewPortPx(tlPx);
+        tlLL = this.getLonLatFromViewPortPx(tlPx);
     var brPx = new OpenLayers.Pixel(size.w, size.h),
         brLL = this.getLonLatFromViewPortPx(brPx);
 
