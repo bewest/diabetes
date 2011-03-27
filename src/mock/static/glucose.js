@@ -43,7 +43,14 @@ var GlucoseDay = OpenLayers.Class( OpenLayers.Layer.MapServer,
   ],
   res_x : null,
   res_y : null,
-  initialize: OpenLayers.Layer.MapServer.prototype.initialize,
+  initialize: function(name, url, params, options) {
+    var args = [ ];
+    args.push(name, url, params, options);
+    OpenLayers.Layer.MapServer.prototype.initialize.apply(this, args);
+    this.isBaseLayer = true;
+    // TODO:
+    //   * 
+  },
   //addOptions: OpenLayers.Layer.MapServer.prototype.addOptions,
   //setZindex: OpenLayers.Layer.prototype.setZIndex,
   //moveTo: OpenLayers.Map.prototype.moveTo,
