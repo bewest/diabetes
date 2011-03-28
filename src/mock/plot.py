@@ -24,6 +24,9 @@ def config_yaxis( ax, formatter=True ):
   if formatter:
     ax.yaxis.set_major_formatter(ticker.FixedFormatter( tick_locs ))
 
+def config_xaxis( ax, numTicks ):
+  ax.xaxis.set_major_locator( ticker.LinearLocator( numTicks ) )
+
 def y_axis_panel(size=(.64, 3.84)):
   """Just get the yaxis"""
   """TODO: more sensitive ticks?"""
@@ -36,11 +39,12 @@ def y_axis_panel(size=(.64, 3.84)):
   ax.xaxis.set_visible(False)
   return get_image_buffer( canvas )
 
-def x_axis_panel( ):
+def x_axis_panel( xlim=(0,1000), numticks=5 ):
   fig = Figure( ( 2.56, 2.56 ), 300 )
   ax = fig.add_axes((0,0,1,1))
   ax.grid(True)
   config_yaxis( ax )
+  config_xaxis( ax, numticks )
   safe_span(ax)
   canvas = FigureCanvas(fig)
   return get_image_buffer( canvas )
@@ -56,13 +60,14 @@ def dot( color='r' ):
   ax.tick_params('both', width=0, length=0)
   return get_image_buffer( canvas )
 
-  
+
 
 def debug(msg):
   fig = Figure( (2.56, 2.56), 300, linewidth=.5 )
   canvas = FigureCanvas(fig)
   ax = fig.add_axes((0,0,1,1))
   config_yaxis( ax, formatter=False )
+  config_xaxis( ax, 5 )
   ax.grid(True)
   ax.text( 0, 1, msg,
            verticalalignment='top',

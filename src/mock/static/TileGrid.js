@@ -2,15 +2,7 @@
 if (!Proj4js.defs.PLANE) {
   Proj4js.defs['PLANE'] = "+proj=eqc +lat_ts=1 +lon_0=0 +x_0=0 +y_0=0 +a=0 +b=0 +units=ft +k_0=1";
 }
-/**
- *
- * getLonLatFromViewPortPx
- * getViewPortPxFromLonLat
- * getZoomForExtent
- * @request Second.js
- * Allows subclasses to independently override the resolution for x or y axis.
- */
-var CartesianLayer = OpenLayers.Class(OpenLayers.Layer.MapServer, {
+var TiledGrid = OpenLayers.Class(OpenLayers.Layer.Grid, {
   res_x : null,
   res_y : null,
   getXResolution: function () {
@@ -82,3 +74,4 @@ var CartesianLayer = OpenLayers.Class(OpenLayers.Layer.MapServer, {
     return OpenLayers.Layer.prototype.getZoomForExtent.apply(this, arguments);
   }
 });
+

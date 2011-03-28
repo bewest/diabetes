@@ -12,6 +12,7 @@ import cherrypy
 from pprint import pformat
 %>
 
+
 <h1>SIMPLE</h1>
 <p><span>${salutation}</span>
    <span>${target}</span>
@@ -19,6 +20,10 @@ from pprint import pformat
 <ol>
   <li><a href="./list">List Chart Anatomy</a></li>
   <li><a href="./openlayers">openlayers</a></li>
+  <li><a href="./tilegrid">tilegrid</a></li>
+  % for page in pages:
+    <li><a href="./template/${page}">${page}</a></li>
+  % endfor
 </ol>
 <pre>
 url

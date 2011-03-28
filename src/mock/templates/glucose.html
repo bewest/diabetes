@@ -15,14 +15,22 @@
   left: 3ex;
 }
 </style>
+<link type="text/css" rel="stylesheet" href="/static/theme/default/style.css">
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">
 </script>
 <script type="text/javascript"> jQuery.noConflict(); </script>
+<!--
 <script src="http://openlayers.org/api/OpenLayers.js"></script>
-<script src="http://proj4js.org/lib/proj4js-compressed.js"></script>
-<script src="/static/XYZ.js"></script>
-<script src="/static/Second.js"></script>
-<script src="/static/CartesianLayer.js"></script>
+<script src="http://openlayers.org/dev/OpenLayers.js"></script>
+-->
+
+<script src="/static/OpenLayers.js" type="text/javascript"></script>
+<script src="http://proj4js.org/lib/proj4js-compressed.js" type="text/javascript"></script>
+<script src="/static/XYZ.js" type="text/javascript"></script>
+<script src="/static/Second.js" type="text/javascript"></script>
+<script src="/static/CartesianLayer.js" type="text/javascript"></script>
+<script src="/static/glucose.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 
 Proj4js.defs["PLANE"] = "+proj=eqc +lat_ts=1 +lon_0=0 +x_0=0 +y_0=0 +a=0 +b=0 +units=ft +k_0=1";
@@ -45,8 +53,8 @@ function add(ll) {
 }
 
 function glucose(x, y) {
-  var lat = (y/400) * 5;
-  var ll = new OpenLayers.LonLat(x, lat );
+  //var lat = (y/400) * 5;
+  var ll = new OpenLayers.LonLat(x, y );
   var marker = add( ll );
   return marker;
 }
@@ -81,7 +89,32 @@ function glucose(x, y) {
 * 240 inches
 * tilepixels = 1024
 * 
+* map calls:
+* moveTo
 * 
+* explicitly provided for overriding
+* getExtent
+* getResolution
+* getUnits
+* getScale
+* getZoomForExtent
+* getResolutionForZoom
+* getZoomForResolution
+* 
+* Translation
+* getLonLatFromViewPortPx
+* getViewPortPxFromLonLat
+* 
+* zoomToScale does some scaling
+* 
+* 
+* 
+* properties:
+* events
+* project via getProjection/getProjectionObject
+* maxResolution via getMaxResolution
+* maxExtent via getMaxExtent
+* numZoomLevels via getNumZoomLevels
 *
 */
 
@@ -91,12 +124,13 @@ OpenLayers.DOTS_PER_INCH = 300;
 var tilesize   = 256;
 var secondsday = 86400;
 var hours      = 24;
-var extent = new OpenLayers.Bounds(-(50), -(.7), (50), (5.1) );
+var extent = new OpenLayers.Bounds(-(hours * 5), -(45), (hours * 5), (420) );
 // ft?
 // var left, bottom, right, top 
 var minExtent = new OpenLayers.Bounds(-1, -1, 1, 1);
-var maxExtent = new OpenLayers.Bounds(-(10 * 5), -(10), (10 * 5), (10));
-var resolutions = [ 5/256 ];
+var maxExtent = new OpenLayers.Bounds(-(5 * hours), -(400 * 2),
+                                       (5 * hours),  (400 * 2));
+var resolutions = [ hours/256 ];
 var me = (function($) {
 console.log('hello');
 var me = { };
@@ -107,7 +141,7 @@ var YAxisControl = OpenLayers.Class(OpenLayers.Control, {
   _img: null,
   draw: function() {
     OpenLayers.Control.prototype.draw.apply(this,arguments);
-    var xy = this.map.getPixelFromLonLat( new OpenLayers.LonLat( 0, 5 ) );
+    var xy = this.map.getPixelFromLonLat( new OpenLayers.LonLat( 0, 400 ) );
     //this.element = document.createElement('DIV');
     this.div.className += "YAxisControl";
     this.div.style.top = ( xy.y - 64) + 'px';
@@ -157,7 +191,8 @@ $(document).ready( function() {
   me.map = new OpenLayers.Map('map', options);
   //me.wms = new OpenLayers.Layer.WMS(
   //me.wms = new OpenLayers.Layer.TMS(
-  me.wms = new OpenLayers.Layer.MapServer(
+  //me.wms = new OpenLayers.Layer.MapServer(
+  me.wms = new GlucoseDay(
     "DEBUG",
     //"./graph/debug?x=\$\{x}&y=\$\{y}&z=\$\{z}",
     "/graph/debug?",
