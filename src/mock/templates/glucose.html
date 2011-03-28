@@ -28,7 +28,9 @@
 <script src="http://proj4js.org/lib/proj4js-compressed.js" type="text/javascript"></script>
 <script src="/static/XYZ.js" type="text/javascript"></script>
 <script src="/static/Second.js" type="text/javascript"></script>
+<!--
 <script src="/static/CartesianLayer.js" type="text/javascript"></script>
+-->
 <script src="/static/glucose.js" type="text/javascript"></script>
 
 <script type="text/javascript">
@@ -201,6 +203,26 @@ $(document).ready( function() {
       // gutter: 16,
       type: 'png' }
   );
+  me.renderers = OpenLayers.Layer.Vector.prototype.renderers;
+  me.style = new OpenLayers.StyleMap({'default': new OpenLayers.Style({
+    strokeColor: 'green',
+    strokeOpacity: 1,
+    strokeWidth: 3,
+    fillColor: "#FF5500",
+    fillOpacity: 0.5,
+    pointRadius: 10,
+    pointerEvents: "visiblePainted",
+    label: "msg: \$\{msg}",
+    fontColor: "blue",
+    fontSize: "12px",
+    width: "50px",
+    xOffset: 0,
+    yOffset: 0,
+    fontFamily: "sans monospace",
+    fontWeight: "bold",
+    msg: "hello"
+
+  })});
   me.map.addLayers([me.wms]);
   me.map.zoomToExtent(extent);
   me.map.events.register("mousemove", me.map, function(e) { 
@@ -217,11 +239,16 @@ $(document).ready( function() {
   me.map.addControl(new OpenLayers.Control.OverviewMap());
   me.yaxis = new YAxisControl();
   me.map.addControl(me.yaxis);
+  me.feat = new OpenLayers.Layer.Vector( "Simple Geometry", { styleMap: me.style, renderers: me.renderers });
+  me.point = new OpenLayers.Geometry.Point( 5, 5 );
+  me.pointFeat =  new OpenLayers.Feature.Vector(me.point, me.style,
+                      { label: "HELLO WORLD", align: 'lb', name: 'test' });
+  //me.feat.addLayer( me.pointFeat );
+  me.feat.addFeatures([ me.pointFeat ]);
   me.scaleline = new OpenLayers.Control.ScaleLine();
-  //me.map.addControl(me.scaleline);
-  //me.scaleline.activate();
   me.markers = new OpenLayers.Layer.Markers("markers");
   me.map.addLayer(me.markers);
+  me.map.addLayers( [me.feat] );
   
   test();
   
@@ -244,12 +271,6 @@ function test() {
   add(new OpenLayers.LonLat( 10, 0 ) );
   add(new OpenLayers.LonLat( 11, 0 ) );
   add(new OpenLayers.LonLat( 12, 0 ) );
-
-  add(new OpenLayers.LonLat( 0, 1 ) );
-  add(new OpenLayers.LonLat( 0, 2 ) );
-  add(new OpenLayers.LonLat( 0, 3 ) );
-  add(new OpenLayers.LonLat( 0, 4 ) );
-  add(new OpenLayers.LonLat( 0, 5 ) );
 
   glucose( -.75, 40 );
   glucose( -.75, 70 );

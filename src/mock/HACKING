@@ -1,5 +1,7 @@
 
-DONE:
+DONE
+====
+
   Y-Axis 0-400, per tile/256px
   Grid lines are:
   0, 40 - 70   hypo
@@ -10,7 +12,8 @@ DONE:
 
 
 
-TODO:
+TODO
+====
 
   missing:
   X-Axis labels:
@@ -44,7 +47,6 @@ Zoom Levels / Views
   9  solstice  182 days 6 months
   
 
-
 Two most important charts, three total:
   Observations:
     * glucose
@@ -62,7 +64,6 @@ Nice to have:
   Observations:
     primings
 
-
   Predictions:
     Primings
     Glucose
@@ -71,7 +72,6 @@ Nice to have:
 
   Indivo Integration
   Glucosurfer interop??
-
 
 
 
