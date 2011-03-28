@@ -1,0 +1,77 @@
+
+DONE:
+  Y-Axis 0-400, per tile/256px
+  Grid lines are:
+  0, 40 - 70   hypo
+  70   - 140   ideal / normal
+  140  - 200   hyper
+  200  - 300   severe hyper
+  300  - 400   dangerous hyper
+
+
+
+TODO:
+
+  missing:
+  X-Axis labels:
+    Layer, subclass from Marker, or maybe Text
+
+
+  Glucose:
+    Subclass From Text
+    Read a list of values, from text block, from url, from, hash, list.
+
+  Format
+    OpenLayers.Format???
+    Times
+    Glucose
+    bolus/basal step functions
+
+Time on X axis:
+Zoom Levels / Views
+-------------------
+
+  z  unit      res
+  0  minutes   90  minutes
+  1  hours     24  hours
+  2  days      2   days
+  3  days      5   days
+  4  weeks     7   days
+  5  weeks     14  days fortnight)
+  6  months    32  days
+  7  months    42  days 6 weeks
+  8  quarters  91  days 365/4
+  9  solstice  182 days 6 months
+  
+
+
+Two most important charts, three total:
+  Observations:
+    * glucose
+    * dosing:
+      basal
+      bolus
+
+    * carbohydrates
+
+Nice to have:
+  Notes, annotations
+  Events
+    Calendar integration
+
+  Observations:
+    primings
+
+
+  Predictions:
+    Primings
+    Glucose
+
+    Pattern recognition
+
+  Indivo Integration
+  Glucosurfer interop??
+
+
+
+
