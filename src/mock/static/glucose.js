@@ -37,6 +37,10 @@ if (!Proj4js.defs.PLANE) {
 //var GlucoseDay = OpenLayers.Class(OpenLayers.Layer.MapServer, {
 var GlucoseDay = OpenLayers.Class( OpenLayers.Layer.MapServer,
                                    OpenLayers.Layer.FixedZoomLevels, {
+  // TODO: figure out zoom levels?
+  // pure conjecture: these could be separate layers or separate zoom levels.
+  // zoom 0: minutes 1 tile = 90 minutes
+  // zoom 1: hours 1 tile = 6 hours
   RESOLUTIONS: [
     24/256,
     400/256
@@ -55,7 +59,11 @@ var GlucoseDay = OpenLayers.Class( OpenLayers.Layer.MapServer,
   //setZindex: OpenLayers.Layer.prototype.setZIndex,
   //moveTo: OpenLayers.Map.prototype.moveTo,
   getResolution: function () {
-    return this.getXResolution.apply(this, arguments);
+    var x = this.getXResolution.apply(this, arguments),
+        y = this.getYResolution.apply(this, arguments);
+    var res = [ x, y ];
+    // most function only compute against one axis.
+    return x;
   },
   getXResolution: function () {
     return 24/256;
