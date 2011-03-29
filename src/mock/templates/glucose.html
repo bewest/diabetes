@@ -203,26 +203,6 @@ $(document).ready( function() {
       // gutter: 16,
       type: 'png' }
   );
-  me.renderers = OpenLayers.Layer.Vector.prototype.renderers;
-  me.style = new OpenLayers.StyleMap({'default': new OpenLayers.Style({
-    strokeColor: 'green',
-    strokeOpacity: 1,
-    strokeWidth: 3,
-    fillColor: "#FF5500",
-    fillOpacity: 0.5,
-    pointRadius: 10,
-    pointerEvents: "visiblePainted",
-    label: "msg: \$\{msg}",
-    fontColor: "blue",
-    fontSize: "12px",
-    width: "50px",
-    xOffset: 0,
-    yOffset: 0,
-    fontFamily: "sans monospace",
-    fontWeight: "bold",
-    msg: "hello"
-
-  })});
   me.map.addLayers([me.wms]);
   me.map.zoomToExtent(extent);
   me.map.events.register("mousemove", me.map, function(e) { 
@@ -239,23 +219,61 @@ $(document).ready( function() {
   me.map.addControl(new OpenLayers.Control.OverviewMap());
   me.yaxis = new YAxisControl();
   me.map.addControl(me.yaxis);
-  me.feat = new OpenLayers.Layer.Vector( "Simple Geometry", { styleMap: me.style, renderers: me.renderers });
-  me.point = new OpenLayers.Geometry.Point( 5, 5 );
-  me.pointFeat =  new OpenLayers.Feature.Vector(me.point, me.style,
-                      { label: "HELLO WORLD", align: 'lb', name: 'test' });
-  //me.feat.addLayer( me.pointFeat );
-  me.feat.addFeatures([ me.pointFeat ]);
   me.scaleline = new OpenLayers.Control.ScaleLine();
   me.markers = new OpenLayers.Layer.Markers("markers");
   me.map.addLayer(me.markers);
-  me.map.addLayers( [me.feat] );
   
   test();
+  do_vectorLayer();
   
 });
 
 return me;
 })(jQuery);
+
+function do_vectorLayer() {
+  me.U = {
+    icon : new OpenLayers.Icon( '/static/dot.png'),
+    iconSize: new OpenLayers.Size(12, 12)
+  };
+  me.renderers = OpenLayers.Layer.Vector.prototype.renderers;
+  me.style = new OpenLayers.StyleMap({'default': new OpenLayers.Style({
+    strokeColor: 'green',
+    strokeOpacity: 1,
+    strokeWidth: 13,
+    fillColor: "#FF5500",
+    fillOpacity: 0.5,
+    pointRadius: 20,
+    pointerEvents: "visiblePainted",
+    label: "msg: \$\{msg}",
+    fontColor: "blue",
+    fontSize: "12px",
+    width: "100px",
+    xOffset: 0,
+    yOffset: 0,
+    fontFamily: "sans monospace",
+    fontWeight: "bold",
+    msg: "hello"
+
+  })});
+  me.feat      = new OpenLayers.Layer.Vector( "Simple Geometry",
+                     { styleMap: me.style,
+                       renderers: me.renderers });
+  me.point     = new OpenLayers.Geometry.Point( 1, 1 );
+  me.pointFeat = new OpenLayers.Feature.Vector(me.point, me.style,
+                     { label: "HELLO WORLD \$\{me.U.icon}",
+                       align: 'lb', name: 'test',
+                       point: me.point,
+                       icon: me.U.icon,
+                       externalGraphic: me.U.icon,
+                       noop: null});
+  //me.feat.addLayer( me.pointFeat );
+  me.feat.addFeatures([ me.pointFeat ]);
+
+  me.map.addLayers( [me.feat] );
+  console.log( 'added feat', me.feat, me.point, me.pointFeat );
+  
+}
 
 function test() {
   add(new OpenLayers.LonLat( 0, 0 ) );
