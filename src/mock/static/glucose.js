@@ -70,7 +70,7 @@ var CartesianLayer = OpenLayers.Class( OpenLayers.Layer.FixedZoomLevels, {
     return x;
   },
   getXResolution: function () {
-    //return 24/256;
+    return 24/256;
     var res  = null,
     viewSize = this.map.getSize(),
     extent   = this.getExtent();
@@ -81,7 +81,7 @@ var CartesianLayer = OpenLayers.Class( OpenLayers.Layer.FixedZoomLevels, {
     return res;
   },
   getYResolution: function () {
-    //return 400/256;
+    return 400/256;
     var res  = null,
     viewSize = this.map.getSize(),
     extent   = this.getExtent();
