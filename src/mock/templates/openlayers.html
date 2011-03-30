@@ -224,12 +224,12 @@ function do_vectorLayer() {
                      { styleMap: me.style,
                        renderers: me.renderers });
   me.point     = new OpenLayers.Geometry.Point( 1, 1 );
-  me.pointFeat = new OpenLayers.Feature.Vector(me.point,
-                     { label: "HELLO WORLD \$\{icon}",
+  me.pointFeat = new OpenLayers.Feature.Vector(me.point, me.style,
+                     { label: "HELLO WORLD",
                        labelAlign: 'lb', name: 'test',
                        point: me.point,
                        externalGraphic: me.U.icon.url,
-                       //graphicWidth: me.U.iconSize.w,
+                       graphicWidth: me.U.iconSize.w,
                        //graphicHeight: me.U.iconSize.h,
                        graphicTitle: "1-title",
                        fill: true,
