@@ -204,15 +204,17 @@ function do_vectorLayer() {
   };
   me.renderers = OpenLayers.Layer.Vector.prototype.renderers;
   me.style = new OpenLayers.StyleMap({'default': new OpenLayers.Style({
-    strokeColor: 'green',
+    strokeColor: 'red',
     strokeOpacity: 1,
     strokeWidth: 3,
-    fillColor: "#FF5500",
+    fillColor: "red",
     pointRadius: 6,
     pointerEvents: "visiblePainted",
     label: "msg: \$\{msg}",
     fontColor: "blue",
+    labelAlign: "\$\{align}",
     fontSize: "12px",
+    externalGraphic: "\$\{icon}",
     xOffset: 0,
     yOffset: 0,
     fontFamily: "sans monospace",
@@ -224,18 +226,15 @@ function do_vectorLayer() {
                      { styleMap: me.style,
                        renderers: me.renderers });
   me.point     = new OpenLayers.Geometry.Point( 1, 1 );
-  me.pointFeat = new OpenLayers.Feature.Vector(me.point, me.style,
-                     { label: "HELLO WORLD",
-                       labelAlign: 'lb', name: 'test',
+  me.pointFeat = new OpenLayers.Feature.Vector(me.point,
+                     { label: "HELLO WORLD 2",
                        point: me.point,
-                       externalGraphic: me.U.icon.url,
-                       graphicWidth: me.U.iconSize.w,
-                       //graphicHeight: me.U.iconSize.h,
-                       graphicTitle: "1-title",
-                       fill: true,
                        msg: "HELLO WORLD",
-                       
-                       noop: null});
+                       align: "bl",
+                       icon: me.U.icon.url,
+                       noop: null }
+                       );
+
   //me.feat.addLayer( me.pointFeat );
   me.feat.addFeatures([ me.pointFeat ]);
 
