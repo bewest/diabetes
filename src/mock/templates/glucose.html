@@ -259,14 +259,16 @@ function do_vectorLayer() {
   me.feat      = new OpenLayers.Layer.Vector( "Simple Geometry",
                      { styleMap: me.style,
                        renderers: me.renderers });
-  me.point     = new OpenLayers.Geometry.Point( 1, 1 );
+  me.point     = new OpenLayers.Geometry.Point( 12, 12 );
   me.pointFeat = new OpenLayers.Feature.Vector(me.point, me.style,
                      { label: "HELLO WORLD \$\{me.U.icon}",
-                       align: 'lb', name: 'test',
+                       labelAlign: 'lb', name: 'test',
                        point: me.point,
-                       icon: me.U.icon,
-                       externalGraphic: me.U.icon,
-                       noop: null});
+                       externalGraphic: me.U.icon.url,
+                       graphicWidth: me.U.iconSize.w,
+                       graphicHeight: me.U.iconSize.h,
+                       graphicTitle: "1-title",
+                       noop: null });
   //me.feat.addLayer( me.pointFeat );
   me.feat.addFeatures([ me.pointFeat ]);
 
@@ -274,6 +276,7 @@ function do_vectorLayer() {
   console.log( 'added feat', me.feat, me.point, me.pointFeat );
   
 }
+
 
 function test() {
   add(new OpenLayers.LonLat( 0, 0 ) );
