@@ -275,7 +275,7 @@ OpenLayers.Util.extend(OpenLayers.Renderer.prototype, {
           location.move(xOffset * res_x, yOffset * res_y);
         }
         this.drawText(feature.id, style, location);
-        console.log( 'drew text');
+        console.log( 'drew text', style, location);
       } else {
         this.removeText(feature.id);
       }
@@ -404,7 +404,7 @@ OpenLayers.Util.extend(OpenLayers.Renderer.SVG.prototype, {
     if (!label.parentNode) {
       label.appendChild(tspan);
       this.textRoot.appendChild(label);
-      console.log('added', label, this.textRoot);
+      console.log('added', 'tspan', tspan, 'label', label, 'textRoot', this.textRoot);
     }
   
   },

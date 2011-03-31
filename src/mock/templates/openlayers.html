@@ -204,6 +204,7 @@ function do_vectorLayer() {
   };
   me.renderers = OpenLayers.Layer.Vector.prototype.renderers;
   me.style = new OpenLayers.StyleMap({'default': new OpenLayers.Style({
+
     strokeColor: 'red',
     strokeOpacity: 1,
     strokeWidth: 3,
@@ -225,6 +226,7 @@ function do_vectorLayer() {
   })});
   me.feat      = new OpenLayers.Layer.Vector( "Simple Geometry",
                      { styleMap: me.style,
+                       isBaseLayer: false,
                        renderers: me.renderers });
   me.point     = new OpenLayers.Geometry.Point( 1, 1 );
   me.pointFeat = new OpenLayers.Feature.Vector(me.point,
