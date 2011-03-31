@@ -259,6 +259,7 @@ function do_vectorLayer() {
   })});
   me.feat      = new OpenLayers.Layer.Vector( "Simple Geometry",
                      { styleMap: me.style,
+                       isBaseLayer: false,
                        renderers: me.renderers });
   me.point     = new OpenLayers.Geometry.Point( 1, 100 );
   me.pointFeat = new OpenLayers.Feature.Vector(me.point,
