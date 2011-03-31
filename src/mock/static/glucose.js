@@ -350,13 +350,13 @@ OpenLayers.Util.extend(OpenLayers.Renderer.SVG.prototype, {
   },
   drawText: function(featureId, style, location) {
     var resolution = this.getResolution(),
-        res_x  = this.map.getXResolution(),
-        res_y  = this.map.getYResolution(),
-        x      = (location.x / res_x + this.left),
-        y      = (location.y / res_y - this.top),
-        label  = this.nodeFactory(featureId + this.LABEL_ID_SUFFIX, "text"),
-        tspan  = this.nodeFactory(featureId + this.LABEL_ID_SUFFIX, "_tspan", "text"),
-        align  = style.labelAlign || "cm";
+        res_x = this.map.getXResolution(),
+        res_y = this.map.getYResolution(),
+        x     = (location.x / res_x + this.left),
+        y     = (location.y / res_y - this.top),
+        label = this.nodeFactory(featureId + this.LABEL_ID_SUFFIX, "text"),
+        tspan = this.nodeFactory(featureId + this.LABEL_ID_SUFFIX, "_tspan", "text"),
+        align;
         ;
 
     label.setAttributeNS(null, "x",  x);
@@ -377,25 +377,28 @@ OpenLayers.Util.extend(OpenLayers.Renderer.SVG.prototype, {
     if (style.fontWeight) {
       label.setAttributeNS(null, "font-weight", style.fontWeight);
     }
-    if (style.labelSelect == true) {
+    if (style.labelSelect === true) {
       label.setAttributeNS(null, "pointer-events", "visible");
       label._featureId = featureId;
       tspan._featureId = featureId;
-      tspan._geometry = location;
+      tspan._geometry  = location;
       tspan._geometryClass = location.CLASS_NAME;
     } else {
       label.setAttributeNS(null, "pointer-events", "none");
     }
+
+    align = style.labelAlign || "cm";
     label.setAttributeNS(null, "text-anchor",
         OpenLayers.Renderer.SVG.LABEL_ALIGN[align[0]] || "middle");
-    if (OpenLayers.IS_GECKO == true) {
+    if (OpenLayers.IS_GECKO === true) {
       label.setAttributeNS(null, "dominant-baseline",
           OpenLayers.Renderer.SVG.LABEL_ALIGN[align[1]] || "central");
 
     } else {
-      label.setAttributeNS(null, "baseline-shift",
+      tspan.setAttributeNS(null, "baseline-shift",
           OpenLayers.Renderer.SVG.LABEL_ALIGN[align[1]] || "-35%");
     }
+
     tspan.textContent = style.label;
     
     if (!label.parentNode) {
