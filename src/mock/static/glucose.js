@@ -298,6 +298,7 @@ OpenLayers.Util.extend(OpenLayers.Renderer.SVG.prototype, {
         top   = extent.top / res_y,
         extentString, inRange;
 
+    console.log('setExtent', left, top);
     if (resolutionChanged) {
       this.left = left;
       this.top = top;
@@ -339,6 +340,7 @@ OpenLayers.Util.extend(OpenLayers.Renderer.SVG.prototype, {
         y      = (this.top - geometry.y / res_y);
 
     if (this.inValidRange(x, y)) {
+      console.log( 'drawRectangle', x, y, width, height);
       node.setAttributeNS(null, "x", x);
       node.setAttributeNS(null, "y", y);
       node.setAttributeNS(null, "width", width);
@@ -423,6 +425,7 @@ OpenLayers.Util.extend(OpenLayers.Renderer.SVG.prototype, {
         x2    = badComponent.x / res_x + this.left,
         y2    = this.top - badComponent.y / res_y,
         k;
+    var str = '';
     if (x2 < -maxX || x2 > maxX) {
       k = (y2 - y1) / (x2 - x1);
       x2 = x2 < 0 ? -maxX : maxX;
@@ -433,16 +436,21 @@ OpenLayers.Util.extend(OpenLayers.Renderer.SVG.prototype, {
       y2 = y2 < 0 ? -maxY : maxY;
       x2 = x1 + (y2 - y1) * k;
     }
-    return x2 + "," + y2;
+    
+    str = x2 + "," + y2;
+    console.log( 'clipLine', str );
+    return str;
   },
   getShortString: function(point) {
     var resolution = this.getResolution(),
         res_x  = this.map.getXResolution(),
         res_y  = this.map.getYResolution(),
-        x      = (location.x / res_x + this.left),
-        y      = (location.y / res_y - this.top);
+        x      = (point.x / res_x + this.left),
+        y      = (point.y / res_y - this.top);
+    var str    = '';
     if (this.inValidRange(x, y)) {
-      return x + "," + y;
+      str = x + "," + y;
+      return str;
     } else {
       return false;
     }

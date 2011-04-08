@@ -270,8 +270,13 @@ function do_vectorLayer() {
                        icon: me.U.icon.url,
                        noop: null }
                        );
-  //me.feat.addLayer( me.pointFeat );
-  me.feat.addFeatures([ me.pointFeat ]);
+
+
+  me.square     = new OpenLayers.Geometry.Polygon.createRegularPolygon(
+                  new OpenLayers.Geometry.Point( 1, 1), 30, 4);
+  me.sqFeat     = new OpenLayers.Feature.Vector(me.square);
+  me.feat.addFeatures([ me.pointFeat, me.sqFeat ]);
+
 
   me.map.addLayers( [me.feat] );
   console.log( 'added feat', me.feat, me.point, me.pointFeat );
