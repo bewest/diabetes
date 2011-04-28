@@ -14,6 +14,8 @@ import date
 
 lookup = TemplateLookup(directories=['templates'])
 
+import helper
+
 class GeneralHandler:
 
     @cherrypy.expose
@@ -70,6 +72,7 @@ class Root(GeneralHandler):
       return tmpl.render(salutation="Hello", target="World")
 
     @cherrypy.expose
+    @cherrypy.tools.mako(directories="./templates")
     def template(self, page):
       tmpl = lookup.get_template("%s" % page)
       return tmpl.render(salutation="Hello", target="World")
