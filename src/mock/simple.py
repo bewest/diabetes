@@ -52,6 +52,11 @@ class Graph(GeneralHandler):
       ctxt = kwds.get( 'date', None )
       return plot.x_axis_panel( )
 
+class Templates(GeneralHandler):
+  def __call__(self, *args, **kwds):
+    
+    cherrypy.log.info("HELLO WORLD")
+    super(self, type(self))(*args, **kwds)
 
 class Root(GeneralHandler):
     @cherrypy.expose
@@ -71,8 +76,8 @@ class Root(GeneralHandler):
       tmpl = lookup.get_template("openlayers.html")
       return tmpl.render(salutation="Hello", target="World")
 
+    #@cherrypy.tools.mako(directories="./templates")
     @cherrypy.expose
-    @cherrypy.tools.mako(directories="./templates")
     def template(self, page):
       tmpl = lookup.get_template("%s" % page)
       return tmpl.render(salutation="Hello", target="World")
