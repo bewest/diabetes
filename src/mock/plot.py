@@ -1,4 +1,7 @@
+import matplotlib
+matplotlib.use('cairo.png')
 from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvas
+#matplotlib.use('cario.svg')
 from matplotlib import ticker
 
 from matplotlib.figure import Figure

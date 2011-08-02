@@ -1,0 +1,3 @@
+[submodule "src/mock/panojs"]
+	path = src/mock/panojs
+	url = /home/bewest/Documents/git/diabetes/../panojs/

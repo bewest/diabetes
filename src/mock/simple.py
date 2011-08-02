@@ -14,7 +14,7 @@ import date
 
 lookup = TemplateLookup(directories=['templates'])
 
-import helper
+#import helper
 
 class GeneralHandler:
 
