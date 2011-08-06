@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>chart anatomy</title>
+<link rel="stylesheet" href="/panojs/styles/panojs.css" type="text/css" />
+<style type="text/css">
+#map {
+  width: 80%;
+  height: 300px;
+
+}
+
+#map .YAxisControl {
+  position: absolute;
+  left: 3ex;
+}
+</style>
+<!--
+<link type="text/css" rel="stylesheet" href="/static/theme/default/style.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">
+</script>
+<script type="text/javascript"> jQuery.noConflict(); </script>
+-->
+<!--
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="http://openlayers.org/dev/OpenLayers.js"></script>
+-->
+<!--
+-->
+
+    <script type="text/javascript" src="/panojs/panojs/utils.js"></script>    
+    <script type="text/javascript" src="/panojs/panojs/PanoJS.js"></script>
+    <script type="text/javascript" src="/panojs/panojs/controls.js"></script>
+    <script type="text/javascript" src="/panojs/panojs/pyramid_imgcnv.js"></script>
+    <script type="text/javascript" src="/panojs/panojs/control_thumbnail.js"></script>
+    <script type="text/javascript" src="/panojs/panojs/control_info.js"></script>
+    <script type="text/javascript" src="/panojs/panojs/control_svg.js"></script>
+
+<script type="text/javascript">
+// <![CDATA[
+
+PanoJS.MSG_BEYOND_MIN_ZOOM = null;
+PanoJS.MSG_BEYOND_MAX_ZOOM = null;
+var viewer1 = null;
+var viewer2 = null;
+
+function createViewer( viewer, dom_id, url, prefix, w, h ) {
+    if (viewer) return;
+  
+    var MY_URL      = url;
+    var MY_PREFIX   = prefix;
+    var MY_TILESIZE = 256;
+    var MY_WIDTH    = w;
+    var MY_HEIGHT   = h;
+    var myPyramid = new ImgcnvPyramid( MY_WIDTH, MY_HEIGHT, MY_TILESIZE);
+    
+    var myProvider = new PanoJS.TileUrlProvider('','','');
+    myProvider.assembleUrl = function(xIndex, yIndex, zoom) {
+        var url = MY_URL + '/' + MY_PREFIX + myPyramid.tile_filename( zoom, xIndex, yIndex );
+        console.log('url: ', url, this, arguments);
+        return url;
+    }
+    
+    viewer = new PanoJS(dom_id, {
+        tileUrlProvider : myProvider,
+        tileSize        : myPyramid.tilesize,
+        maxZoom         : myPyramid.getMaxLevel(),
+        imageWidth      : myPyramid.width,
+        imageHeight     : myPyramid.height,
+        blankTile       : '/panojs/images/blank.gif',
+        loadingTile     : '/panojs/images/progress.gif'
+    });
+
+    //Ext.EventManager.addListener( window, 'resize', callback(viewer, viewer.resize) );
+    viewer.init();
+    return viewer;
+};
+
+
+function initViewers() {
+  viewer1 = createViewer( viewer1, 'viewer1', '/graph/debug?', 'A01_tiled_', 1024 * 6,  512 * 2);
+  createViewer( viewer2, 'viewer2', 'pyramid', 'A01_tiled_', 4135,  4120 );
+}
+  
+// Ext.onReady(initViewers);
+
+
+
+
+// ]]>
+</script>
+
+
+  <div style="width: 100%; height: 400px;"> 
+      <div id="viewer1" class="viewer" style="width: 100%; height: 100%;" ></div>
+  </div>
+
+  <p>Second viewer:</p>
+
+  <div style="width: 100%; height: 400px;"> 
+      <div id="viewer2" class="viewer" style="width: 100%; height: 100%;" ></div>
+  </div> 
+
+<script type="text/javascript">
+initViewers( );
+</script>
+    
+</body>
+</html>
