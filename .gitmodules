@@ -1,3 +1,6 @@
 [submodule "src/mock/panojs"]
 	path = src/mock/panojs
 	url = /home/bewest/Documents/git/panojs
+[submodule "src/mock/polymaps"]
+	path = src/mock/polymaps
+	url = /home/bewest/Documents/git/polymaps/
