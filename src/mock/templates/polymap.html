@@ -1,0 +1,214 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>chart anatomy</title>
+<link rel="stylesheet" href="/panojs/styles/panojs.css" type="text/css" />
+<style type="text/css">
+
+@import url("/polymaps/examples/example.css");
+
+#district path {
+  fill: lightsteelblue;
+  fill-opacity: .5;
+  stroke: steelblue;
+}
+#map {
+  width: 100%;
+  height: 500px;
+
+}
+
+#y_axis {
+  border: 1px solid blue;
+  stroke: 1px solid blue;
+  fill: blue;
+}
+
+.layer rect {
+  fill: black;
+  fill-opacity: .15;
+  stroke: #E5E0D9;
+  shape-rendering: auto;
+  vector-effect: non-scaling-stroke;
+
+}
+
+#map rect {
+  fill: white;
+  fill-opacity: .15;
+  stroke: red;
+  shape-rendering: crispEdges;
+}
+
+.grid {
+  stroke: white;
+  stroke-opacity: .4;
+  shape-rendering: crispEdges;
+}
+
+.wrap {
+  border: 3ex solid pink;
+}
+
+#map .YAxisControl {
+  position: absolute;
+  left: 3ex;
+}
+</style>
+<!--
+<link type="text/css" rel="stylesheet" href="/static/theme/default/style.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">
+</script>
+<script type="text/javascript"> jQuery.noConflict(); </script>
+-->
+<!--
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="http://openlayers.org/dev/OpenLayers.js"></script>
+-->
+<!--
+/polymaps/
+/polymaps/examples/bounds/bounds.html
+/polymaps/
+-->
+    <script type="text/javascript" src="/polymaps/polymaps.js"></script>
+
+
+<script type="text/javascript">
+</script>
+</head>
+<body>
+<h1>PolyMap</h1>
+
+<div class="wrap">
+<h2>Hello</h2>
+<div id="map">
+<!--
+  <script type="text/javascript" src="/static/polymaps-bounds.js"></script>
+-->
+  <script type="text/javascript" >
+var po = org.polymaps;
+
+var div = document.getElementById("map"),
+    svg = div.appendChild(po.svg("svg")),
+    g = svg.appendChild(po.svg("g"));
+
+var map = po.map()
+    .container(g)
+    .tileSize({x: 256, y: 256})
+    .angle(0)
+    .add(po.interact())
+    .on("move", log_event)
+    .on("resize", resize);
+
+resize();
+
+var my_grid = map.add(po.layer(grid));
+
+/*
+* Easy to tack stuff on.
+*/
+var axis = g.appendChild(po.svg("g"));
+var y_axis = axis.appendChild(po.svg("image"));
+y_axis.setAttributeNS(po.ns.xlink, "href", "/graph/yaxis");
+y_axis.setAttribute("class", "axis");
+y_axis.setAttribute("width", "64");
+y_axis.setAttribute("height", "384");
+y_axis.setAttribute("id", "y_axis");
+
+var rect = g.appendChild(po.svg("rect"));
+rect.setAttribute("width", "512px");
+rect.setAttribute("height", "300px");
+
+  var old_center = map.center;
+  map.center = function(x) {
+    console.log('center', this, arguments);
+    var map = old_center.apply(this, arguments);
+    return map;
+  };
+
+function log_event() {
+  console.log(this, arguments);
+}
+
+function resize() {
+  if (resize.ignore) return;
+  var x = div.clientWidth / 2,
+      y = div.clientHeight / 2;
+  g.setAttribute("transform", "translate(" + (x / 2) + "," + (y / 2) + ")");
+  resize.ignore = true;
+  map.size({x: x, y: y});
+  resize.ignore = false;
+}
+
+function grid(tile, projection) {
+  var g = tile.element = po.svg("g");
+
+  var rect = g.appendChild(po.svg("rect")),
+      size = map.tileSize();
+  rect.setAttribute("width", size.x);
+  rect.setAttribute("height", size.y);
+
+  var text = g.appendChild(po.svg("text"));
+  text.setAttribute("x", 6);
+  text.setAttribute("y", 6);
+  text.setAttribute("dy", ".71em");
+  text.appendChild(document.createTextNode(tile.key));
+  console.log(tile, projection);
+}
+
+var spin = 0;
+setInterval(function() {
+  if (spin) map.angle(map.angle() + spin);
+}, 30);
+
+function key(e) {
+  switch (e.keyCode) {
+    case 65: spin = e.type == "keydown" ? -.004 : 0; break;
+    case 68: spin = e.type == "keydown" ? .004 : 0; break;
+  }
+}
+
+window.addEventListener("keydown", key, true);
+window.addEventListener("keyup", key, true);
+window.addEventListener("resize", resize, false);
+
+
+  </script>
+  <span id="copy">
+    &copy; 2010
+    <a href="http://www.cloudmade.com/">CloudMade</a>,
+    <a href="http://www.openstreetmap.org/">OpenStreetMap</a> contributors,
+    <a href="http://creativecommons.org/licenses/by-sa/2.0/">CCBYSA</a>.
+  </span>
+</div>
+</div>
+<div id="todo">
+<h2>TODO</h2>
+  <ul>
+    <li>Custom Tile/Layer to Carsian Plane?</li>
+    <li>restricted/max extent support</li>
+  </ul>
+<h3>notes</h3>
+<pre>
+
+>>> ex = map.extent()
+[Object { lon=-122.47595659301757, lat=37.72288497518073}, Object { lon=-122.41003862426757, lat=37.75682234150081}]
+>>> map.locationPoint(ex[0])
+Object { x=0, y=250.00000000004138}
+>>> map.locationPoint(ex[1])
+Object { x=384, y=-1.241744485014351e-10}
+>>> map.size()
+Object { x=384, y=250}
+
+Layer.js contains the tile's custom projection, which is given to
+the layer at 'load' time.
+The tile function actually gets called by the cache's load during
+scanLines, by scanTriangles, all of which gets defined and executed
+during a Layer's 'move.'
+The projection is a function which it returns function
+'locationPoint' initialized based on the tile's column/row.
+
+</pre>
+</div>
+</body>
+</html>
