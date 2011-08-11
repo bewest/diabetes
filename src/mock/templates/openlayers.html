@@ -233,7 +233,7 @@ function do_vectorLayer() {
                      { styleMap: me.style,
                        isBaseLayer: false,
                        renderers: me.renderers });
-  me.point     = new OpenLayers.Geometry.Point( 1, 1 );
+  me.point     = new OpenLayers.Geometry.Point( 2.5, 2.5 );
   me.pointFeat = new OpenLayers.Feature.Vector(me.point,
                      { label: "HELLO WORLD 2",
                        point: me.point,
@@ -245,8 +245,9 @@ function do_vectorLayer() {
 
 
   me.square     = new OpenLayers.Geometry.Polygon.createRegularPolygon(
-                  new OpenLayers.Geometry.Point( 1, 1), 3, 4);
-  me.sqFeat     = new OpenLayers.Feature.Vector(me.square);
+                  new OpenLayers.Geometry.Point( 1, 1), 1, 4);
+  me.sqFeat     = new OpenLayers.Feature.Vector(me.square,
+                      {msg:'a square'});
   me.feat.addFeatures([ me.pointFeat, me.sqFeat ]);
 
   me.map.addLayers( [me.feat ] );
@@ -296,6 +297,11 @@ function test() {
   <span id="coords"></span>
   <div id="time"></div>
 </div>
+
+<h2>Note</h2>
+<pre>
+
+</pre>
 
 </body>
 </html>
