@@ -4,3 +4,6 @@
 [submodule "src/mock/polymaps"]
 	path = src/mock/polymaps
 	url = /home/bewest/Documents/git/polymaps/
+[submodule "src/mock/pixymaps"]
+	path = src/mock/pixymaps
+	url = /home/bewest/Documents/git/pixymaps
