@@ -112,6 +112,7 @@ var y_axis = axis.appendChild(po.svg("image"));
 y_axis.setAttributeNS(po.ns.xlink, "href", "/graph/yaxis");
 y_axis.setAttribute("class", "axis");
 y_axis.setAttribute("width", "64");
+y_axis.setAttribute("y", "-64");
 y_axis.setAttribute("height", "384");
 y_axis.setAttribute("id", "y_axis");
 
@@ -207,6 +208,46 @@ scanLines, by scanTriangles, all of which gets defined and executed
 during a Layer's 'move.'
 The projection is a function which it returns function
 'locationPoint' initialized based on the tile's column/row.
+
+http://polymaps.org/docs/map.html
+https://github.com/bewest/polymaps/blob/master/src/Map.js
+I can customize the projection, center, and move methods not exposed
+through the API/documentation.
+
+http://polymaps.org/docs/layer.html
+https://github.com/bewest/polymaps/blob/master/src/Layer.js
+
+https://github.com/bewest/polymaps/blob/master/src/Transform.js
+Original map uses a mercator projection where map units are in Lat
+Lon.
+SVG puts origin in top-left (NE) with y ascending south and x to the
+right.
+
+Image Size:
+
+Tiles are 256px * 256px
+Version 1:
+4 tiles deep, square
+1024px * 1024px
+
+I'd like the origin to be at the center of this image.
+I'd like the units to either be straight ahead cartesian plane,
+scaled appropriately for the map units per pixel.  There are tick
+marks dividing each tile into 4 segments.
+
+
+Version 2:
+4 tiles deep, square
+1024px * 1024px
+The map units are actually 0 - 400 per tile on the Y axis,
+and 0 - 86400 on the X axis.
+
+
+
+New Feature:
+Restrict viewport panning to always include a declared extent.
+Will be used to restrict the panning to horizontal motion.
+(As seen in OpenLayers.)
 
 </pre>
 </div>
