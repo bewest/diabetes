@@ -71,6 +71,7 @@
 /polymaps/
 -->
     <script type="text/javascript" src="/polymaps/polymaps.js"></script>
+    <script type="text/javascript" src="/static/polymaps-euc-proj.js"></script>
 
 
 <script type="text/javascript">
@@ -101,6 +102,8 @@ var map = po.map()
     .on("resize", resize);
 
 resize();
+
+// need a euclidean projection?
 
 var my_grid = map.add(po.layer(grid));
 

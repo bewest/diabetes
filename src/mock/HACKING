@@ -57,9 +57,21 @@ Two most important charts, three total:
     * carbohydrates
 
 Nice to have:
+  Rollups:
+    3,4,5,10 day
+    6 week
+
+    Year: http://mbostock.github.com/d3/ex/calendar.html
+
+  Times of Day:
+    Default: 6-10, 10-3, 3-8, 8-12, 12-6
+
   Notes, annotations
   Events
-    Calendar integration
+    Calendar integration: import google calendars
+
+    Custom Views: special calendar import?
+      * semesters, seasons, vacations, projects, "stints"?
 
   Observations:
     primings
@@ -67,11 +79,15 @@ Nice to have:
   Predictions:
     Primings
     Glucose
+      Trends
 
     Pattern recognition
 
   Indivo Integration
   Glucosurfer interop??
 
+Other Integration points:
+  * Fitbit
+  * 
 
 

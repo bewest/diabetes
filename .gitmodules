@@ -7,3 +7,9 @@
 [submodule "src/mock/pixymaps"]
 	path = src/mock/pixymaps
 	url = /home/bewest/Documents/git/pixymaps
+[submodule "src/mock/lines-spent"]
+	path = src/mock/lines-spent
+	url = /home/bewest/Documents/git/lines-spent/
+[submodule "src/mock/d3"]
+	path = src/mock/d3
+	url = /home/bewest/Documents/git/d3/
