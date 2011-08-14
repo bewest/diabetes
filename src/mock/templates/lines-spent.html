@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<head>
+<meta charset=utf-8>
+<title>lines spent</title>
+<style>
+body {
+  font-family: sans-serif;
+  max-width: 45em;
+  margin: 2ex;
+}
+h1 {
+  font-weight: normal;
+}
+blockquote {
+  font-family: serif;
+  font-size: 120%;
+}
+tt {
+  font-family: WebKitWorkaround, monospace;
+}
+
+line {
+  stroke: black;
+}
+
+.tick {
+  font-size: 12px;
+}
+.positive {
+  fill: #5d5;
+}
+.negative {
+  fill: #d55;
+}
+
+#vis {
+  position: relative;
+  margin: 2em 0;
+}
+#vis-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#vis-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+#vis-body {
+  overflow-x: scroll;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+</style>
+</head>
+<body>
+<script src='/d3/d3.js?#'></script>
+<script src='/d3/d3.time.js'></script>
+<script src='/lines-spent/evan.json'></script>
+<h1>lines spent</h1>
+
+<blockquote>...if we wish to count lines of code, we should not regard
+them as "lines produced" but as "lines spent"...<br>
+&mdash; Dijkstra</blockquote>
+
+<p>For the last while I've thought of my role on Chrome as a
+"janitor": I've touched (and built) enough things throughout the
+codebase that it falls on people like me to make cross-cutting cleanup
+changes.  This visualization shows the accumulated effects of my
+changes to the tree over the last year.</p>
+
+<p>Each bar represents a commit. Green represents added lines, red
+removed lines.  Each bar is centered at the cumulative added/removed
+count from my commits: the first commit is centered at 0, and if it
+net added code, the next commit is shifted accordingly.  Hovering a
+bar shows part of the commit message.</p>
+
+<div id='vis'>
+<div id='vis-left'></div>
+<div id='vis-body'></div>
+</div>
+
+<p>More details: this data was computed via <tt>git
+log <span id='git'></span></tt>.  Commits that had &gt;1000 adds or
+deletes were elided (those typically were imports or removals of large
+third-party modules), as were commits that touched under 5 lines.
+<a href="https://github.com/martine/lines-spent">The code is on
+github</a>.</p>
+
+<p>PS: like any visualization of code contribution, please don't read
+too much into it; some of the most important work I've done was three
+days of thinking followed by a two-line change.</p>
+
+<script src='/static/lines-spent.js'></script>
+</body>
