@@ -6,6 +6,7 @@
     <script type="text/javascript" src="/d3/d3.js"></script>
     <script type="text/javascript" src="/d3/d3.behavior.js"></script>
     <script type="text/javascript" src="/d3/d3.geo.js"></script>
+    <script type="text/javascript" src="/d3/d3.time.js"></script>
     <style type="text/css">
 
 svg {
@@ -58,6 +59,7 @@ function redraw() {
 
   var fx = x.tickFormat(10),
       fy = y.tickFormat(10);
+
 
   // Regenerate x-ticks  
   var gx = svg.selectAll("g.x")

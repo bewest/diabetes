@@ -48,6 +48,18 @@ var vis = d3.select('#vis-body')
     .attr('width', w)
     .attr('height', h)
 ;
+vis.call(d3.behavior.zoom().on("zoom", move));
+// vis.call(d3.behavior.zoom());
+
+function move() {
+  var ev = d3.event;
+  var x = d3.event.translate[0],
+      y = d3.event.translate[1];
+  console.log(this, arguments, ev, x, y);
+  console.log( 'selection:',
+               vis.selectAll('.commit'));
+  // find data in view
+}
 
 var kTickWidth = 42;
 var kTickMargin = 2;

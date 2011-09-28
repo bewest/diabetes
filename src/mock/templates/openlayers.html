@@ -33,7 +33,7 @@
 
 var lat_ts =  400.0/5 ;
 //Proj4js.defs["PLANE"] = "+proj=eqc +lat_ts=1 +lon_0=0 +x_0=0 +y_0=0 +a=0 +b=0 +units=ft +k_0=1";
-Proj4js.defs["PLANE"] = "+proj=euclid +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +a=0 +b=0 +units=ft +k_0=1";
+Proj4js.defs["PLANE"] = "+proj=euclid +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +a=400 +b=86400 +units=ft +k_0=1";
 //console.log('lat_ts', lat_ts.toFixed(10) );
 //Proj4js.defs["PLANE"] = "+proj=euclid +lat_ts=" + lat_ts.toFixed(10) + " +lon_0=0 +x_0=0 +y_0=0 +a=1 +b=0 +units=ft +k_0=1";
 
@@ -162,6 +162,7 @@ $(document).ready( function() {
   //, minResolution: 1
   //, maxResolution: 3
   , projection: 'PLANE'
+  , displayProjection: new OpenLayers.Projection("PLANE")
   , units: 'ft'
   };
   me.map = new OpenLayers.Map('map', options);
@@ -238,6 +239,7 @@ function do_vectorLayer() {
                      { styleMap: me.style,
                        isBaseLayer: false,
                        renderers: me.renderers });
+  me.map.addLayers( [me.feat ] );
   me.point     = new OpenLayers.Geometry.Point( 2.5, 2.5 );
   me.pointFeat = new OpenLayers.Feature.Vector(me.point,
                      { label: "HELLO WORLD 2",
@@ -250,12 +252,11 @@ function do_vectorLayer() {
 
 
   me.square     = new OpenLayers.Geometry.Polygon.createRegularPolygon(
-                  new OpenLayers.Geometry.Point( 1, 1), 1, 4);
+                  new OpenLayers.Geometry.Point( 1, 1), .75, 4);
   me.sqFeat     = new OpenLayers.Feature.Vector(me.square,
                       {msg:'a square'});
   me.feat.addFeatures([ me.pointFeat, me.sqFeat ]);
 
-  me.map.addLayers( [me.feat ] );
   console.log( 'added feat', me.feat, me.point, me.pointFeat );
   
 }

@@ -2,7 +2,9 @@
 <html>
 <head>
 <title>chart anatomy</title>
+<!--
 <link rel="stylesheet" href="/panojs/styles/panojs.css" type="text/css" />
+-->
 <style type="text/css">
 
 @import url("/polymaps/examples/example.css");
@@ -93,6 +95,7 @@ var div = document.getElementById("map"),
     svg = div.appendChild(po.svg("svg")),
     g = svg.appendChild(po.svg("g"));
 
+var translate = [ ];
 var map = po.map()
     .container(g)
     .tileSize({x: 256, y: 256})
@@ -100,6 +103,10 @@ var map = po.map()
     .add(po.interact())
     .on("move", log_event)
     .on("resize", resize);
+
+map.centerRange([ {lat: 0, lon: -Infinity },
+                  {lat: 0, lon: +Infinity } ]);
+map.size({x: 86400, y: 500});
 
 resize();
 
@@ -126,12 +133,13 @@ rect.setAttribute("height", "300px");
   var old_center = map.center;
   map.center = function(x) {
     console.log('center', this, arguments);
+    //if (x) x.lat = 0;
     var map = old_center.apply(this, arguments);
     return map;
   };
 
 function log_event() {
-  console.log(this, arguments);
+  console.log(this, arguments, 'extent', map.extent());
 }
 
 function resize() {
