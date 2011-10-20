@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# debug
+#set -x
+
+  find ./ '(' -name '*.py'   \
+          -or -name '*.html' \
+          -or -name '*.js'   \
+          -or -name '*.conf' \
+          ')' \
+       -exec vim '{}' +
+
+#####
+# EOF
