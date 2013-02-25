@@ -1,0 +1,4 @@
+insulaudit onetouch --port /home/insulaudit/sessions/6-403332564/vmodem hello
+INFO:insulaudit.devices.clmm.proto:hello world
+serial number: 
+firmware: 
