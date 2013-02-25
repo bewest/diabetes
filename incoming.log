@@ -1,0 +1,4 @@
+insulaudit onetouch --port /home/insulaudit/sessions/6-403332564/vmodem hello
+INFO:insulaudit.devices.clmm.proto:hello world
+serial number: @ "WWW2A68BY" 0325
+firmware: ?P02.00.00 11/02/05 03B4
