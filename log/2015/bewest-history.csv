@@ -1,4 +1,4 @@
-timestamp,date,_type,amount,_description,bg,correction_estimate,sensitivity,carb_input,bg_target_high,unabsorbed_insulin_total,date,unabsorbed_insulin_count,carb_ration,food_estimate,bg_target_low,bolus_estimate
+timestamp,date,_type,amount,_description,bg,correction_estimate,sensitivity,carb_input,bg_target_high,unabsorbed_insulin_total,date,unabsorbed_insulin_count,carb_ration,food_estimate,bg_target_low,bolus_estimate,
 2015-01-05T00:18:27,1420435107000,CalBGForPH,157,CalBGForPH 2015-01-05T00:18:27 head[2], body[0] op[0x0a],,,,,,,1420435107000,,,,,
 2015-01-05T00:18:30,1420435110000,BolusWizard,,BolusWizard 2015-01-05T00:18:30 head[2], body[13] op[0x5b],157,0.7,45,0,125,0.4,1420435110000,??,,0,106,0.3
 2015-01-05T00:18:30,1420435110000,Bolus,0.3,Bolus 2015-01-05T00:18:30 head[4], body[0] op[0x01],,,,,,,1420435110000,,,,,
